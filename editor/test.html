@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<style>
+			#code_source {
+				width: 100%;
+				height: 200px;
+			}
+
+			.dialog_block {
+				background: black;
+				color: white;
+				font-family: monospace;
+			}
+
+			.code_span {
+				color: pink;
+			}
+		</style>
+
+		<script>
+			function makeDialogElement(text) {
+				var dialogElement = document.createElement("div");
+				dialogElement.classList.add("dialog_block");
+				dialogElement.contentEditable = true;
+				dialogElement.innerText = text;
+
+				var innerHTML = dialogElement.innerHTML;
+				innerHTML = innerHTML.replace(/{/g, "<span class='code_span'>{");
+				innerHTML = innerHTML.replace(/}/g, "}</span>");
+				dialogElement.innerHTML = innerHTML;
+
+				return dialogElement;
+			}
+
+			function updateCodeEditor() {
+				var source = document.getElementById("code_source").value;
+
+				var editorRoot = document.getElementById("code_editor");
+				editorRoot.innerHTML = "";
+
+				editorRoot.appendChild(makeDialogElement(source));
+				editorRoot.appendChild(makeDialogElement("\n"));
+			}
+
+			function onCodeEditorChange() {
+				var source = document.getElementById("code_editor").innerText;
+				document.getElementById("code_source").value = source;
+				updateCodeEditor();
+			}
+
+			function init() {
+				updateCodeEditor();
+			}
+		</script>
+	</head>
+	<body onload="init();">
+		<textarea id="code_source" onchange="updateCodeEditor();">
+Testing testing
+1 2 3
+here is some {code} and some more text
+3 2 1
+		</textarea>
+		<div id="code_editor" onchange="onCodeEditorChange();">
+		</div>
+	</body>
+</html>
