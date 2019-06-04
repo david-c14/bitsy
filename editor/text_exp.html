@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<!-- GENERATED -->
+		<script src="script/generated/resources.js"></script>
+
+		<!-- ENGINE SCRIPTS -->
+		<script src="script/engine/color_util.js"></script>
+		<script src="script/engine/font.js"></script>
+		<script src="script/engine/transition.js"></script>
+		<script src="script/engine/script.js"></script>
+		<script src="script/engine/dialog.js"></script>
+		<script src="script/engine/renderer.js"></script>
+		<script src="script/engine/bitsy.js"></script>
+
+
+		<style>
+			/*#textEditorInput {
+				display: none;
+			}*/
+			#textEditorCanvas {
+				background: green;
+			}
+		</style>
+
+		<script>
+			isPlayerEmbeddedInEditor = true;
+
+			function onClickTextEditorCanvas() {
+				document.getElementById("textEditorInput").focus();
+			}
+
+			function onChangeTextEditorInput() {
+				console.log(document.getElementById("textEditorInput").value);
+				dialogBuffer.AddText(document.getElementById("textEditorInput").value);
+			}
+
+			function init() {
+				var canvas = document.getElementById("textEditorCanvas");
+				canvas.width = 512;
+				canvas.height = 512;
+				var context = canvas.getContext("2d");
+				// var dialogRenderer = Dialog.CreateRenderer();
+				dialogRenderer.AttachContext(context);
+				dialogRenderer.SetCentered(true);
+
+				fontManager = new FontManager(["ascii_small.bitsyfont"]);
+				var font = fontManager.Get(defaultFontName);
+				dialogBuffer.SetFont(font);
+				dialogRenderer.SetFont(font);
+
+				prevTime = Date.now();
+				setInterval(update, -1);
+			}
+
+			var prevTime, deltaTime;
+			function update() {
+				var curTime = Date.now();
+				deltaTime = curTime - prevTime;
+
+				if(dialogBuffer.IsActive()) {
+					dialogRenderer.Draw( dialogBuffer, deltaTime );
+					dialogBuffer.Update( deltaTime );
+				}
+
+				prevTime = curTime;
+			}
+		</script>
+	</head>
+
+	<body onload="init();">
+		<input id="textEditorInput" type="text" onchange="onChangeTextEditorInput();" />
+		<br/>
+		<canvas id="textEditorCanvas" onclick="onClickTextEditorCanvas();"></canvas>
+	</body>
+</html>

@@ -179,15 +179,17 @@ var DialogRenderer = function() {
 
 		this.ClearTextbox();
 
-		buffer.ForEachActiveChar( this.DrawChar );
+		buffer.ForEachActiveChar(this.DrawChar);
 
-		if( buffer.CanContinue() )
+		if(buffer.CanContinue()) {
 			this.DrawNextArrow();
+		}
 
 		this.DrawTextbox();
 
-		if( buffer.DidPageFinishThisFrame() && onPageFinish != null )
+		if(buffer.DidPageFinishThisFrame() && onPageFinish != null) {
 			onPageFinish();
+		}
 	};
 
 	/* this is a hook for GIF rendering */
@@ -300,8 +302,9 @@ var DialogBuffer = function() {
 		}
 
 		// console.log(this.CurChar());
-		if(this.CurChar() != null)
+		if(this.CurChar() != null) {
 			this.CurChar().OnPrint(); // make sure we hit the callback before we run out of text
+		}
 	};
 
 	this.Update = function(dt) {
