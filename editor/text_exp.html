@@ -24,6 +24,16 @@
 		</style>
 
 		<script>
+			/*
+			TODO 
+				- figure out how to activate soft keyboard on mobile
+				- show all text instantly [probably need to extend Skip functionality]
+				- extend textbox past two lines
+				- fit textbox to canvas
+				X show text effects [have to run through script engine]
+				- enum for textbox positions
+			*/
+
 			isPlayerEmbeddedInEditor = true;
 
 			function onClickTextEditorCanvas() {
@@ -32,11 +42,15 @@
 
 			function onChangeTextEditorInput() {
 				console.log(document.getElementById("textEditorInput").value);
-				dialogBuffer.AddText(document.getElementById("textEditorInput").value);
+				// dialogBuffer.AddText(document.getElementById("textEditorInput").value);
+				// scriptInterpreter.Interpret(document.getElementById("textEditorInput").value);
+				startNarrating(document.getElementById("textEditorInput").value);
+				dialogBuffer.Skip();
 			}
 
+			var canvas = null;
 			function init() {
-				var canvas = document.getElementById("textEditorCanvas");
+				canvas = document.getElementById("textEditorCanvas");
 				canvas.width = 512;
 				canvas.height = 512;
 				var context = canvas.getContext("2d");
@@ -57,6 +71,11 @@
 			function update() {
 				var curTime = Date.now();
 				deltaTime = curTime - prevTime;
+
+				var textboxSize = dialogRenderer.ImageSize();
+				canvas.width = textboxSize.width;
+				canvas.height = textboxSize.height;
+
 
 				if(dialogBuffer.IsActive()) {
 					dialogRenderer.Draw( dialogBuffer, deltaTime );

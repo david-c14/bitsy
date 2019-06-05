@@ -24,11 +24,18 @@ var DialogRenderer = function() {
 		arrow_height : 5,
 	};
 
+	var curRowCount = 2;
+	function recalculateTextboxSize(rowCount) {
+		curRowCount = rowCount;
+		textboxInfo.height = (textboxInfo.padding_vert * (curRowCount+1)) + (relativeFontHeight() * curRowCount) + textboxInfo.arrow_height;
+		console.log(textboxInfo.height);
+		textboxInfo.img = context.createImageData(textboxInfo.width*scale, textboxInfo.height*scale);
+	}
+
 	var font = null;
 	this.SetFont = function(f) {
 		font = f;
-		textboxInfo.height = (textboxInfo.padding_vert * 3) + (relativeFontHeight() * 2) + textboxInfo.arrow_height;
-		textboxInfo.img = context.createImageData(textboxInfo.width*scale, textboxInfo.height*scale);
+		recalculateTextboxSize(2);
 	}
 
 	function textScale() {
@@ -52,8 +59,9 @@ var DialogRenderer = function() {
 		if(context == null) return;
 
 		//create new image none exists
-		if(textboxInfo.img == null)
+		if(textboxInfo.img == null) {
 			textboxInfo.img = context.createImageData(textboxInfo.width*scale, textboxInfo.height*scale);
+		}
 
 		// fill text box with black
 		for (var i=0;i<textboxInfo.img.data.length;i+=4)
@@ -65,14 +73,23 @@ var DialogRenderer = function() {
 		}
 	};
 
+	// TODO ... make this an enum
 	var isCentered = false;
 	this.SetCentered = function(centered) {
 		isCentered = centered;
 	};
 
+	isTopLeft = true; // HACK
+
 	this.DrawTextbox = function() {
-		if(context == null) return;
-		if (isCentered) {
+		if(context == null) {
+			return;
+		}
+
+		if (isTopLeft) {
+			context.putImageData(textboxInfo.img, 0, 0);
+		}
+		else if (isCentered) {
 			context.putImageData(textboxInfo.img, textboxInfo.left*scale, ((height/2)-(textboxInfo.height/2))*scale);
 		}
 		else if (player().y < mapsize/2) {
@@ -177,6 +194,11 @@ var DialogRenderer = function() {
 	this.Draw = function(buffer,dt) {
 		effectTime += dt;
 
+		if (buffer.CurRowCount() > curRowCount) {
+			console.log("RESIZE!!! " + buffer.CurRowCount());
+			recalculateTextboxSize(buffer.CurRowCount());
+		}
+
 		this.ClearTextbox();
 
 		buffer.ForEachActiveChar(this.DrawChar);
@@ -206,6 +228,13 @@ var DialogRenderer = function() {
 	// this.CharsPerRow = function() {
 	// 	return textboxInfo.charsPerRow;
 	// }
+
+	this.ImageSize = function () {
+		return {
+			width: textboxInfo.img.width,
+			height: textboxInfo.img.height,
+		};
+	}
 }
 
 
@@ -323,7 +352,7 @@ var DialogBuffer = function() {
 	};
 
 	this.Skip = function() {
-		console.log("SKIPPP");
+		// console.log("SKIPPP");
 		didPageFinishThisFrame = false;
 		didFlipPageThisFrame = false;
 		// add new characters until you get to the end of the current line of dialog
@@ -357,7 +386,7 @@ var DialogBuffer = function() {
 	}
 
 	this.Continue = function() {
-		console.log("CONTINUE");
+		// console.log("CONTINUE");
 		if (pageIndex + 1 < this.CurPageCount()) {
 			//start next page
 			this.FlipPage();
@@ -485,6 +514,9 @@ var DialogBuffer = function() {
 
 	var pixelsPerRow = 192; // hard-coded fun times!!!
 
+	// TEST
+	var maxRowCount = Infinity;
+
 	this.AddDrawing = function(drawingId, onFinishHandler) {
 		// console.log("DRAWING ID " + drawingId);
 
@@ -503,7 +535,7 @@ var DialogBuffer = function() {
 			//stay on same row
 			curRowArr.push( drawingChar );
 		}
-		else if (curRowIndex == 0)
+		else if (curRowIndex < maxRowCount-1)
 		{
 			//start next row
 			buffer[ curPageIndex ][ curRowIndex ] = curRowArr;
@@ -556,7 +588,7 @@ var DialogBuffer = function() {
 				//stay on same row
 				curRowArr = AddWordToCharArray( curRowArr, wordWithPrecedingSpace, activeTextEffects );
 			}
-			else if (curRowIndex == 0) {
+			else if (curRowIndex < maxRowCount-1) {
 				//start next row
 				buffer[ curPageIndex ][ curRowIndex ] = curRowArr;
 				buffer[ curPageIndex ].push( [] );
@@ -577,17 +609,19 @@ var DialogBuffer = function() {
 		}
 
 		//destroy any empty stuff
-		var lastPage = buffer[ buffer.length-1 ];
-		var lastRow = lastPage[ lastPage.length-1 ];
-		if( lastRow.length == 0 )
-			lastPage.splice( lastPage.length-1, 1 );
-		if( lastPage.length == 0 )
-			buffer.splice( buffer.length-1, 1 );
+		var lastPage = buffer[buffer.length-1];
+		var lastRow = lastPage[lastPage.length-1];
+		if (lastRow.length == 0) {
+			lastPage.splice(lastPage.length-1, 1);
+		}
+		if (lastPage.length == 0) {
+			buffer.splice(buffer.length-1, 1);
+		}
 
 		//finish up 
 		lastPage = buffer[ buffer.length-1 ];
 		lastRow = lastPage[ lastPage.length-1 ];
-		if( lastRow.length > 0 ) {
+		if (lastRow.length > 0) {
 			var lastChar = lastRow[ lastRow.length-1 ];
 			lastChar.SetPrintHandler( onFinishHandler );
 		}

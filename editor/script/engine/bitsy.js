@@ -2255,7 +2255,9 @@ TODO
 function startNarrating(dialogStr,end) {
 	console.log("NARRATE " + dialogStr);
 
-	if(end === undefined) end = false;
+	if (end === undefined) {
+		end = false;
+	}
 
 	isNarrating = true;
 	isEnding = end;
@@ -2306,7 +2308,7 @@ function startDialog(dialogStr,scriptId,dialogCallback) {
 		scriptInterpreter.Interpret( dialogStr, onScriptEnd );
 	}
 	else {
-		if( !scriptInterpreter.HasScript(scriptId) ) {
+		if(!scriptInterpreter.HasScript(scriptId)) {
 			scriptInterpreter.Compile( scriptId, dialogStr );
 		}
 		scriptInterpreter.DebugVisualizeScriptTree(scriptId);
