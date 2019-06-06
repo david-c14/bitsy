@@ -73,32 +73,43 @@ var DialogRenderer = function() {
 		}
 	};
 
-	// TODO ... make this an enum
+	var TextboxPosition = {
+		OppositePlayer : 0,
+		Centered : 1,
+		TopLeft : 2,
+	};
+	var position = TextboxPosition.OppositePlayer;
+
 	var isCentered = false;
 	this.SetCentered = function(centered) {
-		isCentered = centered;
+		position = centered ? TextboxPosition.Centered : TextboxPosition.OppositePlayer;
 	};
 
-	isTopLeft = true; // HACK
+	// hacky extension of this boolean-based model :/
+	this.SetTopLeft = function(isTopLeft) {
+		position = isTopLeft ? TextboxPosition.TopLeft : TextboxPosition.OppositePlayer;
+	}
 
 	this.DrawTextbox = function() {
 		if(context == null) {
 			return;
 		}
 
-		if (isTopLeft) {
+		if (position == TextboxPosition.TopLeft) {
 			context.putImageData(textboxInfo.img, 0, 0);
 		}
-		else if (isCentered) {
+		else if (position == TextboxPosition.Centered) {
 			context.putImageData(textboxInfo.img, textboxInfo.left*scale, ((height/2)-(textboxInfo.height/2))*scale);
 		}
-		else if (player().y < mapsize/2) {
-			//bottom
-			context.putImageData(textboxInfo.img, textboxInfo.left*scale, (height-textboxInfo.bottom-textboxInfo.height)*scale);
-		}
-		else {
-			//top
-			context.putImageData(textboxInfo.img, textboxInfo.left*scale, textboxInfo.top*scale);
+		else if (position == TextboxPosition.OppositePlayer) {
+			if (player().y < mapsize/2) {
+				//bottom
+				context.putImageData(textboxInfo.img, textboxInfo.left*scale, (height-textboxInfo.bottom-textboxInfo.height)*scale);
+			}
+			else {
+				//top
+				context.putImageData(textboxInfo.img, textboxInfo.left*scale, textboxInfo.top*scale);
+			}
 		}
 	};
 
@@ -194,9 +205,8 @@ var DialogRenderer = function() {
 	this.Draw = function(buffer,dt) {
 		effectTime += dt;
 
-		if (buffer.CurRowCount() > curRowCount) {
-			console.log("RESIZE!!! " + buffer.CurRowCount());
-			recalculateTextboxSize(buffer.CurRowCount());
+		if (buffer.CurRowCount() != curRowCount) {
+			recalculateTextboxSize(Math.max(2,buffer.CurRowCount()));
 		}
 
 		this.ClearTextbox();
@@ -463,7 +473,9 @@ var DialogBuffer = function() {
 	function DialogFontChar(font, char, effectList) {
 		Object.assign(this, new DialogChar(effectList));
 
+		// console.log(char);
 		var charData = font.getChar(char);
+		// console.log(charData);
 		this.bitmap = charData.data;
 		this.width = charData.width;
 		this.height = charData.height;

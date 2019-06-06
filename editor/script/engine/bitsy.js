@@ -219,7 +219,9 @@ function reset_cur_game() {
 
 var update_interval = null;
 function onready(startWithTitle) {
-	if(startWithTitle === undefined || startWithTitle === null) startWithTitle = true;
+	if(startWithTitle === undefined || startWithTitle === null) {
+		startWithTitle = true;
+	}
 
 	clearInterval(loading_interval);
 
