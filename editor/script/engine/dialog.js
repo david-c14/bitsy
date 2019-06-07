@@ -645,7 +645,7 @@ var DialogBuffer = function() {
 
 	this.AddLinebreak = function() {
 		var lastPage = buffer[ buffer.length-1 ];
-		if( lastPage.length <= 1 ) {
+		if( lastPage.length <= (maxRowCount-1) ) {
 			console.log("LINEBREAK - NEW ROW ");
 			// add new row
 			lastPage.push( [] );

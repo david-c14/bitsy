@@ -326,12 +326,15 @@ function mobileOffsetCorrection(off,e,innerSize) {
 }
 
 function tileTypeToIdPrefix(type) {
-	if( type == TileType.Tile )
+	if (type == TileType.Tile) {
 		return "TIL_";
-	else if( type == TileType.Sprite || type == TileType.Avatar )
+	}
+	else if (type == TileType.Sprite || type == TileType.Avatar) {
 		return "SPR_";
-	else if( type == TileType.Item )
+	}
+	else if (type == TileType.Item) {
 		return "ITM_";
+	}
 }
 
 /* DIALOG UI 
@@ -356,6 +359,19 @@ function reloadDialogUICore() { // TODO: name is terrible
 	else {
 		document.getElementById("dialogText").value = "";
 	}
+
+	var x = document.getElementById("test_dialog_canvas");
+	if (x != undefined && x != null) {
+		x.remove();
+	}
+
+	var t = new TextEditor();
+	t.SetText(document.getElementById("dialogText").value);
+	var c = t.GetCanvas();
+	c.setAttribute("id","test_dialog_canvas");
+	c.style.width = "312px";
+	c.style.display = "block";
+	document.getElementById("dialog").appendChild(c);
 }
 
 // hacky - assumes global paintTool object

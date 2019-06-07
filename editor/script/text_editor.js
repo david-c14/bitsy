@@ -7,6 +7,7 @@ var TextEditor = function() {
 	canvas.width = 512; // todo -- remove??
 	canvas.height = 512;
 	var context = canvas.getContext("2d");
+	context.imageSmoothingEnabled = false; // does this do anything??
 
 	dialogRenderer.AttachContext(context);
 	dialogRenderer.SetTopLeft(true);
@@ -45,6 +46,8 @@ var TextEditor = function() {
 
 		dialogBuffer.Skip();
 	}
+
+	this.SetText(""); // hack..
 
 	prevTime = Date.now();
 	setInterval(update, -1);
