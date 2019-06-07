@@ -38,6 +38,10 @@
 				X enum for textbox positions
 				X shrink textbox when text gets smaller
 				X encapsulate into its own class / file
+				- consider perf & formatting for all supported languages!!!
+				- basic text input (add, delete)
+				- basic text cursor
+				- how do we handle when you type in some code??
 			*/
 
 			isPlayerEmbeddedInEditor = true;
@@ -55,7 +59,7 @@
 			function init() {
 				textEditor = new TextEditor();
 				var canvas = textEditor.GetCanvas();
-				canvas.style.width = "300px";
+				canvas.style.width = "312px";
 				document.body.appendChild(canvas);
 				textEditor.SetText(document.getElementById("textEditorInput").value);
 			}
@@ -65,6 +69,5 @@
 	<body onload="init();">
 		<input id="textEditorInput" type="text" onchange="onChangeTextEditorInput();" />
 		<br/>
-		<!-- <canvas id="textEditorCanvas" onclick="onClickTextEditorCanvas();"></canvas> -->
 	</body>
 </html>

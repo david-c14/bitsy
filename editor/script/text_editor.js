@@ -6,6 +6,7 @@ var TextEditor = function() {
 	var canvas = document.createElement("canvas");
 	canvas.width = 512; // todo -- remove??
 	canvas.height = 512;
+	canvas.tabIndex = 1;
 	var context = canvas.getContext("2d");
 	context.imageSmoothingEnabled = false; // does this do anything??
 
@@ -29,11 +30,25 @@ var TextEditor = function() {
 		prevTime = curTime;
 	}
 
+	canvas.addEventListener("keypress", function(e) {
+		console.log(e);
+		curText = curText + e.key;
+		updateText(curText);
+		// TODO : insert text directly into the buffer!!! don't rerun the whole script lol
+	});
+
+	canvas.addEventListener("mousedown", function(e) {
+		console.log(e);
+	});
+
 	this.GetCanvas = function() {
 		return canvas;
 	}
 
-	this.SetText = function(text) {
+	var curText = "";
+	function updateText(text) {
+		curText = text;
+
 		var font = fontManager.Get(fontName); // hack -- relies on globals (pass font in w/ constructor?)
 		dialogBuffer.SetFont(font);
 		dialogRenderer.SetFont(font);
@@ -42,12 +57,15 @@ var TextEditor = function() {
 		dialogRenderer.Reset();
 
 		scriptInterpreter.SetDialogBuffer( dialogBuffer );
-		scriptInterpreter.Interpret( text );
+		scriptInterpreter.Interpret( curText );
 
 		dialogBuffer.Skip();
 	}
+	updateText(curText);
 
-	this.SetText(""); // hack..
+	this.SetText = function(text) {
+		updateText(text);
+	}
 
 	prevTime = Date.now();
 	setInterval(update, -1);
