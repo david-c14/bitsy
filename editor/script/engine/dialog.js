@@ -670,6 +670,29 @@ var DialogBuffer = function() {
 		activeTextEffects.splice( activeTextEffects.indexOf( name ), 1 );
 	}
 
+	this.DeleteChar = function() {
+		var pageCount = buffer.length;
+		var page = buffer[pageCount - 1];
+		var lineCount = page.length;
+		var line = page[lineCount - 1];
+
+		line.pop();
+
+		if (line.length <= 0) {
+			// rowIndex--;
+			page.pop();
+		}
+
+		if (page.length <= 0) {
+			// pageIndex--;
+			buffer.pop();
+		}
+
+		charIndex--; // TODO ... move this to a selection thing?
+
+		// console.log(buffer);
+	}
+
 	/* this is a hook for GIF rendering */
 	var didPageFinishThisFrame = false;
 	this.DidPageFinishThisFrame = function(){ return didPageFinishThisFrame; };

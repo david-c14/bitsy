@@ -30,12 +30,41 @@ var TextEditor = function() {
 		prevTime = curTime;
 	}
 
-	canvas.addEventListener("keypress", function(e) {
-		console.log(e);
-		curText = curText + e.key;
-		updateText(curText);
-		// TODO : insert text directly into the buffer!!! don't rerun the whole script lol
+	// canvas.addEventListener("keypress", function(e) {
+	// 	e.preventDefault();
+
+	// 	// console.log(e);
+	// 	// curText = curText + e.key;
+	// 	// updateText(curText);
+	// 	// TODO : insert text directly into the buffer!!! don't rerun the whole script lol
+	// });
+
+
+	canvas.addEventListener("keydown", function(e) {
+		// console.log(e);
+		// console.log("KEY DOWN");
+
+		// stop backspace from going to previous webpage
+		e.preventDefault();
+
+		if (e.key === "Backspace") {
+			dialogBuffer.DeleteChar();
+		}
+		else {
+			dialogBuffer.AddText(e.key);
+			dialogBuffer.DoNextChar();
+		}
+
+
+		return false;
 	});
+
+	// canvas.addEventListener("keyup", function(e) {
+	// 	console.log(e);
+	// 	console.log("KEY UP");
+	// 	e.preventDefault();
+	// 	return false;
+	// });
 
 	canvas.addEventListener("mousedown", function(e) {
 		console.log(e);
