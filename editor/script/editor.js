@@ -4,6 +4,11 @@ adv dialog todos:
 - nested adv dialog
 - "inner dialog block"
 - special detection for text effects
+- thought: I should make scripts error out if they try to access the dialog thing when it's in use?
+- thought: instead of creating a special text effect list.. just store a bool on whether functions are allowed inside a dialog block
+- thought: I should probably scrap the parser and start over
+- thought: dialog and code "blocks" are kind of a terrible idea???
+- why did I make sequences etc.. there own thing instead of just functions???
 
 I'm a cat {wvy}awwww yeah{wvy}
 {sequence
