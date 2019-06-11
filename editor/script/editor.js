@@ -5,6 +5,46 @@ adv dialog todos:
 - "inner dialog block"
 - special detection for text effects
 
+I'm a cat {wvy}awwww yeah{wvy}
+{sequence
+- a
+- b
+- c
+}
+>>>>> (cur)
+- block dialog 
+-- function print 
+-- block code 
+--- function wvy 
+-- function print 
+-- block code 
+--- function wvy 
+-- function br 
+-- block code 
+--- sequence 
+---- block dialog 
+----- function print 
+---- block dialog 
+----- function print 
+---- block dialog 
+----- function print
+>>>>> (what I want)
+- root (or something)
+-- block dialog
+--- function print
+--- add_text_effect wvy
+--- function print
+--- remove_text_effect wvy
+--- function br
+-- sequence
+--- block dialog 
+---- function print 
+--- block dialog 
+---- function print 
+--- block dialog 
+---- function print
+
+
 leftover todos:
 - add "direct edit" dropdowns for exits when in "move" mode
 - try another orientation on android fix

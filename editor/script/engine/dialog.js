@@ -28,7 +28,6 @@ var DialogRenderer = function() {
 	function recalculateTextboxSize(rowCount) {
 		curRowCount = rowCount;
 		textboxInfo.height = (textboxInfo.padding_vert * (curRowCount+1)) + (relativeFontHeight() * curRowCount) + textboxInfo.arrow_height;
-		console.log(textboxInfo.height);
 		textboxInfo.img = context.createImageData(textboxInfo.width*scale, textboxInfo.height*scale);
 	}
 
