@@ -1,4 +1,10 @@
 /*
+adv dialog todos:
+- adv dialog creator SHOULD give us the containing div as well
+- nested adv dialog
+- "inner dialog block"
+- special detection for text effects
+
 leftover todos:
 - add "direct edit" dropdowns for exits when in "move" mode
 - try another orientation on android fix
