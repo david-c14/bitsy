@@ -10,7 +10,8 @@ this.CreateUtils = function() {
 
 var Interpreter = function() {
 	var env = new Environment();
-	var parser = new Parser( env );
+	// var parser = new Parser( env );
+	var parser = new ParserNext(env);
 
 	this.SetDialogBuffer = function(buffer) { env.SetDialogBuffer( buffer ); };
 
@@ -30,15 +31,18 @@ var Interpreter = function() {
 		// console.log( env.GetScript( scriptName ).Serialize() );
 	}
 	this.Interpret = function(scriptStr, exitHandler) { // Compiles and runs code immediately
-		// console.log("INTERPRET");
+		console.log("INTERPRET");
+		console.log(scriptStr);
 		var script = parser.Parse( scriptStr );
+		console.log(script);
 		script.Eval( env, function(result) { OnScriptReturn(result, exitHandler); } );
 	}
 	this.HasScript = function(name) { return env.HasScript(name); };
 
 	this.ResetEnvironment = function() {
 		env = new Environment();
-		parser = new Parser( env );
+		// parser = new Parser( env );
+		parser = new ParserNext(env);
 	}
 
 	this.Parse = function(scriptStr) { // parses a script but doesn't save it
@@ -509,7 +513,7 @@ function leadingWhitespace(depth) {
 }
 
 /* NODES */
-var TreeRelationship = function() {
+var TreeRelationship = function() { // TODO ... rename?
 	this.parent = null;
 	this.children = [];
 	this.AddChild = function(node) {
@@ -527,6 +531,10 @@ var TreeRelationship = function() {
 			this.children[i].VisitAll( visitor, depth + 1 );
 		}
 	};
+
+	this.ChildCount = function() {
+		return this.children.length;
+	}
 }
 
 function isReturnObject(val) {
@@ -1005,17 +1013,100 @@ var ElseNode = function() {
 }
 
 var Sym = {
-	// DialogOpen : "/\"",
-	// DialogClose : "\"/",
-	DialogOpen : '"""',
+	DialogOpen : '"""', // TODO : get rid of this junk please
 	DialogClose : '"""',
 	CodeOpen : "{",
 	CodeClose : "}",
-	Linebreak : "\n", // just call it "break" ?
+	Linebreak : "\n",
 	Separator : ":",
 	List : "-",
-	String : '"'
+	String : '"',
+	Space : " ",
 };
+
+var ParserNext = function(env) {
+		/*
+			new parsing algorithm
+				- start by assuming you are making a new dialog node
+					- if you hit a curly brace, then you need to start code parsing
+					- if you hit a newline, add a linebreak node
+					- otherwise all text is added to print statements
+				- during code parsing
+					- start by looking for special blocks (sequence, if, etc) [can these be turned into special functions?]
+					- then look for known functions
+					- if nothing is found, attempt to parse as an expression
+						- if that fails, store it as "unknown code" that doesn't execute (but DOES store the text inside of it)
+				- AND REMEMBER: one goal is here is to put "text formatting" code blocks inside one root node
+					this is going to severely complicate the dialog parsing code :/
+
+			TODO
+				- refactor / re-design block nodes
+		*/
+
+	var environment = env;
+
+	this.Parse = function(scriptStr) {
+		var rootNode = new BlockNode(BlockMode.Code);
+
+		var isParsingDialog = true;
+		var curDialogText = "";
+		var curDialogNode = new BlockNode(BlockMode.Dialog); // TODO... these should really be two seperate node types
+
+		for (var i = 0; i < scriptStr.length; i++) {
+			if (isParsingDialog) {
+				if (scriptStr[i] === Sym.CodeOpen) {
+					if (curDialogText.length > 0) {
+						curDialogNode.AddChild(new FuncNode("print", [curDialogText]));
+						curDialogText = "";
+					}
+
+					if (curDialogNode.ChildCount() > 0) {
+						rootNode.AddChild(curDialogNode);
+					}
+
+					isParsingDialog = false;
+				}
+				else if (scriptStr[i] === Sym.Linebreak) {
+					if (curDialogText.length > 0) {
+						curDialogNode.AddChild(new FuncNode("print", [curDialogText]));
+						curDialogText = "";
+					}
+					curDialogNode.AddChild(new FuncNode("br", []));
+				}
+				else {
+					curDialogText += scriptStr[i];
+				}
+			}
+			else {
+				// TODO ... actual code parsing
+				if (scriptStr[i] === Sym.CodeClose) {
+					rootNode.AddChild(new FuncNode("unknown_code", []));
+
+					curDialogNode = new BlockNode(BlockMode.Dialog);
+					curDialogText = "";
+					isParsingDialog = true;
+				}
+			}
+		}
+
+		// ugly --- wrap up any leftovers
+		if (curDialogText.length > 0) {
+			curDialogNode.AddChild(new FuncNode("print", [curDialogText]));
+			curDialogText = "";
+		}
+
+		if (curDialogNode.ChildCount() > 0) {
+			rootNode.AddChild(curDialogNode);
+		}
+
+		return rootNode;
+	}
+
+	this.CreateExpression = function(exprStr) {
+
+	}
+
+}
 
 var Parser = function(env) {
 	var environment = env;
