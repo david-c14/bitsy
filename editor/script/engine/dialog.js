@@ -526,7 +526,8 @@ var DialogBuffer = function() {
 	var pixelsPerRow = 192; // hard-coded fun times!!!
 
 	// TEST
-	var maxRowCount = Infinity;
+	// var maxRowCount = Infinity;
+	var maxRowCount = 2;
 
 	this.AddDrawing = function(drawingId, onFinishHandler) {
 		// console.log("DRAWING ID " + drawingId);

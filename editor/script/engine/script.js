@@ -736,12 +736,19 @@ var LiteralNode = function(value) {
 	this.Serialize = function(depth) {
 		var str = "";
 
-		if(this.value === null)
+		if (this.value === null) {
 			return str;
+		}
 
-		if(typeof this.value === "string") str += '"';
+		if (typeof this.value === "string") {
+			str += '"';
+		}
+
 		str += this.value;
-		if(typeof this.value === "string") str += '"';
+
+		if (typeof this.value === "string") {
+			str += '"';
+		}
 
 		return str;
 	}
@@ -759,10 +766,12 @@ var VarNode = function(name) {
 
 	this.Eval = function(environment,onReturn) {
 		// console.log("EVAL " + this.name + " " + environment.HasVariable(this.name) + " " + environment.GetVariable(this.name));
-		if( environment.HasVariable(this.name) )
+		if( environment.HasVariable(this.name) ) {
 			onReturn( environment.GetVariable( this.name ) );
-		else
+		}
+		else {
 			onReturn(null); // not a valid variable -- return null and hope that's ok
+		}
 	} // TODO: might want to store nodes in the variableMap instead of values???
 
 	this.Serialize = function(depth) {
@@ -1056,7 +1065,7 @@ var ParserNext = function(env) {
 			if (isParsingDialog) {
 				if (scriptStr[i] === Sym.CodeOpen) {
 					if (curDialogText.length > 0) {
-						curDialogNode.AddChild(new FuncNode("print", [curDialogText]));
+						curDialogNode.AddChild(new FuncNode("print", [new LiteralNode(curDialogText)]));
 						curDialogText = "";
 					}
 
@@ -1068,7 +1077,7 @@ var ParserNext = function(env) {
 				}
 				else if (scriptStr[i] === Sym.Linebreak) {
 					if (curDialogText.length > 0) {
-						curDialogNode.AddChild(new FuncNode("print", [curDialogText]));
+						curDialogNode.AddChild(new FuncNode("print", [new LiteralNode(curDialogText)]));
 						curDialogText = "";
 					}
 					curDialogNode.AddChild(new FuncNode("br", []));
@@ -1091,7 +1100,7 @@ var ParserNext = function(env) {
 
 		// ugly --- wrap up any leftovers
 		if (curDialogText.length > 0) {
-			curDialogNode.AddChild(new FuncNode("print", [curDialogText]));
+			curDialogNode.AddChild(new FuncNode("print", [new LiteralNode(curDialogText)]));
 			curDialogText = "";
 		}
 

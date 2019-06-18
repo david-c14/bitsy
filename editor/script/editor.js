@@ -411,18 +411,19 @@ function reloadDialogUICore() { // TODO: name is terrible
 		document.getElementById("dialogText").value = "";
 	}
 
-	var x = document.getElementById("test_dialog_canvas");
-	if (x != undefined && x != null) {
-		x.remove();
-	}
+	// TODO... remove this test hack
+	// var x = document.getElementById("test_dialog_canvas");
+	// if (x != undefined && x != null) {
+	// 	x.remove();
+	// }
 
-	var t = new TextEditor();
-	t.SetText(document.getElementById("dialogText").value);
-	var c = t.GetCanvas();
-	c.setAttribute("id","test_dialog_canvas");
-	c.style.width = "312px";
-	c.style.display = "block";
-	document.getElementById("dialog").appendChild(c);
+	// var t = new TextEditor();
+	// t.SetText(document.getElementById("dialogText").value);
+	// var c = t.GetCanvas();
+	// c.setAttribute("id","test_dialog_canvas");
+	// c.style.width = "312px";
+	// c.style.display = "block";
+	// document.getElementById("dialog").appendChild(c);
 }
 
 // hacky - assumes global paintTool object
