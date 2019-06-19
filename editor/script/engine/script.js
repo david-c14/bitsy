@@ -658,6 +658,26 @@ function isMultilineListBlock(node) {
 	return false;
 }
 
+
+var UndefinedCodeNode = function(sourceStr) {
+	Object.assign( this, new TreeRelationship() );
+	this.type = "undefined_code";
+	this.source = sourceStr;
+
+	this.Eval = function(environment,onReturn) {
+		onReturn(null);
+	}
+
+	this.Serialize = function(depth) {
+		// TODO.. make sure to test this
+		return leadingWhitespace(depth) + Sym.CodeOpen + this.source + Sym.CodeClose;
+	}
+
+	this.ToString = function() {
+		return "undefined code";
+	}
+}
+
 var FuncNode = function(name,arguments) {
 	Object.assign( this, new TreeRelationship() );
 	// Object.assign( this, new Runnable() );
@@ -1057,9 +1077,11 @@ var ParserNext = function(env) {
 	this.Parse = function(scriptStr) {
 		var rootNode = new BlockNode(BlockMode.Code);
 
-		var isParsingDialog = true;
+		var isParsingDialog = true; // TODO... make this an enum kind of thing
 		var curDialogText = "";
 		var curDialogNode = new BlockNode(BlockMode.Dialog); // TODO... these should really be two seperate node types
+
+		var curCodeText = "";
 
 		for (var i = 0; i < scriptStr.length; i++) {
 			if (isParsingDialog) {
@@ -1073,6 +1095,7 @@ var ParserNext = function(env) {
 						rootNode.AddChild(curDialogNode);
 					}
 
+					curCodeText = "";
 					isParsingDialog = false;
 				}
 				else if (scriptStr[i] === Sym.Linebreak) {
@@ -1088,8 +1111,13 @@ var ParserNext = function(env) {
 			}
 			else {
 				// TODO ... actual code parsing
-				if (scriptStr[i] === Sym.CodeClose) {
-					rootNode.AddChild(new FuncNode("unknown_code", []));
+				if (scriptStr[i] != Sym.CodeClose) {
+					curCodeText += scriptStr[i];
+				}
+				else {
+					rootNode.AddChild(new UndefinedCodeNode(curCodeText));
+
+					curCodeText = "";
 
 					curDialogNode = new BlockNode(BlockMode.Dialog);
 					curDialogText = "";
