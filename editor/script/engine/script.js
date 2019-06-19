@@ -1074,7 +1074,22 @@ var ParserNext = function(env) {
 
 	var environment = env;
 
-	this.Parse = function(scriptStr) {
+	function IsWhitespace(str) {
+		return ( str === " " || str === "\t" || str === "\n" );
+	}
+
+	// var IsFunction = function(sourceStr) {
+	// 	var funcName = "";
+
+	// 	var i = 0;
+	// 	while (i < sourceStr.length && !IsWhitespace(sourceStr[i])) {
+	// 		funcName += sourceStr[i];
+	// 	}
+
+	// 	return environment.HasFunction(funcName);
+	// }
+
+	this.Parse = function(sourceStr) {
 		var rootNode = new BlockNode(BlockMode.Code);
 
 		var isParsingDialog = true; // TODO... make this an enum kind of thing
@@ -1083,9 +1098,9 @@ var ParserNext = function(env) {
 
 		var curCodeText = "";
 
-		for (var i = 0; i < scriptStr.length; i++) {
+		for (var i = 0; i < sourceStr.length; i++) {
 			if (isParsingDialog) {
-				if (scriptStr[i] === Sym.CodeOpen) {
+				if (sourceStr[i] === Sym.CodeOpen) {
 					if (curDialogText.length > 0) {
 						curDialogNode.AddChild(new FuncNode("print", [new LiteralNode(curDialogText)]));
 						curDialogText = "";
@@ -1098,7 +1113,7 @@ var ParserNext = function(env) {
 					curCodeText = "";
 					isParsingDialog = false;
 				}
-				else if (scriptStr[i] === Sym.Linebreak) {
+				else if (sourceStr[i] === Sym.Linebreak) {
 					if (curDialogText.length > 0) {
 						curDialogNode.AddChild(new FuncNode("print", [new LiteralNode(curDialogText)]));
 						curDialogText = "";
@@ -1106,16 +1121,25 @@ var ParserNext = function(env) {
 					curDialogNode.AddChild(new FuncNode("br", []));
 				}
 				else {
-					curDialogText += scriptStr[i];
+					curDialogText += sourceStr[i];
 				}
 			}
 			else {
 				// TODO ... actual code parsing
-				if (scriptStr[i] != Sym.CodeClose) {
-					curCodeText += scriptStr[i];
+				if (sourceStr[i] != Sym.CodeClose) {
+					curCodeText += sourceStr[i];
 				}
 				else {
-					rootNode.AddChild(new UndefinedCodeNode(curCodeText));
+					var sourceSplitOnSpace = curCodeText.split(" "); // TODO.. is this equivalent to the old parser code?
+					var isFunction = environment.HasFunction(sourceSplitOnSpace[0]);
+					if (isFunction) {
+						var funcName = sourceSplitOnSpace[0];
+						var funcArgs = sourceSplitOnSpace.slice(1);
+						rootNode.AddChild(new FuncNode(funcName, funcArgs));
+					}
+					else {
+						rootNode.AddChild(new UndefinedCodeNode(curCodeText));
+					}
 
 					curCodeText = "";
 
