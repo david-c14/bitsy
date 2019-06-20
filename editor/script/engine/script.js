@@ -535,6 +535,10 @@ var TreeRelationship = function() { // TODO ... rename?
 	this.ChildCount = function() {
 		return this.children.length;
 	}
+
+	this.Children = function() {
+		return this.children;
+	}
 }
 
 function isReturnObject(val) {
@@ -1070,24 +1074,86 @@ var ParserNext = function(env) {
 
 			TODO
 				- refactor / re-design block nodes
+				- mark functions that exist for text formatting purposes / dialog block purposes
+					- add that to the preceding dialog block (if it exists)
+				- need to split everything into functions AND allow for recursion
+				- should I REALLY refactor everything or try to add all this to the existing code to avoid regressions?
+
+			THOUGHTS
+				- can sequences, ifs, etc be turned into special functions?
+					- that implies turning the dash-list syntax into a way of separating parameters (or declaring a dialog block???)
+				- still need to think about dialog blocks vs inner dialog blocks.. etc.. what's the design here??
+
+			what are my goals here exactly??
+				- elevate the "dialog block" to the same level as the "sequence block" and "if block"
+				- enable hacks to roundtrip
+				- enable nested UI 
 		*/
 
 	var environment = env;
 
-	function IsWhitespace(str) {
-		return ( str === " " || str === "\t" || str === "\n" );
+	function IsWhitespace(charStr) {
+		return charStr === " " || charStr === "\t" || charStr === "\n";
 	}
 
-	// var IsFunction = function(sourceStr) {
-	// 	var funcName = "";
+	function FindFirstSymbol(sourceStr) {
+		var symbolStr = "";
 
-	// 	var i = 0;
-	// 	while (i < sourceStr.length && !IsWhitespace(sourceStr[i])) {
-	// 		funcName += sourceStr[i];
-	// 	}
+		var i = 0;
+		while (i < sourceStr.length && !IsWhitespace(sourceStr[i])) {
+			symbolStr += sourceStr[i];
+			i++;
+		}
 
-	// 	return environment.HasFunction(funcName);
-	// }
+		return symbolStr;
+	}
+
+	function IsFunction(sourceStr) {
+		var symbol = FindFirstSymbol(sourceStr);
+		return environment.HasFunction(symbol); // TODO -- at some point I may need to create local environments for locally defined functions?
+	}
+
+	function IsSequenceName(symbolStr) {
+		return symbolStr === "sequence" || symbolStr === "cycle" || symbolStr === "shuffle";
+	}
+
+	function IsSequence(sourceStr) {
+		var symbol = FindFirstSymbol(sourceStr);
+		return IsSequenceName(symbol);
+	}
+
+	function FindEndOfBlock = function(sourceStr, index, openSymbol, closeSymbol) {
+		// TODO
+		// var startIndex = i;
+
+		// var matchCount = 0;
+		// if( this.MatchAhead( open ) ) {
+		// 	matchCount++;
+		// 	this.Step( open.length );
+		// }
+
+		// while( matchCount > 0 && !this.Done() ) {
+		// 	if( this.MatchAhead( close ) ) {
+		// 		matchCount--;
+		// 		this.Step( close.length );
+		// 	}
+		// 	else if( this.MatchAhead( open ) ) {
+		// 		matchCount++;
+		// 		this.Step( open.length );
+		// 	}
+		// 	else {
+		// 		this.Step();
+		// 	}
+		// }
+
+		// // console.log("!!! " + startIndex + " " + i);
+
+		// return sourceStr.slice( startIndex + open.length, i - close.length );
+	}
+
+	function IsExpression() {
+		// TODO --- what IS an expression (especially in a world with roundtripped undefined code???)
+	}
 
 	this.Parse = function(sourceStr) {
 		var rootNode = new BlockNode(BlockMode.Code);
@@ -1130,13 +1196,19 @@ var ParserNext = function(env) {
 					curCodeText += sourceStr[i];
 				}
 				else {
-					var sourceSplitOnSpace = curCodeText.split(" "); // TODO.. is this equivalent to the old parser code?
-					var isFunction = environment.HasFunction(sourceSplitOnSpace[0]);
-					if (isFunction) {
-						var funcName = sourceSplitOnSpace[0];
-						var funcArgs = sourceSplitOnSpace.slice(1);
+					// TODO : should IsFunction return the function name?
+					if (IsFunction(curCodeText)) {
+						var funcName = curCodeText.split(" ")[0];
+						// TODO ... I should create a smarter way to parse arguments that skips ALL white space (except stuff inside code blocks etc)
+						var funcArgs = curCodeText.split(" ").slice(1);
+
+						// TODO (later -- merge text related functions to previous dialog block if it exists)
 						rootNode.AddChild(new FuncNode(funcName, funcArgs));
 					}
+					else if (IsSequence(curCodeText)) {
+						rootNode.AddChild(new UndefinedCodeNode("SEQ_TEST"));
+					}
+					// else if (IsExpression()) {}
 					else {
 						rootNode.AddChild(new UndefinedCodeNode(curCodeText));
 					}
