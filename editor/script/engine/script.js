@@ -1122,7 +1122,7 @@ var ParserNext = function(env) {
 		return IsSequenceName(symbol);
 	}
 
-	function FindEndOfBlock = function(sourceStr, index, openSymbol, closeSymbol) {
+	function FindEndOfBlock(sourceStr, index, openSymbol, closeSymbol) {
 		// TODO
 		// var startIndex = i;
 
@@ -1155,82 +1155,151 @@ var ParserNext = function(env) {
 		// TODO --- what IS an expression (especially in a world with roundtripped undefined code???)
 	}
 
+	// TODO : split into ParseDialog and AddDialogToNode
+	function ParseDialog(sourceStr, index, parentNode) {
+		var dialogNode = new BlockNode(BlockMode.Dialog); // TODO... these should really be two seperate node types
+		var curDialogText = "";
+
+		function TryAddCurText() {
+			if (curDialogText.length > 0) {
+				dialogNode.AddChild(new FuncNode("print", [new LiteralNode(curDialogText)]));
+				curDialogText = "";
+			}
+		}
+
+		while (index < sourceStr.length && sourceStr[index] != Sym.CodeOpen) {
+			if (sourceStr[index] === Sym.Linebreak) {
+				TryAddCurText();
+				dialogNode.AddChild(new FuncNode("br", []));
+			}
+			else {
+				curDialogText += sourceStr[index];
+			}
+			index++;
+		}
+
+		TryAddCurText();
+
+		if (dialogNode.ChildCount() > 0) {
+			parentNode.AddChild(dialogNode);
+		}
+
+		return index;
+	}
+
+	// the goal of this function is to either add a single code node to the parent node OR the last dialog node (if it's a function)
+	// the tricky part here is this needs to recursively go through inner code nodes as well!
+	// and something needs to work for code that goes inside function parameters instead of as a child of a block
+	function ParseCode(sourceStr, index, parentNode) {
+		// just skip everything for now
+		var codeInnerStr = "";
+
+		if (sourceStr[index] === Sym.CodeOpen) {
+			index++;
+		}
+
+		while (index < sourceStr.length && sourceStr[index] != Sym.CodeClose) {
+			codeInnerStr += sourceStr[index];
+			index++;
+		}
+
+		if (sourceStr[index] === Sym.CodeClose) {
+			index++;
+		}
+
+		parentNode.AddChild(new UndefinedCodeNode(codeInnerStr));
+
+		return index;
+	}
+
 	this.Parse = function(sourceStr) {
 		var rootNode = new BlockNode(BlockMode.Code);
 
-		var isParsingDialog = true; // TODO... make this an enum kind of thing
-		var curDialogText = "";
-		var curDialogNode = new BlockNode(BlockMode.Dialog); // TODO... these should really be two seperate node types
-
-		var curCodeText = "";
-
-		for (var i = 0; i < sourceStr.length; i++) {
-			if (isParsingDialog) {
-				if (sourceStr[i] === Sym.CodeOpen) {
-					if (curDialogText.length > 0) {
-						curDialogNode.AddChild(new FuncNode("print", [new LiteralNode(curDialogText)]));
-						curDialogText = "";
-					}
-
-					if (curDialogNode.ChildCount() > 0) {
-						rootNode.AddChild(curDialogNode);
-					}
-
-					curCodeText = "";
-					isParsingDialog = false;
-				}
-				else if (sourceStr[i] === Sym.Linebreak) {
-					if (curDialogText.length > 0) {
-						curDialogNode.AddChild(new FuncNode("print", [new LiteralNode(curDialogText)]));
-						curDialogText = "";
-					}
-					curDialogNode.AddChild(new FuncNode("br", []));
-				}
-				else {
-					curDialogText += sourceStr[i];
-				}
+		// Turn this into ParseBlock
+		var index = 0;
+		while (index < sourceStr.length) {
+			if (sourceStr[index] === Sym.CodeOpen) {
+				index = ParseCode(sourceStr,index,rootNode);
 			}
 			else {
-				// TODO ... actual code parsing
-				if (sourceStr[i] != Sym.CodeClose) {
-					curCodeText += sourceStr[i];
-				}
-				else {
-					// TODO : should IsFunction return the function name?
-					if (IsFunction(curCodeText)) {
-						var funcName = curCodeText.split(" ")[0];
-						// TODO ... I should create a smarter way to parse arguments that skips ALL white space (except stuff inside code blocks etc)
-						var funcArgs = curCodeText.split(" ").slice(1);
-
-						// TODO (later -- merge text related functions to previous dialog block if it exists)
-						rootNode.AddChild(new FuncNode(funcName, funcArgs));
-					}
-					else if (IsSequence(curCodeText)) {
-						rootNode.AddChild(new UndefinedCodeNode("SEQ_TEST"));
-					}
-					// else if (IsExpression()) {}
-					else {
-						rootNode.AddChild(new UndefinedCodeNode(curCodeText));
-					}
-
-					curCodeText = "";
-
-					curDialogNode = new BlockNode(BlockMode.Dialog);
-					curDialogText = "";
-					isParsingDialog = true;
-				}
+				index = ParseDialog(sourceStr,index,rootNode);
 			}
 		}
 
-		// ugly --- wrap up any leftovers
-		if (curDialogText.length > 0) {
-			curDialogNode.AddChild(new FuncNode("print", [new LiteralNode(curDialogText)]));
-			curDialogText = "";
-		}
 
-		if (curDialogNode.ChildCount() > 0) {
-			rootNode.AddChild(curDialogNode);
-		}
+		// var isParsingDialog = true; // TODO... make this an enum kind of thing
+		// var curDialogText = "";
+		// var curDialogNode = new BlockNode(BlockMode.Dialog); // TODO... these should really be two seperate node types
+
+		// var curCodeText = "";
+
+		// for (var i = 0; i < sourceStr.length; i++) {
+		// 	if (isParsingDialog) {
+		// 		if (sourceStr[i] === Sym.CodeOpen) {
+		// 			if (curDialogText.length > 0) {
+		// 				curDialogNode.AddChild(new FuncNode("print", [new LiteralNode(curDialogText)]));
+		// 				curDialogText = "";
+		// 			}
+
+		// 			if (curDialogNode.ChildCount() > 0) {
+		// 				rootNode.AddChild(curDialogNode);
+		// 			}
+
+		// 			curCodeText = "";
+		// 			isParsingDialog = false;
+		// 		}
+		// 		else if (sourceStr[i] === Sym.Linebreak) {
+		// 			if (curDialogText.length > 0) {
+		// 				curDialogNode.AddChild(new FuncNode("print", [new LiteralNode(curDialogText)]));
+		// 				curDialogText = "";
+		// 			}
+		// 			curDialogNode.AddChild(new FuncNode("br", []));
+		// 		}
+		// 		else {
+		// 			curDialogText += sourceStr[i];
+		// 		}
+		// 	}
+		// 	else {
+		// 		// TODO ... actual code parsing
+		// 		if (sourceStr[i] != Sym.CodeClose) {
+		// 			curCodeText += sourceStr[i];
+		// 		}
+		// 		else {
+		// 			// TODO : should IsFunction return the function name?
+		// 			if (IsFunction(curCodeText)) {
+		// 				var funcName = curCodeText.split(" ")[0];
+		// 				// TODO ... I should create a smarter way to parse arguments that skips ALL white space (except stuff inside code blocks etc)
+		// 				var funcArgs = curCodeText.split(" ").slice(1);
+
+		// 				// TODO (later -- merge text related functions to previous dialog block if it exists)
+		// 				rootNode.AddChild(new FuncNode(funcName, funcArgs)); // also the args need to actually be parsed..
+		// 			}
+		// 			else if (IsSequence(curCodeText)) {
+		// 				rootNode.AddChild(new UndefinedCodeNode("SEQ_TEST"));
+		// 			}
+		// 			// else if (IsExpression()) {}
+		// 			else {
+		// 				rootNode.AddChild(new UndefinedCodeNode(curCodeText));
+		// 			}
+
+		// 			curCodeText = "";
+
+		// 			curDialogNode = new BlockNode(BlockMode.Dialog);
+		// 			curDialogText = "";
+		// 			isParsingDialog = true;
+		// 		}
+		// 	}
+		// }
+
+		// // ugly --- wrap up any leftovers
+		// if (curDialogText.length > 0) {
+		// 	curDialogNode.AddChild(new FuncNode("print", [new LiteralNode(curDialogText)]));
+		// 	curDialogText = "";
+		// }
+
+		// if (curDialogNode.ChildCount() > 0) {
+		// 	rootNode.AddChild(curDialogNode);
+		// }
 
 		return rootNode;
 	}
