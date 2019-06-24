@@ -15,6 +15,8 @@ var resourceFiles = [
 	"resources/export/exportTemplate.html",
 	"resources/export/exportStyleFixed.css",
 	"resources/export/exportStyleFull.css",
+	/* plugins */
+	"resources/pluginTemplate.html",
 	/* engine scripts */
 	"../editor/script/engine/bitsy.js",
 	"../editor/script/engine/font.js",

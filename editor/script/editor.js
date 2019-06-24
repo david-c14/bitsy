@@ -3464,3 +3464,5 @@ function showFontMissingCharacterWarning() {
 function hideFontMissingCharacterWarning() {
 	document.getElementById("fontMissingCharacter").style.display = "none";
 }
+
+// PLUGINS -- todo : make into its own file

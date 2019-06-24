@@ -1339,6 +1339,27 @@
 					</div>
 				</div>
 
+				<!-- PLUGIN TODO
+					- https://www.html5rocks.com/en/tutorials/security/sandboxed-iframes/
+					- https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage
+				-->
+				<div id="testPluginPanel" class="panel color0">
+					<div class="bar color0">
+
+						<button title="minimize test plugin window" class="light panelBarClose" onclick="hidePanel('testPluginPanel');">
+							<i class="material-icons">close</i>
+						</button>
+
+						<div title="test plugin window" class="panelBarTitle" onmousedown="grabCard(event);">
+							<i class="material-icons">star</i>
+							<span>test plugin</span>
+						</div>
+
+					</div>
+
+					<iframe style="border: none;" src="../experiments/test_plugin.html"></iframe>
+				</div>
+
 			</div> <!-- Editor Content -->
 		</div> <!-- Editor Window -->
 
