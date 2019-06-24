@@ -3466,3 +3466,14 @@ function hideFontMissingCharacterWarning() {
 }
 
 // PLUGINS -- todo : make into its own file
+function addPluginPanel(id, name, src) {
+	var pluginTemplateHTML = Resources["pluginTemplate.html"];
+	pluginTemplateHTML = pluginTemplateHTML.replace(/@@PLUGIN_ID/g, id);
+	pluginTemplateHTML = pluginTemplateHTML.replace(/@@PLUGIN_NAME/g, name);
+	pluginTemplateHTML = pluginTemplateHTML.replace(/@@PLUGIN_SRC/g, src);
+
+	var pluginTemplate = document.createElement('template');
+	pluginTemplate.innerHTML = pluginTemplateHTML;
+	var editorContent = document.getElementById("editorContent");
+	editorContent.appendChild(pluginTemplate.content.firstChild);
+}
