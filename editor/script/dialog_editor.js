@@ -700,26 +700,10 @@ var SeqBlockUI = function(node, num) {
 		optionDiv.classList.add('advDialogOptionDiv');
 		div.insertBefore( optionDiv, addOptionEl );
 
-		// var subNumSpan = document.createElement("div");
-		// subNumSpan.innerText = num + numToLetter(index) + ". ";
-		// // subNumSpan.style.background = "black";
-		// subNumSpan.style.fontSize = "12px";
-		// subNumSpan.style.display = "block";
-		// // subNumSpan.style.verticalAlign = "middle";
-		// // subNumSpan.style.height = "20px";
-		// // subNumSpan.style.float = "left";
-		// // subNumSpan.style.position = "relative";
-		// // subNumSpan.style.top = "-20px";
-		// // subNumSpan.style.lineHeight = "100%";
-		// // subNumSpan.style.height = "10px";
-		// // subNumSpan.style.marginTop = "-30px";
-		// optionDiv.appendChild( subNumSpan );
-
 		var textArea = document.createElement("textarea");
 		textArea.classList.add('advDialogTextOption');
 		textArea.classList.add('gameTextDir');
 		textArea.value = option.Serialize();
-		// textArea.style.float = "left";
 		var onChangeOption = createOnChangeOption( index );
 		textArea.addEventListener('change', onChangeOption);
 		textArea.addEventListener('keyup', onChangeOption);
@@ -729,8 +713,6 @@ var SeqBlockUI = function(node, num) {
 		textArea.addEventListener('select', textChangeHandler);
 		textArea.addEventListener('blur', textChangeHandler);
 		textArea.title = "type line of dialog here"
-		// textArea.style.float = "left";
-		// div.insertBefore( textArea, addOptionEl );
 		textArea.style.display = "inline-block";
 		optionDiv.appendChild( textArea );
 

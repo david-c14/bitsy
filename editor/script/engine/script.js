@@ -531,14 +531,6 @@ var TreeRelationship = function() { // TODO ... rename?
 			this.children[i].VisitAll( visitor, depth + 1 );
 		}
 	};
-
-	this.ChildCount = function() {
-		return this.children.length;
-	}
-
-	this.Children = function() {
-		return this.children;
-	}
 }
 
 function isReturnObject(val) {
@@ -1122,35 +1114,6 @@ var ParserNext = function(env) {
 		return IsSequenceName(symbol);
 	}
 
-	function FindEndOfBlock(sourceStr, index, openSymbol, closeSymbol) {
-		// TODO
-		// var startIndex = i;
-
-		// var matchCount = 0;
-		// if( this.MatchAhead( open ) ) {
-		// 	matchCount++;
-		// 	this.Step( open.length );
-		// }
-
-		// while( matchCount > 0 && !this.Done() ) {
-		// 	if( this.MatchAhead( close ) ) {
-		// 		matchCount--;
-		// 		this.Step( close.length );
-		// 	}
-		// 	else if( this.MatchAhead( open ) ) {
-		// 		matchCount++;
-		// 		this.Step( open.length );
-		// 	}
-		// 	else {
-		// 		this.Step();
-		// 	}
-		// }
-
-		// // console.log("!!! " + startIndex + " " + i);
-
-		// return sourceStr.slice( startIndex + open.length, i - close.length );
-	}
-
 	function IsExpression() {
 		// TODO --- what IS an expression (especially in a world with roundtripped undefined code???)
 	}
@@ -1158,6 +1121,13 @@ var ParserNext = function(env) {
 	// TODO : split into ParseDialog and AddDialogToNode
 	function ParseDialog(sourceStr, index, parentNode) {
 		var dialogNode = new BlockNode(BlockMode.Dialog); // TODO... these should really be two seperate node types
+
+		// ok this is hacky as hell... using this to continue dialog nodes that were interrupted by code parsing..
+		// DOESN'T WORK BECAUSE IT CREATES DUPLICATES...
+		if (parentNode.children.length > 0 && parentNode.children[parentNode.children.length-1].type === "block") {
+			dialogNode = parentNode.children[parentNode.children.length-1];
+		}
+
 		var curDialogText = "";
 
 		function TryAddCurText() {
@@ -1180,7 +1150,7 @@ var ParserNext = function(env) {
 
 		TryAddCurText();
 
-		if (dialogNode.ChildCount() > 0) {
+		if (dialogNode.children.length > 0) {
 			parentNode.AddChild(dialogNode);
 		}
 
@@ -1191,23 +1161,52 @@ var ParserNext = function(env) {
 	// the tricky part here is this needs to recursively go through inner code nodes as well!
 	// and something needs to work for code that goes inside function parameters instead of as a child of a block
 	function ParseCode(sourceStr, index, parentNode) {
-		// just skip everything for now
+		// TODO .. turn this inner string thing into a function
 		var codeInnerStr = "";
+
+		var matchCount = 0;
 
 		if (sourceStr[index] === Sym.CodeOpen) {
 			index++;
+			matchCount++;
 		}
 
-		while (index < sourceStr.length && sourceStr[index] != Sym.CodeClose) {
-			codeInnerStr += sourceStr[index];
+		while (index < sourceStr.length && matchCount > 0) {
+			if (sourceStr[index] === Sym.CodeOpen) {
+				matchCount++;
+			}
+			else if (sourceStr[index] === Sym.CodeClose) {
+				matchCount--;
+			}
+
+			if (matchCount > 0) {
+				codeInnerStr += sourceStr[index];
+			}
+
 			index++;
 		}
 
-		if (sourceStr[index] === Sym.CodeClose) {
-			index++;
-		}
+		if (IsFunction(codeInnerStr)) {
+			var funcName = codeInnerStr.split(" ")[0];
+			// TODO ... I should create a smarter way to parse arguments that skips ALL white space (except stuff inside code blocks etc)
+			var funcArgs = codeInnerStr.split(" ").slice(1);
 
-		parentNode.AddChild(new UndefinedCodeNode(codeInnerStr));
+			// TODO (later -- merge text related functions to previous dialog block if it exists)
+			if (parentNode.children.length > 0 && parentNode.children[parentNode.children.length-1].type === "block") {
+				// not quite right, because it doesn't look at whether it's a dialog block or not
+				parentNode.children[parentNode.children.length-1].AddChild(new FuncNode(funcName, funcArgs));
+			}
+			else {
+				parentNode.AddChild(new FuncNode(funcName, funcArgs)); // also the args need to actually be parsed..
+			}
+		}
+		// else if (IsSequence(codeInnerStr)) {
+		// 	rootNode.AddChild(new UndefinedCodeNode("SEQ_TEST"));
+		// }
+		// else if (IsExpression()) {}
+		else {
+			parentNode.AddChild(new UndefinedCodeNode(codeInnerStr));
+		}
 
 		return index;
 	}
