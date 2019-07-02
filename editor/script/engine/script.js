@@ -1,3 +1,11 @@
+/*
+TODO
+- thoughts on a simpler parser
+	- remove "parser state" construct
+	- remove "code block" cruft
+	- don't try and group all dialog stuff together because that just complicates things (do that at the UI level)
+*/
+
 function Script() {
 
 this.CreateInterpreter = function() {
