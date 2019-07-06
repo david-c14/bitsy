@@ -4,6 +4,7 @@ TODO
 	- remove "parser state" construct
 	- remove "code block" cruft
 	- don't try and group all dialog stuff together because that just complicates things (do that at the UI level)
+	- better commenting of each stage of parsing
 */
 
 function Script() {
@@ -861,7 +862,7 @@ var ExpNode = function(operator, left, right) {
 
 var SequenceBase = function() {
 	this.Serialize = function(depth) {
-		var str = "";
+		var str = Sym.CodeOpen;
 		str += this.type + "\n";
 		for (var i = 0; i < this.options.length; i++) {
 			// console.log("SERIALIZE SEQUENCE ");
@@ -869,6 +870,7 @@ var SequenceBase = function() {
 			str += leadingWhitespace(depth + 1) + Sym.List + " " + this.options[i].Serialize(depth + 2) + "\n";
 		}
 		str += leadingWhitespace(depth);
+		str += Sym.CodeClose;
 		return str;
 	}
 
@@ -900,8 +902,9 @@ var SequenceNode = function(options) {
 		this.options[index].Eval( environment, onReturn );
 
 		var next = index + 1;
-		if(next < this.options.length)
+		if (next < this.options.length) {
 			index = next;
+		}
 	}
 }
 
@@ -1086,25 +1089,16 @@ var ParserNext = function(env) {
 		return symbolStr;
 	}
 
-	function IsFunction(sourceStr) {
-		var symbol = FindFirstSymbol(sourceStr);
-		return environment.HasFunction(symbol); // TODO -- at some point I may need to create local environments for locally defined functions?
-	}
-
+	// TODO ... store these names somewhere better??
 	function IsSequenceName(symbolStr) {
 		return symbolStr === "sequence" || symbolStr === "cycle" || symbolStr === "shuffle";
-	}
-
-	function IsSequence(sourceStr) {
-		var symbol = FindFirstSymbol(sourceStr);
-		return IsSequenceName(symbol);
 	}
 
 	function IsExpression() {
 		// TODO --- what IS an expression (especially in a world with roundtripped undefined code???)
 	}
 
-	function ParseDialog(parentNode, sourceStr, index) {
+	function ParseDialog(parentNode, sourceStr, index, earlyStopSymbols) {
 		var curDialogText = "";
 
 		function TryAddCurText() {
@@ -1114,7 +1108,7 @@ var ParserNext = function(env) {
 			}
 		}
 
-		while (index < sourceStr.length && sourceStr[index] != Sym.CodeOpen) {
+		while (index < sourceStr.length && earlyStopSymbols.indexOf(sourceStr[index]) == -1) {
 			if (sourceStr[index] === Sym.Linebreak) {
 				TryAddCurText();
 				parentNode.AddChild(new FuncNode("br", []));
@@ -1158,6 +1152,47 @@ var ParserNext = function(env) {
 		return { contents:contents, index:index };
 	}
 
+	function ParseSequence(parentNode, sourceStr, sequenceTypeName) {
+		// skip past the name of the sequence type
+		var index = sequenceTypeName.length;
+
+		// find start of list
+		while (index < sourceStr.length && sourceStr[index] != Sym.List) {
+			index++;
+		}
+		index++;
+
+		// parse inner code block for each list item
+		var innerBlocks = [];
+		while (index < sourceStr.length) {
+			var block = new BlockNode(BlockMode.Dialog, false /*doIndentFirstLine*/);
+			index = ParseBlockContents(block, sourceStr, index, [Sym.List]);
+
+			// remove the last newline from the inner block if there is one
+			if (block.children.length > 0) {
+				var lastChild = block.children[block.children.length-1];
+				if (lastChild.type === "function" && lastChild.name === "br") {
+					block.children.splice(block.children.length-1);
+				}
+			}
+
+			innerBlocks.push(block);
+
+			index++; // skip the list item symbol
+		}
+
+		// initialize sequence node
+		if (sequenceTypeName === "sequence") {
+			parentNode.AddChild( new SequenceNode( innerBlocks ) );
+		}
+		else if (sequenceTypeName === "cycle") {
+			parentNode.AddChild( new CycleNode( innerBlocks ) );
+		}
+		else if (sequenceTypeName === "shuffle") {
+			parentNode.AddChild( new ShuffleNode( innerBlocks ) );
+		}
+	}
+
 	// the goal of this function is to either add a single code node to the parent node OR the last dialog node (if it's a function)
 	// the tricky part here is this needs to recursively go through inner code nodes as well!
 	// and something needs to work for code that goes inside function parameters instead of as a child of a block
@@ -1166,16 +1201,19 @@ var ParserNext = function(env) {
 		var codeContents = results.contents;
 		index = results.index;
 
-		if (IsFunction(codeContents)) {
+		var firstSymbol = FindFirstSymbol(codeContents);
+
+		// if (IsIf(...)) // TODO
+		if (environment.HasFunction(firstSymbol)) {
 			var funcName = codeContents.split(" ")[0];
 			// TODO ... I should create a smarter way to parse arguments that skips ALL white space (except stuff inside code blocks etc)
 			var funcArgs = codeContents.split(" ").slice(1);
 			parentNode.AddChild(new FuncNode(funcName, funcArgs)); // also the args need to actually be parsed..
 		}
-		// else if (IsSequence(codeInnerStr)) {
-		// 	rootNode.AddChild(new UndefinedCodeNode("SEQ_TEST"));
-		// }
-		// else if (IsExpression()) {}
+		else if (IsSequenceName(firstSymbol)) {
+			ParseSequence(parentNode, codeContents, firstSymbol);
+		}
+		// else if (IsExpression()) {} // TODO
 		else {
 			parentNode.AddChild(new UndefinedCodeNode(codeContents));
 		}
@@ -1184,22 +1222,23 @@ var ParserNext = function(env) {
 	}
 
 	// TODO .. should I be more consistent by inputting entire source string, but with start and end indices??
-	function ParseBlockContents(blockNode, sourceStr) {
-		var index = 0;
-		while (index < sourceStr.length) {
+	function ParseBlockContents(blockNode, sourceStr, index, earlyStopSymbols) {
+		while (index < sourceStr.length && earlyStopSymbols.indexOf(sourceStr[index]) == -1) {
 			if (sourceStr[index] === Sym.CodeOpen) {
 				index = ParseCode(blockNode,sourceStr,index);
 			}
 			else {
-				index = ParseDialog(blockNode,sourceStr,index);
+				index = ParseDialog(blockNode,sourceStr,index, earlyStopSymbols.concat([Sym.CodeOpen]));
 			}
 		}
+
+		return index;
 	}
 
 	this.Parse = function(sourceStr) {
 		var rootNode = new BlockNode(BlockMode.Code);
 
-		ParseBlockContents(rootNode, sourceStr);
+		ParseBlockContents(rootNode, sourceStr, 0, []);
 
 		return rootNode;
 	}
