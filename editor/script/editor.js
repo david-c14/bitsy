@@ -1519,6 +1519,7 @@ function updateWallCheckboxOnCurrentTile() {
 }
 
 // TODO : better name?
+var scriptEditor = new ScriptEditor();
 function reloadAdvDialogUI() {
 	// var dialogId = getCurDialogId(); // necessary?
 	if( drawing.type === TileType.Sprite || drawing.type === TileType.Item ) {
@@ -1528,11 +1529,20 @@ function reloadAdvDialogUI() {
 
 		var dialogStr = document.getElementById("dialogText").value;
 		document.getElementById("dialogCodeText").value = dialogStr;
-		var scriptTree = scriptInterpreter.Parse( dialogStr );
-		console.log("~~~~ RELOAD ADV DIALOG UI ~~~~~");
-		console.log(scriptTree);
-		createAdvDialogEditor(scriptTree);
-		previewDialogScriptTree = scriptTree;
+
+		// OLD STUFF
+		// var scriptTree = scriptInterpreter.Parse( dialogStr );
+		// console.log("~~~~ RELOAD ADV DIALOG UI ~~~~~");
+		// console.log(scriptTree);
+		// createAdvDialogEditor(scriptTree);
+		// previewDialogScriptTree = scriptTree;
+
+		// clear out the old editor
+		var dialogFormDiv = document.getElementById("advDialogViewport");
+		dialogFormDiv.innerHTML = "";
+
+		var editor = scriptEditor.CreateEditor(dialogStr);
+		dialogFormDiv.appendChild(editor.GetElement());
 	}
 	else {
 		document.getElementById("dialogEditorHasContent").style.display = "none";
