@@ -588,7 +588,7 @@ var IfBlockUI = function(node, num) {
 
 var seqRadioCount = 0;
 var SeqBlockUI = function(node, num) {
-	var sequenceNode = node.children[0];
+	var sequenceNode = node; // TODO : this is not needed now in the new world
 
 	function createOnChangeOption(index) {
 		return function(event) {
@@ -872,7 +872,7 @@ function createAdvDialogEditor(scriptTree) {
 	function isBlock(node) { return node.type === "block"; };
 	function isChildType(node,type) { return node.children[0].type === type; };
 	function isIf(node) { return isBlock(node) && isChildType(node,"if") && !node.children[0].IsSingleLine(); };
-	function isSeq(node) { return isBlock(node) && (isChildType(node,"sequence") || isChildType(node,"cycle") || isChildType(node,"shuffle")); };
+	function isSeq(node) { return node.type === "sequence" || node.type === "cycle" || node.type === "shuffle"; };
 
 	var dialogFormDiv = document.getElementById("advDialogViewport");
 	dialogFormDiv.innerHTML = "";
