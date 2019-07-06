@@ -47,6 +47,13 @@ function DialogNodeEditor(dialogNodeList) {
 	var div = document.createElement("div");
 	div.classList.add("dialogNode");
 
+	// TODO: I still find this hacky
+	var fakeDialogRoot = scriptUtils.CreateDialogBlock(dialogNodeList);
+
+	var textArea = document.createElement("textarea");
+	textArea.value = fakeDialogRoot.Serialize();
+	div.appendChild(textArea);
+
 	this.GetElement = function() {
 		return div;
 	}
