@@ -15,12 +15,12 @@
 function ScriptEditor() {
 	this.CreateEditor = function(scriptStr) {
 		var scriptRootNode = scriptInterpreter.Parse( scriptStr );
-		return new BlockNodeEditor(scriptRootNode, true);
+		return new BlockNodeEditor(scriptRootNode, null, true);
 	}
 } // ScriptEditor
 
 // TODO : name? editor or viewer? or something else?
-function BlockNodeEditor(blockNode, isEven) {
+function BlockNodeEditor(blockNode, notifyChangeHandler, isEven) {
 	Object.assign( this, new NodeEditorBase(isEven) );
 
 	this.div.classList.add("blockNode");
@@ -29,34 +29,78 @@ function BlockNodeEditor(blockNode, isEven) {
 	// minimizeButton.innerText = "minimize";
 	// this.div.appendChild(minimizeButton);
 
-	var dialogNodeList = [];
-	function addGatheredDialogNodes(div) {
-		if (dialogNodeList.length > 0) {
-			var dialogNodeEditor = new DialogNodeEditor(dialogNodeList, isEven);
-			div.appendChild(dialogNodeEditor.GetElement());
+	var childEditors = [];
 
-			dialogNodeList = [];
+	function InitChildEditors(div) {
+		childNodeEditors = [];
+
+		var dialogNodeList = [];
+		function AddGatheredDialogNodes(div) {
+			if (dialogNodeList.length > 0) {
+				var dialogNodeEditor = new DialogNodeEditor(dialogNodeList, OnChange, isEven);
+				div.appendChild(dialogNodeEditor.GetElement());
+
+				dialogNodeList = [];
+
+				childEditors.push(dialogNodeEditor);
+			}
+		}
+
+		for (var i = 0; i < blockNode.children.length; i++) {
+			var childNode = blockNode.children[i];
+			if (childNode.type === "sequence" || childNode.type === "cycle" || childNode.type === "shuffle") {
+				AddGatheredDialogNodes(div);
+
+				var sequenceNodeEditor = new SequenceNodeEditor(childNode, OnChange, isEven);
+				div.appendChild(sequenceNodeEditor.GetElement());
+
+				childEditors.push(sequenceNodeEditor);
+			}
+			else {
+				// gather dialog nodes
+				dialogNodeList.push(childNode);
+			}
+		}
+
+		AddGatheredDialogNodes(div);
+	}
+
+	this.Serialize = function() {
+		// TODO: I **need** to get rid of the triple quotes thing it sucks
+		return '"""\n' + blockNode.Serialize() + '\n"""';
+	}
+
+	var self = this; // hacky!!!
+	function OnChange(requiresChildNodeRefresh) {
+		var updatedChildren = [];
+		for (var i = 0; i < childEditors.length; i++) {
+			updatedChildren = updatedChildren.concat(childEditors[i].GetNodes());
+		}
+
+		console.log(updatedChildren);
+
+		blockNode.children = updatedChildren;
+		console.log(blockNode.Serialize());
+
+		// TODO : I'm a little worried this will get hard to handle
+		if (requiresChildNodeRefresh) {
+			self.div.innerHTML = "";
+			InitChildEditors(self.div); // is this wasteful???
+		}
+
+		if (notifyChangeHandler != null) {
+			notifyChangeHandler();
 		}
 	}
 
-	for (var i = 0; i < blockNode.children.length; i++) {
-		var childNode = blockNode.children[i];
-		if (childNode.type === "sequence" || childNode.type === "cycle" || childNode.type === "shuffle") {
-			addGatheredDialogNodes(this.div);
-
-			var sequenceNodeEditor = new SequenceNodeEditor(childNode, isEven);
-			this.div.appendChild(sequenceNodeEditor.GetElement());
-		}
-		else {
-			// gather dialog nodes
-			dialogNodeList.push(childNode);
-		}
+	this.SetNotifyChangeHandler = function(handler) {
+		notifyChangeHandler = handler;
 	}
 
-	addGatheredDialogNodes(this.div);
+	InitChildEditors(this.div);
 }
 
-function DialogNodeEditor(dialogNodeList, isEven) {
+function DialogNodeEditor(dialogNodeList, notifyChangeHandler, isEven) {
 	Object.assign( this, new NodeEditorBase(isEven) );
 	// Object.assign( this, new SelectableElement(this) );
 
@@ -79,12 +123,26 @@ function DialogNodeEditor(dialogNodeList, isEven) {
 		fakeDialogRoot = scriptInterpreter.Parse(textArea.value);
 		dialogNodeList = fakeDialogRoot.children;
 		// TODO -- how do I make sure everything updates correctly??
+
+		var requiresChildNodeRefresh = false;
+		if (dialogNodeList.length > 0) {
+			var lastChild = dialogNodeList[dialogNodeList.length - 1];
+			if (lastChild.type === "sequence" || lastChild.type === "cycle" || lastChild.type === "shuffle") {
+				requiresChildNodeRefresh = true;
+			}
+		}
+
+		notifyChangeHandler(requiresChildNodeRefresh);
 	}
 	textArea.addEventListener("change", OnChangeText);
 	textArea.addEventListener("keyup", OnChangeText);
+
+	this.GetNodes = function() {
+		return dialogNodeList;
+	}
 }
 
-function SequenceNodeEditor(sequenceNode, isEven) {
+function SequenceNodeEditor(sequenceNode, notifyChangeHandler, isEven) {
 	Object.assign( this, new NodeEditorBase(isEven) );
 	// Object.assign( this, new SelectableElement(this) );
 
@@ -96,8 +154,18 @@ function SequenceNodeEditor(sequenceNode, isEven) {
 
 	for (var i = 0; i < sequenceNode.options.length; i++) {
 		var optionBlockNode = sequenceNode.options[i];
-		var optionBlockNodeEditor = new BlockNodeEditor(optionBlockNode, !isEven);
+		var optionBlockNodeEditor = new BlockNodeEditor(optionBlockNode, OnChange, !isEven);
 		this.div.appendChild(optionBlockNodeEditor.GetElement());
+	}
+
+	this.GetNodes = function() {
+		return [sequenceNode];
+	}
+
+	function OnChange() {
+		if (notifyChangeHandler != null) {
+			notifyChangeHandler();
+		}
 	}
 }
 

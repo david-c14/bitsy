@@ -1542,6 +1542,13 @@ function reloadAdvDialogUI() {
 		dialogFormDiv.innerHTML = "";
 
 		var editor = scriptEditor.CreateEditor(dialogStr);
+		editor.SetNotifyChangeHandler( function() {
+			// TODO... respond to changes (needs to handle all cases, such as deletion!)
+			console.log("CHANGE!!!!");
+			console.log(editor.Serialize());
+			dialog[getCurDialogId()] = editor.Serialize();
+			refreshGameData();
+		} );
 		dialogFormDiv.appendChild(editor.GetElement());
 	}
 	else {

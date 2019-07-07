@@ -1236,7 +1236,7 @@ var ParserNext = function(env) {
 	}
 
 	this.Parse = function(sourceStr) {
-		var rootNode = new BlockNode(BlockMode.Code);
+		var rootNode = new BlockNode(BlockMode.Dialog);
 
 		ParseBlockContents(rootNode, sourceStr, 0, []);
 
