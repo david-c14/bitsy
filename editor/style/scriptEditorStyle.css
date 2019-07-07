@@ -3,27 +3,55 @@
 	min-height: 300px;
 	background: purple;
 	padding: 10px;*/
-	border-left: 4px solid black;
+	border: 1px solid #6767b2;
+	border-left: 4px solid #6767b2;
+	min-height: 10px;
+	/*background: black;*/
 	/*border-top: 2px solid gray;*/
 }
+
+.blockNode:hover {
+	border-color: orange;
+}
+
+/*.blockNode.scriptNodeEven:hover {
+	border-color: yellow;
+}
+
+.blockNode.scriptNodeOdd:hover {
+	border-color: purple;
+}*/
 
 .dialogNode {
 	min-width: 100px;
 	/*min-height: 200px;*/
 	/*margin: 10px;*/
-	background: #7d828a;
-	border-bottom: 4px solid #303236;
+	/*background: #7d828a;*/
+	border-bottom: 4px solid #636363;
 }
 
 .sequenceNode {
 	min-width: 100px;
-	min-height: 200px;
+	/*min-height: 200px;*/
 	/*margin: 10px;*/
-	background: #acbfe6;
+	/*background: #acbfe6;*/
 	padding: 10px;
 	border-bottom: 4px solid #8291ad;
 }
 
 .sequenceNode .blockNode {
 	margin-bottom: 8px;
+}
+
+.scriptNodeEven {
+	background: #e8e8ff;
+}
+
+.scriptNodeOdd {
+	background: #ccccff;
+}
+
+.scriptNodeSelected {
+	background: #6767b2;
+	color: white;
 }
