@@ -137,6 +137,14 @@ function DialogNodeEditor(dialogNodeList, notifyChangeHandler, isEven) {
 	textArea.addEventListener("change", OnChangeText);
 	textArea.addEventListener("keyup", OnChangeText);
 
+	var deleteButton = document.createElement("button");
+	deleteButton.innerText = "delete";
+	deleteButton.onclick = function() {
+		dialogNodeList = [];
+		notifyChangeHandler(true /*requiresChildNodeRefresh*/);
+	}
+	this.div.appendChild(deleteButton);
+
 	this.GetNodes = function() {
 		return dialogNodeList;
 	}
@@ -158,8 +166,17 @@ function SequenceNodeEditor(sequenceNode, notifyChangeHandler, isEven) {
 		this.div.appendChild(optionBlockNodeEditor.GetElement());
 	}
 
+	var nodeList = [sequenceNode]; // TODO .. this is a bit of a hack really
+	var deleteButton = document.createElement("button");
+	deleteButton.innerText = "delete";
+	deleteButton.onclick = function() {
+		nodeList = [];
+		notifyChangeHandler(true /*requiresChildNodeRefresh*/);
+	}
+	this.div.appendChild(deleteButton);
+
 	this.GetNodes = function() {
-		return [sequenceNode];
+		return nodeList;
 	}
 
 	function OnChange() {
