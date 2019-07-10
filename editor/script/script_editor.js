@@ -82,18 +82,36 @@ function BlockNodeEditor(blockNode, parentNode, isEven) {
 
 	var self = this; // hacky!!!
 	this.UpdateChild = function(childEditor) {
+		UpdateNodeChildren();
+
+		if (childEditor.RequiresFullRefresh()) { // TODO -- I wonder if it would be simpler to always do this?
+			self.div.innerHTML = ""; // inefficient?
+			InitChildEditors(self.div);
+		}
+
+		SendUpdateNotification();
+	}
+
+	this.RemoveChild = function(childEditor) {
+		self.div.removeChild(childEditor.GetElement());
+		childEditors.splice(childEditors.indexOf(childEditor));
+
+		// it's a little weird to me the way I've broken up these...
+		UpdateNodeChildren();
+
+		SendUpdateNotification();
+	}
+
+	function UpdateNodeChildren() {
 		var updatedChildren = [];
 		for (var i = 0; i < childEditors.length; i++) {
 			updatedChildren = updatedChildren.concat(childEditors[i].GetNodes());
 		}
 
 		blockNode.children = updatedChildren;
+	}
 
-		if (childEditor.RequiresFullRefresh()) {
-			self.div.innerHTML = "";
-			InitChildEditors(self.div); // is this wasteful???
-		}
-
+	function SendUpdateNotification() {
 		if (parentNode != null) {
 			parentNode.UpdateChild(self);
 		}
@@ -143,13 +161,12 @@ function DialogNodeEditor(dialogNodeList, parentNode, isEven) {
 	textArea.addEventListener("change", OnChangeText);
 	textArea.addEventListener("keyup", OnChangeText);
 
-	// var deleteButton = document.createElement("button");
-	// deleteButton.innerText = "delete";
-	// deleteButton.onclick = function() {
-	// 	dialogNodeList = [];
-	// 	notifyChangeHandler(true /*requiresChildNodeRefresh*/);
-	// }
-	// this.div.appendChild(deleteButton);
+	var deleteButton = document.createElement("button");
+	deleteButton.innerText = "delete";
+	deleteButton.onclick = function() {
+		parentNode.RemoveChild(self);
+	}
+	this.div.appendChild(deleteButton);
 
 	this.GetNodes = function() {
 		return dialogNodeList;
@@ -183,14 +200,12 @@ function SequenceNodeEditor(sequenceNode, parentNode, isEven) {
 		this.div.appendChild(optionBlockNodeEditor.GetElement());
 	}
 
-	// var nodeList = [sequenceNode]; // TODO .. this is a bit of a hack really
-	// var deleteButton = document.createElement("button");
-	// deleteButton.innerText = "delete";
-	// deleteButton.onclick = function() {
-	// 	nodeList = [];
-	// 	notifyChangeHandler(true /*requiresChildNodeRefresh*/);
-	// }
-	// this.div.appendChild(deleteButton);
+	var deleteButton = document.createElement("button");
+	deleteButton.innerText = "delete";
+	deleteButton.onclick = function() {
+		parentNode.RemoveChild(self);
+	}
+	this.div.appendChild(deleteButton);
 
 	this.GetNodes = function() {
 		return [sequenceNode];
