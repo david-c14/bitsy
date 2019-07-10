@@ -9,6 +9,12 @@
 	- make order of nodes clearer (some kind of arrow?)
 	- update game when nodes change
 		- insert sequence nodes and so on if you try to type supported code into a dialog node text editor
+
+
+	change methods
+		- UpdateChild
+		- RemoveChild
+		- InsertChild
 */
 
 // TODO : rename? factory?
@@ -20,7 +26,7 @@ function ScriptEditor() {
 } // ScriptEditor
 
 // TODO : name? editor or viewer? or something else?
-function BlockNodeEditor(blockNode, notifyChangeHandler, isEven) {
+function BlockNodeEditor(blockNode, parentNode, isEven) {
 	Object.assign( this, new NodeEditorBase(isEven) );
 
 	this.div.classList.add("blockNode");
@@ -37,7 +43,7 @@ function BlockNodeEditor(blockNode, notifyChangeHandler, isEven) {
 		var dialogNodeList = [];
 		function AddGatheredDialogNodes(div) {
 			if (dialogNodeList.length > 0) {
-				var dialogNodeEditor = new DialogNodeEditor(dialogNodeList, OnChange, isEven);
+				var dialogNodeEditor = new DialogNodeEditor(dialogNodeList, self, isEven);
 				div.appendChild(dialogNodeEditor.GetElement());
 
 				dialogNodeList = [];
@@ -51,7 +57,7 @@ function BlockNodeEditor(blockNode, notifyChangeHandler, isEven) {
 			if (childNode.type === "sequence" || childNode.type === "cycle" || childNode.type === "shuffle") {
 				AddGatheredDialogNodes(div);
 
-				var sequenceNodeEditor = new SequenceNodeEditor(childNode, OnChange, isEven);
+				var sequenceNodeEditor = new SequenceNodeEditor(childNode, self, isEven);
 				div.appendChild(sequenceNodeEditor.GetElement());
 
 				childEditors.push(sequenceNodeEditor);
@@ -70,37 +76,43 @@ function BlockNodeEditor(blockNode, notifyChangeHandler, isEven) {
 		return '"""\n' + blockNode.Serialize() + '\n"""';
 	}
 
+	this.SetNotifyChangeHandler = function(handler) {
+		notifyChangeHandler = handler;
+	}
+
 	var self = this; // hacky!!!
-	function OnChange(requiresChildNodeRefresh) {
+	this.UpdateChild = function(childEditor) {
 		var updatedChildren = [];
 		for (var i = 0; i < childEditors.length; i++) {
 			updatedChildren = updatedChildren.concat(childEditors[i].GetNodes());
 		}
 
-		console.log(updatedChildren);
-
 		blockNode.children = updatedChildren;
-		console.log(blockNode.Serialize());
 
-		// TODO : I'm a little worried this will get hard to handle
-		if (requiresChildNodeRefresh) {
+		if (childEditor.RequiresFullRefresh()) {
 			self.div.innerHTML = "";
 			InitChildEditors(self.div); // is this wasteful???
 		}
 
-		if (notifyChangeHandler != null) {
-			notifyChangeHandler();
+		if (parentNode != null) {
+			parentNode.UpdateChild(self);
+		}
+
+		if (self.OnChangeHandler != null) {
+			self.OnChangeHandler();
 		}
 	}
 
-	this.SetNotifyChangeHandler = function(handler) {
-		notifyChangeHandler = handler;
+	this.RequiresFullRefresh = function() {
+		return false;
 	}
+
+	this.OnChangeHandler = null;
 
 	InitChildEditors(this.div);
 }
 
-function DialogNodeEditor(dialogNodeList, notifyChangeHandler, isEven) {
+function DialogNodeEditor(dialogNodeList, parentNode, isEven) {
 	Object.assign( this, new NodeEditorBase(isEven) );
 	// Object.assign( this, new SelectableElement(this) );
 
@@ -118,39 +130,44 @@ function DialogNodeEditor(dialogNodeList, notifyChangeHandler, isEven) {
 	textArea.value = fakeDialogRoot.Serialize();
 	this.div.appendChild(textArea);
 
+	var self = this;
 	var OnChangeText = function() {
 		console.log(textArea.value);
 		fakeDialogRoot = scriptInterpreter.Parse(textArea.value);
 		dialogNodeList = fakeDialogRoot.children;
-		// TODO -- how do I make sure everything updates correctly??
 
-		var requiresChildNodeRefresh = false;
-		if (dialogNodeList.length > 0) {
-			var lastChild = dialogNodeList[dialogNodeList.length - 1];
-			if (lastChild.type === "sequence" || lastChild.type === "cycle" || lastChild.type === "shuffle") {
-				requiresChildNodeRefresh = true;
-			}
+		if (parentNode != null) {
+			parentNode.UpdateChild(self);
 		}
-
-		notifyChangeHandler(requiresChildNodeRefresh);
 	}
 	textArea.addEventListener("change", OnChangeText);
 	textArea.addEventListener("keyup", OnChangeText);
 
-	var deleteButton = document.createElement("button");
-	deleteButton.innerText = "delete";
-	deleteButton.onclick = function() {
-		dialogNodeList = [];
-		notifyChangeHandler(true /*requiresChildNodeRefresh*/);
-	}
-	this.div.appendChild(deleteButton);
+	// var deleteButton = document.createElement("button");
+	// deleteButton.innerText = "delete";
+	// deleteButton.onclick = function() {
+	// 	dialogNodeList = [];
+	// 	notifyChangeHandler(true /*requiresChildNodeRefresh*/);
+	// }
+	// this.div.appendChild(deleteButton);
 
 	this.GetNodes = function() {
 		return dialogNodeList;
 	}
+
+
+	this.UpdateChild = function(childEditor) {
+		// TODO ??
+	}
+
+	this.RequiresFullRefresh = function() {
+		return dialogNodeList.some(function(node) {
+			return node.type === "sequence" || node.type === "cycle" || node.type === "shuffle";
+		});
+	}
 }
 
-function SequenceNodeEditor(sequenceNode, notifyChangeHandler, isEven) {
+function SequenceNodeEditor(sequenceNode, parentNode, isEven) {
 	Object.assign( this, new NodeEditorBase(isEven) );
 	// Object.assign( this, new SelectableElement(this) );
 
@@ -162,27 +179,32 @@ function SequenceNodeEditor(sequenceNode, notifyChangeHandler, isEven) {
 
 	for (var i = 0; i < sequenceNode.options.length; i++) {
 		var optionBlockNode = sequenceNode.options[i];
-		var optionBlockNodeEditor = new BlockNodeEditor(optionBlockNode, OnChange, !isEven);
+		var optionBlockNodeEditor = new BlockNodeEditor(optionBlockNode, this, !isEven);
 		this.div.appendChild(optionBlockNodeEditor.GetElement());
 	}
 
-	var nodeList = [sequenceNode]; // TODO .. this is a bit of a hack really
-	var deleteButton = document.createElement("button");
-	deleteButton.innerText = "delete";
-	deleteButton.onclick = function() {
-		nodeList = [];
-		notifyChangeHandler(true /*requiresChildNodeRefresh*/);
-	}
-	this.div.appendChild(deleteButton);
+	// var nodeList = [sequenceNode]; // TODO .. this is a bit of a hack really
+	// var deleteButton = document.createElement("button");
+	// deleteButton.innerText = "delete";
+	// deleteButton.onclick = function() {
+	// 	nodeList = [];
+	// 	notifyChangeHandler(true /*requiresChildNodeRefresh*/);
+	// }
+	// this.div.appendChild(deleteButton);
 
 	this.GetNodes = function() {
-		return nodeList;
+		return [sequenceNode];
 	}
 
-	function OnChange() {
-		if (notifyChangeHandler != null) {
-			notifyChangeHandler();
+	var self = this;
+	this.UpdateChild = function(childEditor) {
+		if (parentNode != null) {
+			parentNode.UpdateChild(self);
 		}
+	}
+
+	this.RequiresFullRefresh = function() {
+		return false; // TODO : move into base?
 	}
 }
 
