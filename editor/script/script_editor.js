@@ -96,7 +96,8 @@ function BlockNodeEditor(blockNode, parentNode, isEven) {
 
 	this.RemoveChild = function(childEditor) {
 		self.div.removeChild(childEditor.GetElement());
-		childEditors.splice(childEditors.indexOf(childEditor));
+		childEditors.splice(childEditors.indexOf(childEditor),1);
+		console.log(childEditors);
 
 		// it's a little weird to me the way I've broken up these...
 		UpdateNodeChildren();
@@ -258,13 +259,39 @@ function SequenceNodeEditor(sequenceNode, parentNode, isEven) {
 	span.innerText = sequenceNode.type;
 	topDiv.appendChild(span);
 
+	// TODO : THIS WHOLE THING IS A DUPLICATE
+	var controlDiv = document.createElement("div");
+	controlDiv.style.float = "right";
+	topDiv.appendChild(controlDiv);
+
+	var moveUpButton = document.createElement("button");
+	moveUpButton.innerText = "up";
+	moveUpButton.onclick = function() {
+		var insertIndex = parentNode.IndexOfChild(self);
+		parentNode.RemoveChild(self);
+		insertIndex -= 1;
+		parentNode.InsertChild(self,insertIndex);
+	}
+	controlDiv.appendChild(moveUpButton);
+
+	var moveDownButton = document.createElement("button");
+	moveDownButton.innerText = "down";
+	// deleteButton.style.float = "right";
+	moveDownButton.onclick = function() {
+		var insertIndex = parentNode.IndexOfChild(self);
+		parentNode.RemoveChild(self);
+		insertIndex += 1;
+		parentNode.InsertChild(self,insertIndex);
+	}
+	controlDiv.appendChild(moveDownButton);
+
 	var deleteButton = document.createElement("button");
 	deleteButton.innerText = "delete";
-	deleteButton.style.float = "right";
+	// deleteButton.style.float = "right";
 	deleteButton.onclick = function() {
 		parentNode.RemoveChild(self);
 	}
-	topDiv.appendChild(deleteButton);
+	controlDiv.appendChild(deleteButton);
 
 	for (var i = 0; i < sequenceNode.options.length; i++) {
 		var optionBlockNode = sequenceNode.options[i];
