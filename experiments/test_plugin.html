@@ -4,12 +4,19 @@
 		<meta charset="UTF-8">
 		<!-- <title>Bitsy</title> -->
 		<style>
-			/*body {
+			body {
 				background: blue;
-			}*/
+			}
 		</style>
+		<script>
+			window.addEventListener("message", function(event) {
+				document.getElementById("game_data").innerText = event.data;
+			});
+		</script>
 	</head>
 	<body>
 		TEST
+
+		<div id="game_data"></div>
 	</body>
 </html>

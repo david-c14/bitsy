@@ -861,6 +861,10 @@ function start() {
 	// }
 
 	initLanguageOptions();
+
+
+	/// PLUGIN TEST!!!!
+	addPluginPanel("test", "test", "../experiments/test_plugin.html");
 }
 
 function newDrawing() {
@@ -3476,4 +3480,12 @@ function addPluginPanel(id, name, src) {
 	pluginTemplate.innerHTML = pluginTemplateHTML;
 	var editorContent = document.getElementById("editorContent");
 	editorContent.appendChild(pluginTemplate.content.firstChild);
+
+	events.Listen("game_data_change", function(event) {
+		var data = document.getElementById("game_data").value
+		console.log("TEST PLUGIN " + name);
+		var frame = document.getElementById(id + "_frame");
+		// console.log(document.getElementById(id + "_frame"));
+		frame.contentWindow.postMessage(data, '*');
+	});
 }
