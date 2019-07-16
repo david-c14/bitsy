@@ -205,6 +205,10 @@ var Utils = function() {
 		}
 		return dialogStr;
 	}
+
+	this.CreateEmptyPrintFunc = function() {
+		return new FuncNode("print", [new LiteralNode(" ")]);
+	}
 }
 
 

@@ -1518,8 +1518,10 @@ function updateWallCheckboxOnCurrentTile() {
 	}
 }
 
+// SCRIPT EDITOR
 // TODO : better name?
-var scriptEditor = new ScriptEditor();
+var scriptEditorModule = new ScriptEditor();
+var curScriptEditor = null;
 function reloadAdvDialogUI() {
 	// var dialogId = getCurDialogId(); // necessary?
 	if( drawing.type === TileType.Sprite || drawing.type === TileType.Item ) {
@@ -1541,19 +1543,28 @@ function reloadAdvDialogUI() {
 		var dialogFormDiv = document.getElementById("advDialogViewport");
 		dialogFormDiv.innerHTML = "";
 
-		var editor = scriptEditor.CreateEditor(dialogStr);
-		editor.OnChangeHandler = function() {
+		curScriptEditor = scriptEditorModule.CreateEditor(dialogStr);
+		curScriptEditor.OnChangeHandler = function() {
 			// TODO... respond to changes (needs to handle all cases, such as deletion!)
 			console.log("CHANGE!!!!");
-			console.log(editor.Serialize());
-			dialog[getCurDialogId()] = editor.Serialize();
+			console.log(curScriptEditor.Serialize());
+			dialog[getCurDialogId()] = curScriptEditor.Serialize();
 			refreshGameData();
 		};
-		dialogFormDiv.appendChild(editor.GetElement());
+		dialogFormDiv.appendChild(curScriptEditor.GetElement());
 	}
 	else {
 		document.getElementById("dialogEditorHasContent").style.display = "none";
 		document.getElementById("dialogEditorNoContent").style.display = "block";
+	}
+}
+
+// TODO -- very much WIP (including the function name)
+function addDialogBlock() {
+	if (curScriptEditor != null) {
+		var dialogNodeEditor = new DialogNodeEditor([scriptUtils.CreateEmptyPrintFunc()], curScriptEditor, false);
+		curScriptEditor.AppendChild(dialogNodeEditor);
+		// curScriptEditor.Refresh();
 	}
 }
 

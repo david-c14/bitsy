@@ -1,7 +1,9 @@
 /*
 - TODO
-	- add / remove nodes
-	- move nodes (by dragging them)
+	- add nodes
+	X remove nodes
+	X move nodes
+	- drag nodes
 	X make nesting clear
 	- use real dialog renderer
 	- minimize / maximize blocks
@@ -12,11 +14,15 @@
 			- this could be improved probably
 	- figure out the bug w/ extra whitespace inside of sequences
 	- can I create HTML templates for the blocks? so I don't have to specify everything in code?
+	- swap order of items in sequence (and delete them)
+	- inter-block movement of nodes
+	- copy / cut / paste nodes
+	- "workbench" area? for non-attached, non-deleted nodes
 
 	change methods
 		X UpdateChild
 		X RemoveChild
-		- InsertChild
+		X InsertChild
 */
 
 // TODO : rename? factory?
@@ -121,7 +127,7 @@ function BlockNodeEditor(blockNode, parentNode, isEven) {
 
 		childEditors = beforeInsert.concat([childEditor]).concat(afterInsert);
 
-		console.log(childEditors);
+		// console.log(childEditors);
 
 		UpdateNodeChildren();
 
@@ -134,6 +140,10 @@ function BlockNodeEditor(blockNode, parentNode, isEven) {
 		SendUpdateNotification();
 	}
 
+	this.AppendChild = function(childEditor) {
+		self.InsertChild(childEditor, childEditors.length);
+	}
+
 	function UpdateNodeChildren() {
 		var updatedChildren = [];
 		for (var i = 0; i < childEditors.length; i++) {
@@ -141,6 +151,8 @@ function BlockNodeEditor(blockNode, parentNode, isEven) {
 		}
 
 		blockNode.children = updatedChildren;
+
+		console.log(updatedChildren);
 	}
 
 	function SendUpdateNotification() {
@@ -152,6 +164,15 @@ function BlockNodeEditor(blockNode, parentNode, isEven) {
 			self.OnChangeHandler();
 		}
 	}
+
+	// this.Refresh = function() {
+	// 	UpdateNodeChildren();
+
+	// 	self.div.innerHTML = ""; // inefficient?
+	// 	InitChildEditors(self.div);
+
+	// 	SendUpdateNotification();
+	// }
 
 	this.RequiresFullRefresh = function() {
 		return false;
