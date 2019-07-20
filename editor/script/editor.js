@@ -1568,6 +1568,16 @@ function addDialogBlock() {
 	}
 }
 
+// ALSO WIP
+function addSequenceBlock() {
+	if (curScriptEditor != null) {
+		var sequenceNode = scriptUtils.CreateSequenceNode();
+		console.log(sequenceNode);
+		var sequenceNodeEditor = new SequenceNodeEditor(sequenceNode, curScriptEditor, false);
+		curScriptEditor.AppendChild(sequenceNodeEditor);
+	}
+}
+
 function reloadSprite() {
 	// animation UI
 	if ( sprite[drawing.id] && sprite[drawing.id].animation.isAnimated ) {

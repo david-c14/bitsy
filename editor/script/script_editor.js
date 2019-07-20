@@ -1,6 +1,10 @@
 /*
 - TODO
 	- add nodes
+		X dialog
+		- sequence
+		- cycle
+		- shuffle
 	X remove nodes
 	X move nodes
 	- drag nodes
@@ -23,6 +27,17 @@
 		X UpdateChild
 		X RemoveChild
 		X InsertChild
+
+NOTES
+I could create a dialog block by doing post-processing of the nodes in each block
+	- this would simplify some of the UI code
+how do I treat the merging of dialog blocks? automatic? (sort of how it is now?) something you have to do on purpose?
+blocks and nodes and editors oh my! need to sort out my terminology!!!
+- having to assign parent node and is even at construction is a bit of a pain!! especially since those things need to change if the node moves...
+- need to fix fucked up spacing with re-serialization of sequences
+- need to be able to up / down / delete options in a sequence
+- need to be able to insert actions, not just add them at the end
+- need to be able to "pop out" nodes to a higher level (is dragging the best way to do this? cut and paste?)
 */
 
 // TODO : rename? factory?
@@ -77,6 +92,9 @@ function BlockNodeEditor(blockNode, parentNode, isEven) {
 		}
 
 		AddGatheredDialogNodes(div);
+
+		// TODO : put add butotn here if it's empty
+		hackyAddButton();
 	}
 
 	this.Serialize = function() {
@@ -109,6 +127,17 @@ function BlockNodeEditor(blockNode, parentNode, isEven) {
 		UpdateNodeChildren();
 
 		SendUpdateNotification();
+
+		// hacky as fuck -- just a temp prototype
+		hackyAddButton();
+	}
+
+	function hackyAddButton() {
+		if (blockNode.children.length <= 0 ) {
+			var addButton = document.createElement("button");
+			addButton.innerText = "add action";
+			self.div.appendChild(addButton);
+		}
 	}
 
 	this.IndexOfChild = function(childEditor) {
@@ -336,6 +365,7 @@ function SequenceNodeEditor(sequenceNode, parentNode, isEven) {
 	}
 }
 
+// TODO -- I think this was premature abstraction... probably need to refactor everything again!
 function NodeEditorBase(isEven) {
 	this.div = document.createElement("div");
 	this.div.classList.add(isEven ? "scriptNodeEven" : "scriptNodeOdd");

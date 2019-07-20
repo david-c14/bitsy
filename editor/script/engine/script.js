@@ -134,6 +134,14 @@ var Utils = function() {
 		return oldSequence;
 	}
 
+	this.CreateSequenceNode = function() {
+		var option1 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
+		var option2 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
+		var sequence = new SequenceNode( [ option1, option2 ] );
+		return sequence;
+	}
+
+	// TODO -- remove soon
 	this.CreateSequenceBlock = function() {
 		var option1 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
 		var option2 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
