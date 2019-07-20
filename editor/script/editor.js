@@ -1530,7 +1530,7 @@ function reloadAdvDialogUI() {
 		document.getElementById("dialogEditorNoContent").style.display = "none";
 
 		var dialogStr = document.getElementById("dialogText").value;
-		document.getElementById("dialogCodeText").value = dialogStr;
+		// document.getElementById("dialogCodeText").value = dialogStr;
 
 		// OLD STUFF
 		// var scriptTree = scriptInterpreter.Parse( dialogStr );
@@ -1562,7 +1562,7 @@ function reloadAdvDialogUI() {
 // TODO -- very much WIP (including the function name)
 function addDialogBlock() {
 	if (curScriptEditor != null) {
-		var dialogNodeEditor = new DialogNodeEditor([scriptUtils.CreateEmptyPrintFunc()], curScriptEditor, false);
+		var dialogNodeEditor = new DialogNodeEditor([scriptUtils.CreateEmptyPrintFunc()], curScriptEditor);
 		curScriptEditor.AppendChild(dialogNodeEditor);
 		// curScriptEditor.Refresh();
 	}
@@ -1573,7 +1573,7 @@ function addSequenceBlock() {
 	if (curScriptEditor != null) {
 		var sequenceNode = scriptUtils.CreateSequenceNode();
 		console.log(sequenceNode);
-		var sequenceNodeEditor = new SequenceNodeEditor(sequenceNode, curScriptEditor, false);
+		var sequenceNodeEditor = new SequenceNodeEditor(sequenceNode, curScriptEditor);
 		curScriptEditor.AppendChild(sequenceNodeEditor);
 	}
 }

@@ -444,7 +444,7 @@ input {
 }
 
 #advDialogViewport {
-	padding: 12px;
+	/*padding: 12px;*/
 	/*width:340px;*/
 	min-width: 340px;
 	height:450px;

@@ -44,13 +44,13 @@ blocks and nodes and editors oh my! need to sort out my terminology!!!
 function ScriptEditor() {
 	this.CreateEditor = function(scriptStr) {
 		var scriptRootNode = scriptInterpreter.Parse( scriptStr );
-		return new BlockNodeEditor(scriptRootNode, null, true);
+		return new BlockNodeEditor(scriptRootNode, null);
 	}
 } // ScriptEditor
 
 // TODO : name? editor or viewer? or something else?
-function BlockNodeEditor(blockNode, parentNode, isEven) {
-	Object.assign( this, new NodeEditorBase(isEven) );
+function BlockNodeEditor(blockNode, parentNode) {
+	Object.assign( this, new NodeEditorBase() );
 
 	this.div.classList.add("blockNode");
 
@@ -66,7 +66,7 @@ function BlockNodeEditor(blockNode, parentNode, isEven) {
 		var dialogNodeList = [];
 		function AddGatheredDialogNodes(div) {
 			if (dialogNodeList.length > 0) {
-				var dialogNodeEditor = new DialogNodeEditor(dialogNodeList, self, isEven);
+				var dialogNodeEditor = new DialogNodeEditor(dialogNodeList, self);
 				div.appendChild(dialogNodeEditor.GetElement());
 
 				dialogNodeList = [];
@@ -80,7 +80,7 @@ function BlockNodeEditor(blockNode, parentNode, isEven) {
 			if (childNode.type === "sequence" || childNode.type === "cycle" || childNode.type === "shuffle") {
 				AddGatheredDialogNodes(div);
 
-				var sequenceNodeEditor = new SequenceNodeEditor(childNode, self, isEven);
+				var sequenceNodeEditor = new SequenceNodeEditor(childNode, self);
 				div.appendChild(sequenceNodeEditor.GetElement());
 
 				childEditors.push(sequenceNodeEditor);
@@ -212,8 +212,8 @@ function BlockNodeEditor(blockNode, parentNode, isEven) {
 	InitChildEditors(this.div);
 }
 
-function DialogNodeEditor(dialogNodeList, parentNode, isEven) {
-	Object.assign( this, new NodeEditorBase(isEven) );
+function DialogNodeEditor(dialogNodeList, parentNode) {
+	Object.assign( this, new NodeEditorBase() );
 	// Object.assign( this, new SelectableElement(this) );
 
 	this.div.classList.add("dialogNode");
@@ -296,8 +296,8 @@ function DialogNodeEditor(dialogNodeList, parentNode, isEven) {
 	}
 }
 
-function SequenceNodeEditor(sequenceNode, parentNode, isEven) {
-	Object.assign( this, new NodeEditorBase(isEven) );
+function SequenceNodeEditor(sequenceNode, parentNode) {
+	Object.assign( this, new NodeEditorBase() );
 	// Object.assign( this, new SelectableElement(this) );
 
 	this.div.classList.add("sequenceNode");
@@ -345,7 +345,7 @@ function SequenceNodeEditor(sequenceNode, parentNode, isEven) {
 
 	for (var i = 0; i < sequenceNode.options.length; i++) {
 		var optionBlockNode = sequenceNode.options[i];
-		var optionBlockNodeEditor = new BlockNodeEditor(optionBlockNode, this, !isEven);
+		var optionBlockNodeEditor = new BlockNodeEditor(optionBlockNode, this);
 		this.div.appendChild(optionBlockNodeEditor.GetElement());
 	}
 
@@ -366,9 +366,9 @@ function SequenceNodeEditor(sequenceNode, parentNode, isEven) {
 }
 
 // TODO -- I think this was premature abstraction... probably need to refactor everything again!
-function NodeEditorBase(isEven) {
+function NodeEditorBase() {
 	this.div = document.createElement("div");
-	this.div.classList.add(isEven ? "scriptNodeEven" : "scriptNodeOdd");
+	// this.div.classList.add(isEven ? "scriptNodeEven" : "scriptNodeOdd");
 
 	this.GetElement = function() {
 		return this.div;
