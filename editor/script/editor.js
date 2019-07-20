@@ -1559,25 +1559,6 @@ function reloadAdvDialogUI() {
 	}
 }
 
-// TODO -- very much WIP (including the function name)
-function addDialogBlock() {
-	if (curScriptEditor != null) {
-		var dialogNodeEditor = new DialogNodeEditor([scriptUtils.CreateEmptyPrintFunc()], curScriptEditor);
-		curScriptEditor.AppendChild(dialogNodeEditor);
-		// curScriptEditor.Refresh();
-	}
-}
-
-// ALSO WIP
-function addSequenceBlock() {
-	if (curScriptEditor != null) {
-		var sequenceNode = scriptUtils.CreateSequenceNode();
-		console.log(sequenceNode);
-		var sequenceNodeEditor = new SequenceNodeEditor(sequenceNode, curScriptEditor);
-		curScriptEditor.AppendChild(sequenceNodeEditor);
-	}
-}
-
 function reloadSprite() {
 	// animation UI
 	if ( sprite[drawing.id] && sprite[drawing.id].animation.isAnimated ) {

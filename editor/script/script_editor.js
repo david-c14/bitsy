@@ -38,6 +38,8 @@ blocks and nodes and editors oh my! need to sort out my terminology!!!
 - need to be able to up / down / delete options in a sequence
 - need to be able to insert actions, not just add them at the end
 - need to be able to "pop out" nodes to a higher level (is dragging the best way to do this? cut and paste?)
+
+IDEA: hidden iframe containing templates for all the nodes types, etc.!
 */
 
 // TODO : rename? factory?
@@ -93,8 +95,7 @@ function BlockNodeEditor(blockNode, parentNode) {
 
 		AddGatheredDialogNodes(div);
 
-		// TODO : put add butotn here if it's empty
-		hackyAddButton();
+		var actionBuilder = new ActionBuilder(self);
 	}
 
 	this.Serialize = function() {
@@ -127,17 +128,6 @@ function BlockNodeEditor(blockNode, parentNode) {
 		UpdateNodeChildren();
 
 		SendUpdateNotification();
-
-		// hacky as fuck -- just a temp prototype
-		hackyAddButton();
-	}
-
-	function hackyAddButton() {
-		if (blockNode.children.length <= 0 ) {
-			var addButton = document.createElement("button");
-			addButton.innerText = "add action";
-			self.div.appendChild(addButton);
-		}
 	}
 
 	this.IndexOfChild = function(childEditor) {
@@ -167,6 +157,8 @@ function BlockNodeEditor(blockNode, parentNode) {
 		}
 
 		SendUpdateNotification();
+
+		var actionBuilder = new ActionBuilder(self);
 	}
 
 	this.AppendChild = function(childEditor) {
@@ -193,15 +185,6 @@ function BlockNodeEditor(blockNode, parentNode) {
 			self.OnChangeHandler();
 		}
 	}
-
-	// this.Refresh = function() {
-	// 	UpdateNodeChildren();
-
-	// 	self.div.innerHTML = ""; // inefficient?
-	// 	InitChildEditors(self.div);
-
-	// 	SendUpdateNotification();
-	// }
 
 	this.RequiresFullRefresh = function() {
 		return false;
@@ -374,5 +357,36 @@ function NodeEditorBase() {
 }
 
 function ActionBuilder(parentBlock) {
+	var actionBuilderTemplate = document.getElementById("actionBuilderTemplate");
 
+	parentBlock.div.appendChild(actionBuilderTemplate.content.cloneNode(true));
+
+	// console.log(actionBuilderDiv);
+	var actionBuilderNodes = parentBlock.div.querySelectorAll(".actionBuilder");
+	var actionBuilderDiv = actionBuilderNodes[actionBuilderNodes.length - 1];
+
+	var addButton = actionBuilderDiv.querySelector(".actionBuilderAdd");
+	addButton.onclick = function() {
+		actionBuilderDiv.classList.add("actionBuilderActive");
+	}
+
+	var cancelButton = actionBuilderDiv.querySelector(".actionBuilderCancel");
+	cancelButton.onclick = function() {
+		actionBuilderDiv.classList.remove("actionBuilderActive");
+	}
+
+	var addDialogButton = actionBuilderDiv.querySelector(".actionBuilderAddDialog");
+	addDialogButton.onclick = function() {
+		var dialogNodeEditor = new DialogNodeEditor([scriptUtils.CreateEmptyPrintFunc()], parentBlock);
+		parentBlock.AppendChild(dialogNodeEditor);
+	}
+
+	var addSequenceButton = actionBuilderDiv.querySelector(".actionBuilderAddSequence");
+	addSequenceButton.onclick = function() {
+		var sequenceNode = scriptUtils.CreateSequenceNode();
+		var sequenceNodeEditor = new SequenceNodeEditor(sequenceNode, parentBlock);
+		parentBlock.AppendChild(sequenceNodeEditor);
+	}
+
+	// console.log(addButton);
 }

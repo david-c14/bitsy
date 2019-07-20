@@ -457,12 +457,12 @@ input {
 	resize: both;
 }
 
-#advDialogViewport .controlBox {
+/*#advDialogViewport .controlBox {
 	margin-bottom: 5px;
 	border: solid 1px #6767b2;
 	padding: 10px;
 	line-height: 170%;
-}
+}*/
 
 #dialogCodeText {
 	width: 340px;
