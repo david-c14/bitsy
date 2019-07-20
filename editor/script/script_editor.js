@@ -214,7 +214,6 @@ function BlockNodeEditor(blockNode, parentNode) {
 
 function DialogNodeEditor(dialogNodeList, parentNode) {
 	Object.assign( this, new NodeEditorBase() );
-	// Object.assign( this, new SelectableElement(this) );
 
 	this.div.classList.add("dialogNode");
 
@@ -298,7 +297,6 @@ function DialogNodeEditor(dialogNodeList, parentNode) {
 
 function SequenceNodeEditor(sequenceNode, parentNode) {
 	Object.assign( this, new NodeEditorBase() );
-	// Object.assign( this, new SelectableElement(this) );
 
 	this.div.classList.add("sequenceNode");
 
@@ -375,47 +373,6 @@ function NodeEditorBase() {
 	}
 }
 
-// TODO : work in progress
-var lastSelectedScriptNode = null; // hacky global
-function SelectableElement(base) {
-	var self = this; // I hate doing this..
+function ActionBuilder(parentBlock) {
 
-	base.div.classList.add("scriptNodeSelectable");
-
-	base.div.onclick = function(event) {
-		if (lastSelectedScriptNode != null) {
-			lastSelectedScriptNode.Deselect();
-		}
-
-		base.div.classList.add("scriptNodeSelected");
-
-		// window.addEventListener("keypress", OnKeyPress);
-		// window.addEventListener("keydown", OnKeyDown);
-		// window.addEventListener("keyup", OnKeyUp);
-
-		lastSelectedScriptNode = self;
-
-		event.stopPropagation();
-	}
-
-	this.Deselect = function() {
-		base.div.classList.remove("scriptNodeSelected");
-		// window.removeEventListener("keypress", OnKeyPress);
-		// window.removeEventListener("keydown", OnKeyDown);
-		// window.removeEventListener("keyup", OnKeyUp);
-	}
-
-	// var OnKeyPress = function(event) {
-	// 	event.preventDefault();
-	// }
-
-	// ONLY NEED THIS ONE REALLY
-	// var OnKeyDown = function(event) {
-	// 	event.preventDefault();
-	// 	console.log(event);
-	// }
-
-	// var OnKeyUp = function(event) {
-	// 	event.preventDefault();
-	// }
 }
