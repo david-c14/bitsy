@@ -5,9 +5,14 @@ var ctx;
 
 var title = "";
 var room = {};
+
 var tile = {};
 var sprite = {};
 var item = {};
+
+// TODO : THIS will replace tile, sprite, and item
+var object = {};
+
 var dialog = {};
 var palette = { //start off with a default palette
 		"default" : {
@@ -1174,17 +1179,20 @@ function parseWorld(file) {
 		else if (getType(curLine) === "ROOM" || getType(curLine) === "SET") { //SET for back compat
 			i = parseRoom(lines, i);
 		}
-		else if (getType(curLine) === "TIL") {
-			i = parseTile(lines, i);
-		}
-		else if (getType(curLine) === "SPR") {
-			i = parseSprite(lines, i);
-		}
-		else if (getType(curLine) === "ITM") {
-			i = parseItem(lines, i);
-		}
-		else if (getType(curLine) === "DRW") {
-			i = parseDrawing(lines, i);
+		// else if (getType(curLine) === "TIL") {
+		// 	i = parseTile(lines, i);
+		// }
+		// else if (getType(curLine) === "SPR") {
+		// 	i = parseSprite(lines, i);
+		// }
+		// else if (getType(curLine) === "ITM") {
+		// 	i = parseItem(lines, i);
+		// }
+		// else if (getType(curLine) === "DRW") {
+		// 	i = parseDrawing(lines, i);
+		// }
+		else if (getType(curLine) === "TIL" || getType(curLine) === "SPR" || getType(curLine) === "ITM") {
+			i = parseObject(lines, i, getType(curLine));
 		}
 		else if (getType(curLine) === "DLG") {
 			i = parseDialog(lines, i);
@@ -1727,6 +1735,34 @@ function parsePalette(lines,i) { //todo this has to go first right now :(
 		name : name,
 		colors : colors
 	};
+	return i;
+}
+
+// TODO : pick up here..
+function parseObject(lines, i, type) {
+	var id = getId(lines[i]);
+
+	// hack to stop freezing
+	i++;
+	while (i < lines.length && lines[i].length > 0) {
+		i++;
+	} 
+
+	// TODO : handle POS from sprites.. add to the room sprite info
+
+	// object data
+	object[id] = {
+		id: null, // unique ID
+		type: type, // default behavior: is it a sprite, item, or tile?
+		name : null, // user-supplied name
+		drw: null, // drawing ID
+		col: null, // color index
+		animation : null, // animation data (this may need to vary per instance)
+		inventory : null, // starting inventory (player only)
+		actions : null, // scripts (should tiles execute them? I'm tempted to say no to maintain seperation from foreground)
+		isWall : null, // wall tile? (tile only)
+	};
+
 	return i;
 }
 
