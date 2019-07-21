@@ -1217,9 +1217,8 @@ function newRoom() {
 		walls : [],
 		exits : [],
 		endings : [],
-		effects : [],
 		pal : palId,
-		items : []
+		objects : [],
 	};
 	refreshGameData();
 

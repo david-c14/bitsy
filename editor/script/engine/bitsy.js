@@ -1320,15 +1320,6 @@ function serializeWorld(skipFonts) {
 				worldStr += "\n";
 			}
 		}
-		// TODO : vNext
-		// if (room[id].effects.length > 0) {
-		// 	/* EFFECTS */
-		// 	for (j in room[id].effects) {
-		// 		var e = room[id].effects[j];
-		// 		worldStr += "EFF " + e.id + " " + e.x + "," + e.y;
-		// 		worldStr += "\n";
-		// 	}
-		// }
 		if (room[id].pal != null && room[id].pal != "default") {
 			/* PALETTE */
 			worldStr += "PAL " + room[id].pal + "\n";
@@ -1376,6 +1367,8 @@ function serializeWorld(skipFonts) {
 				worldStr += "ITM " + itemId + " " + object[id].inventory[itemId] + "\n";
 			}
 		}
+
+		worldStr += "\n";
 	}
 	/* DIALOG */
 	for (id in dialog) {
@@ -1624,7 +1617,9 @@ function fixupOldObjectIds() {
 		for (var y = 0; y < mapsize; y++) {
 			for (var x = 0; x < mapsize; x++) {
 				var oldTileId = room[id].tilemap[y][x];
-				room[id].tilemap[y][x] = backCompatObjectIDs.TIL[oldTileId];
+				if (oldTileId != "0") {
+					room[id].tilemap[y][x] = backCompatObjectIDs.TIL[oldTileId];
+				}
 			}
 		}
 
@@ -1651,6 +1646,7 @@ function parseObject(lines, i, type, versionNumber) {
 	// need to de-dupe IDs from old versions and store it for later fixup operations (this might get nasty)
 	if (versionNumber < 7) {
 		var oldId = id;
+		// TODO ... instead of doing this gross underscore stuff.. why don't I just keep a count of new objects and assign new IDs that way
 		id = id === "A" ? id : type + "_" + oldId;
 		backCompatObjectIDs[type][oldId] = id;
 	}
@@ -1740,6 +1736,7 @@ function parseObject(lines, i, type, versionNumber) {
 			frameCount : renderer.GetFrameCount(drwId),
 		},
 		inventory : startingInventory, // starting inventory (player only)
+		dlg : dialogId, // TODO : do I want to consolidate these with the actions?
 		actions : actions, // scripts (should tiles execute them? I'm tempted to say no to maintain seperation from foreground)
 		isWall : isWall, // wall tile? (tile only)
 	};
