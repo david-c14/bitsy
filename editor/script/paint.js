@@ -1,7 +1,11 @@
 /*
 	PAINT
+
+TODO :
+- create a select drawing event
+- can I remove the reference to the room tool??
 */
-function PaintTool(canvas, roomTool) {
+function PaintTool(canvas) {
 	// TODO : variables
 	var self = this; // feels a bit hacky
 
@@ -13,10 +17,14 @@ function PaintTool(canvas, roomTool) {
 	this.drawPaintGrid = true;
 
 	// engine object
-	var curDrawingId = "A"; // TODO.. change this later?
+	var curDrawingId = "A"; // TODO.. change this initial ID later?
 	this.GetCurDrawing = function() {
 		return object[curDrawingId];
 	}
+	events.Listen("select_drawing", function(event) {
+		curDrawingId = event.id;
+		// TODO... what else needs to go here?
+	});
 
 	// renderer object access
 	var imageSource = null;
@@ -25,7 +33,7 @@ function PaintTool(canvas, roomTool) {
 			return;
 		}
 
-		imageSource = (renderer.GetImageSource(self.GetCurDrawing().drw).slice();
+		imageSource = (renderer.GetImageSource(self.GetCurDrawing()).drw).slice();
 	}
 	function UpdateImageSource() {
 		if (imageSource === null || imageSource === undefined) {

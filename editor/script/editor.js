@@ -554,9 +554,6 @@ var editMode = EditMode.Edit; // TODO : move to core.js?
 var roomTool;
 var paintTool;
 
-/* CUR DRAWING */
-var drawing = new DrawingId(TileType.Avatar,"A");
-
 var tileIndex = 0;
 var spriteIndex = 0;
 var itemIndex = 0;
@@ -758,11 +755,10 @@ function start() {
 	//init tool controllers
 	roomTool = new RoomTool(canvas);
 	roomTool.listenEditEvents()
-	roomTool.drawing = drawing;
 	roomTool.editDrawingAtCoordinateCallback = editDrawingAtCoordinate;
 
-	paintTool = new PaintTool(document.getElementById("paint"),roomTool);
-	paintTool.drawing = drawing;
+	paintTool = new PaintTool(document.getElementById("paint"));
+	// TODO.. get rid of these..
 	paintTool.onReloadTile = function(){ reloadTile() };
 	paintTool.onReloadSprite = function(){ reloadSprite() };
 	paintTool.onReloadItem = function(){ reloadItem() };
@@ -850,8 +846,8 @@ function start() {
 
 	// init paint explorer
 	paintExplorer = new PaintExplorer("paintExplorer",selectPaint);
-	paintExplorer.Refresh(TileType.Avatar);
-	paintExplorer.ChangeSelection("A");
+	paintExplorer.Refresh(TileType.Avatar); // TODO : remove this
+	paintExplorer.ChangeSelection("A"); // TODO : remove this too!
 	paintTool.explorer = paintExplorer;
 	paintExplorer.SetDisplayCaptions( true );
 
@@ -929,6 +925,9 @@ function start() {
 	// }
 
 	initLanguageOptions();
+
+	// TODO... this might not work as the default ID forever
+	events.Raise("select_drawing", {id:"A"});
 }
 
 function newDrawing() {
