@@ -923,12 +923,11 @@ function movePlayer(direction) {
 
 	// do items first, because you can pick up an item AND go through a door
 	if (itmIndex > -1) {
-		// TODO pick up items (what about touch?)
 		// console.log("HIT ITM ");
 		// console.log( itmIndex );
-		var itm = room[ player().room ].items[ itmIndex ];
+		var itm = room[ player().room ].objects[ itmIndex ];
 		// console.log(itm);
-		room[ player().room ].items.splice( itmIndex, 1 );
+		room[ player().room ].objects.splice( itmIndex, 1 );
 		if( player().inventory[ itm.id ] ) {
 			player().inventory[ itm.id ] += 1;
 		}
