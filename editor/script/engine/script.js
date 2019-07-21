@@ -33,16 +33,13 @@ var Interpreter = function() {
 	this.Run = function(scriptName, exitHandler, object) { // Runs pre-compiled script
 		// console.log("RUN");
 		// console.log(env.GetScript( scriptName ));
-		env.SetObject(object);
 
-		env.GetScript( scriptName )
-			.Eval(env,
-				function(result) {
-					OnScriptReturn(result, exitHandler);
+		var localEnv = new LocalEnvironment(env);
+		localEnv.SetObject(object);
 
-					// TODO : this will CLEARLY cause problems when multiple scripts run at the same time!!!
-					env.ClearObject();
-				});
+		var script = env.GetScript(scriptName);
+
+		script.Eval(localEnv, function(result) { OnScriptReturn(result, exitHandler); });
 
 		// console.log("SERIALIZE!!!!");
 		// console.log( env.GetScript( scriptName ).Serialize() );
@@ -50,16 +47,13 @@ var Interpreter = function() {
 	this.Interpret = function(scriptStr, exitHandler, object) { // Compiles and runs code immediately
 		// console.log("INTERPRET");
 		// console.log(scriptStr);
+		var localEnv = new LocalEnvironment(env);
+		localEnv.SetObject(object);
+
 		var script = parser.Parse( scriptStr );
 		// console.log(script);
 
-		env.SetObject(object);
-
-		script.Eval(env,
-			function(result) {
-				OnScriptReturn(result, exitHandler);
-				env.ClearObject();
-			});
+		script.Eval(localEnv, function(result) { OnScriptReturn(result, exitHandler); });
 	}
 	this.HasScript = function(name) { return env.HasScript(name); };
 
@@ -474,6 +468,7 @@ function subExp(environment,left,right,onReturn) {
 }
 
 /* ENVIRONMENT */
+// Global environment storing global variables, functions, operators, and scripts
 var Environment = function() {
 	var dialogBuffer = null;
 	this.SetDialogBuffer = function(buffer) { dialogBuffer = buffer; };
@@ -502,10 +497,12 @@ var Environment = function() {
 	// functionMap.set("return", returnFunc);
 
 	this.HasFunction = function(name) { return functionMap.has(name); };
-	this.EvalFunction = function(name,parameters,onReturn) {
-		// console.log(functionMap);
-		// console.log(name);
-		functionMap.get( name )( this, parameters, onReturn );
+	this.EvalFunction = function(name,parameters,onReturn,env) {
+		if (env == undefined || env == null) {
+			env = this;
+		}
+
+		functionMap.get( name )( env, parameters, onReturn );
 	}
 
 	var variableMap = new Map();
@@ -550,8 +547,12 @@ var Environment = function() {
 	operatorMap.set("-", subExp);
 
 	this.HasOperator = function(sym) { return operatorMap.get(sym); };
-	this.EvalOperator = function(sym,left,right,onReturn) {
-		operatorMap.get( sym )( this, left, right, onReturn );
+	this.EvalOperator = function(sym,left,right,onReturn,env) {
+		if (env == undefined || env == null) {
+			env = this;
+		}
+
+		operatorMap.get( sym )( env, left, right, onReturn );
 	}
 
 	var scriptMap = new Map();
@@ -566,12 +567,50 @@ var Environment = function() {
 	this.GetVariableNames = function() {
 		return Array.from( variableMap.keys() );
 	}
+}
 
+// Local environment for a single run of a script: knows what object triggered the script (if any)
+var LocalEnvironment = function(parentEnvironment) {
+	// this.SetDialogBuffer // not allowed in local environment?
+	this.GetDialogBuffer = function() { return parentEnvironment.GetDialogBuffer(); };
+
+	this.HasFunction = function(name) { return parentEnvironment.HasFunction(name); };
+	this.EvalFunction = function(name,parameters,onReturn,env) {
+		if (env == undefined || env == null) {
+			env = this;
+		}
+
+		parentEnvironment.EvalFunction(name,parameters,onReturn,env);
+	}
+
+	this.HasVariable = function(name) { return parentEnvironment.HasVariable(name); };
+	this.GetVariable = function(name) { return parentEnvironment.GetVariable(name); };
+	this.SetVariable = function(name,value,useHandler) { parentEnvironment.SetVariable(name,value,useHandler); };
+	// this.DeleteVariable // not needed in local environment?
+
+	this.HasOperator = function(sym) { return parentEnvironment.HasOperator(sym); };
+	this.EvalOperator = function(sym,left,right,onReturn,env) {
+		if (env == undefined || env == null) {
+			env = this;
+		}
+
+		parentEnvironment.EvalOperator(sym,left,right,onReturn,env);
+	};
+
+	// TODO : I don't *think* any of this is required by the local environment
+	// this.HasScript
+	// this.GetScript
+	// this.SetScript
+
+	// TODO : pretty sure these debug methods aren't required by the local environment either
+	// this.SetOnVariableChangeHandler
+	// this.GetVariableNames
+
+	// This is the only special part of the local environment (for now); it knows what object called it
 	var curObject = null;
 	this.HasObject = function() { return curObject != undefined && curObject != null; }
 	this.SetObject = function(object) { curObject = object; }
 	this.GetObject = function() { return curObject; }
-	this.ClearObject = function() { curObject = null; }
 }
 
 function leadingWhitespace(depth) {
