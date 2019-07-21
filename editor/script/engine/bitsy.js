@@ -2267,7 +2267,8 @@ function startNarrating(dialogStr,end) {
 }
 
 function startItemDialog(itemId) {
-	var dialogId = item[itemId].dlg;
+	var itm = item[itemId];
+	var dialogId = itm.dlg;
 	// console.log("START ITEM DIALOG " + dialogId);
 	if(dialog[dialogId]){
 		var dialogStr = dialog[dialogId];
@@ -2281,15 +2282,15 @@ function startSpriteDialog(spriteId) {
 	// console.log("START SPRITE DIALOG " + dialogId);
 	if(dialog[dialogId]){
 		var dialogStr = dialog[dialogId];
-		startDialog(dialogStr,dialogId);
+		startDialog(dialogStr,dialogId,spr);
 	}
 }
 
-function startDialog(dialogStr,scriptId,dialogCallback) {
+function startDialog(dialogStr,scriptId,object) {
 	// console.log("START DIALOG ");
 	if(dialogStr.length <= 0) {
 		// console.log("ON EXIT DIALOG -- startDialog 1");
-		onExitDialog(dialogCallback);
+		onExitDialog();
 		return;
 	}
 
@@ -2302,19 +2303,19 @@ function startDialog(dialogStr,scriptId,dialogCallback) {
 
 	var onScriptEnd = function(scriptResult) {
 		dialogBuffer.OnDialogEnd(function() {
-			onExitDialog(scriptResult, dialogCallback);
+			onExitDialog(scriptResult);
 		});
 	};
 
 	if(scriptId === undefined) {
-		scriptInterpreter.Interpret( dialogStr, onScriptEnd );
+		scriptInterpreter.Interpret( dialogStr, onScriptEnd, object );
 	}
 	else {
 		if(!scriptInterpreter.HasScript(scriptId)) {
 			scriptInterpreter.Compile( scriptId, dialogStr );
 		}
 		scriptInterpreter.DebugVisualizeScriptTree(scriptId);
-		scriptInterpreter.Run( scriptId, onScriptEnd );
+		scriptInterpreter.Run( scriptId, onScriptEnd, object );
 	}
 
 }

@@ -30,21 +30,36 @@ var Interpreter = function() {
 		var script = parser.Parse( scriptStr );
 		env.SetScript( scriptName, script );
 	}
-	this.Run = function(scriptName, exitHandler) { // Runs pre-compiled script
+	this.Run = function(scriptName, exitHandler, object) { // Runs pre-compiled script
 		// console.log("RUN");
 		// console.log(env.GetScript( scriptName ));
+		env.SetObject(object);
+
 		env.GetScript( scriptName )
-			.Eval( env, function(result) { OnScriptReturn(result, exitHandler); } );
+			.Eval(env,
+				function(result) {
+					OnScriptReturn(result, exitHandler);
+
+					// TODO : this will CLEARLY cause problems when multiple scripts run at the same time!!!
+					env.ClearObject();
+				});
 
 		// console.log("SERIALIZE!!!!");
 		// console.log( env.GetScript( scriptName ).Serialize() );
 	}
-	this.Interpret = function(scriptStr, exitHandler) { // Compiles and runs code immediately
-		console.log("INTERPRET");
-		console.log(scriptStr);
+	this.Interpret = function(scriptStr, exitHandler, object) { // Compiles and runs code immediately
+		// console.log("INTERPRET");
+		// console.log(scriptStr);
 		var script = parser.Parse( scriptStr );
-		console.log(script);
-		script.Eval( env, function(result) { OnScriptReturn(result, exitHandler); } );
+		// console.log(script);
+
+		env.SetObject(object);
+
+		script.Eval(env,
+			function(result) {
+				OnScriptReturn(result, exitHandler);
+				env.ClearObject();
+			});
 	}
 	this.HasScript = function(name) { return env.HasScript(name); };
 
@@ -355,6 +370,23 @@ function shakyFunc(environment,parameters,onReturn) {
 	onReturn(null);
 }
 
+/* TODO NEW EXPERIMENTAL FUNCTIONS */
+function moveLeftFunc(environment,parameters,onReturn) {
+	if (environment.HasObject()) {
+		var object = environment.GetObject();
+		object.x -= 1;
+	}
+	onReturn(null);
+}
+
+function moveUpFunc(environment,parameters,onReturn) {
+	if (environment.HasObject()) {
+		var object = environment.GetObject();
+		object.y -= 1;
+	}
+	onReturn(null);
+}
+
 /* BUILT-IN OPERATORS */
 function setExp(environment,left,right,onReturn) {
 	// console.log("SET " + left.name);
@@ -461,6 +493,8 @@ var Environment = function() {
 	functionMap.set("printTile", printTileFunc);
 	functionMap.set("printItem", printItemFunc);
 	functionMap.set("debugOnlyPrintFont", printFontFunc); // DEBUG ONLY
+	functionMap.set("moveLeft", moveLeftFunc);
+	functionMap.set("moveUp", moveUpFunc);
 
 	// TODO : vNext
 	// functionMap.set("changeAvatar", changeAvatarFunc);
@@ -479,17 +513,26 @@ var Environment = function() {
 	this.GetVariable = function(name) { return variableMap.get(name); };
 	this.SetVariable = function(name,value,useHandler) {
 		// console.log("SET VARIABLE " + name + " = " + value);
-		if(useHandler === undefined) useHandler = true;
+		if (useHandler === undefined) {
+			useHandler = true;
+		}
+
 		variableMap.set(name, value);
-		if(onVariableChangeHandler != null && useHandler)
+
+		if (onVariableChangeHandler != null && useHandler) {
 			onVariableChangeHandler(name);
+		}
 	};
 	this.DeleteVariable = function(name,useHandler) {
-		if(useHandler === undefined) useHandler = true;
-		if(variableMap.has(name)) {
+		if (useHandler === undefined) {
+			useHandler = true;
+		}
+
+		if (variableMap.has(name)) {
 			variableMap.delete(name);
-			if(onVariableChangeHandler != null && useHandler)
+			if (onVariableChangeHandler != null && useHandler) {
 				onVariableChangeHandler(name);
+			}
 		}
 	};
 
@@ -522,6 +565,12 @@ var Environment = function() {
 	this.GetVariableNames = function() {
 		return Array.from( variableMap.keys() );
 	}
+
+	var curObject = null;
+	this.HasObject = function() { return curObject != undefined && curObject != null; }
+	this.SetObject = function(object) { curObject = object; }
+	this.GetObject = function() { return curObject; }
+	this.ClearObject = function() { curObject = null; }
 }
 
 function leadingWhitespace(depth) {
