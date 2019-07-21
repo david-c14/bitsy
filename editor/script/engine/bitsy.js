@@ -1372,71 +1372,47 @@ function serializeWorld(skipFonts) {
 		}
 		worldStr += "\n";
 	}
-	/* TILES */
-	for (id in tile) {
-		worldStr += "TIL " + id + "\n";
-		worldStr += serializeDrawing( "TIL_" + id );
-		if (tile[id].name != null && tile[id].name != undefined) {
+	/* OBJECTS */
+	for (id in object) {
+		// TODO : save out if it's the player avatar!
+
+		var type = object[id].type;
+		worldStr += type + " " + id + "\n";
+		worldStr += serializeDrawing("DRW_" + id);
+		if (object[id].name != null && object[id].name != undefined) {
 			/* NAME */
-			worldStr += "NAME " + tile[id].name + "\n";
+			worldStr += "NAME " + object[id].name + "\n";
 		}
-		if (tile[id].isWall != null && tile[id].isWall != undefined) {
+		if (object[id].col != null && object[id].col != undefined && tile[id].col != 1) {
+			var defaultColor = type === "TIL" ? 1 : 2;
+			if (object[id].col != defaultColor) {
+				/* COLOR OVERRIDE */
+				worldStr += "COL " + object[id].col + "\n";
+			}
+		}
+		if (type === "TIL" && object[id].isWall != null && object[id].isWall != undefined) {
 			/* WALL */
-			worldStr += "WAL " + tile[id].isWall + "\n";
+			worldStr += "WAL " + object[id].isWall + "\n";
 		}
-		if (tile[id].col != null && tile[id].col != undefined && tile[id].col != 1) {
-			/* COLOR OVERRIDE */
-			worldStr += "COL " + tile[id].col + "\n";
+		if (type != "TIL" && object[id].dlg != null) {
+			worldStr += "DLG " + object[id].dlg + "\n";
 		}
-		worldStr += "\n";
-	}
-	/* SPRITES */
-	for (id in sprite) {
-		worldStr += "SPR " + id + "\n";
-		worldStr += serializeDrawing( "SPR_" + id );
-		if (sprite[id].name != null && sprite[id].name != undefined) {
-			/* NAME */
-			worldStr += "NAME " + sprite[id].name + "\n";
-		}
-		if (sprite[id].dlg != null) {
-			worldStr += "DLG " + sprite[id].dlg + "\n";
-		}
-		if (sprite[id].room != null) {
-			/* SPRITE POSITION */
-			worldStr += "POS " + sprite[id].room + " " + sprite[id].x + "," + sprite[id].y + "\n";
-		}
-		if (sprite[id].inventory != null) {
-			for(itemId in sprite[id].inventory) {
-				worldStr += "ITM " + itemId + " " + sprite[id].inventory[itemId] + "\n";
+		if (type != "TIL" && object[id].actions != null && object[id].actions != undefined) {
+			for (var i = 0; i < object[id].actions.length; i++) {
+				worldStr += "ACT " + object[id].actions[i] + "\n";
 			}
 		}
-		if (sprite[id].col != null && sprite[id].col != undefined && sprite[id].col != 2) {
-			/* COLOR OVERRIDE */
-			worldStr += "COL " + sprite[id].col + "\n";
-		}
-		if (sprite[id].actions != null && sprite[id].actions != undefined) {
-			for (var i = 0; i < sprite[id].actions.length; i++) {
-				worldStr += "ACT " + sprite[id].actions[i] + "\n";
+		// TODO : implement this ONLY for player avatar!!
+		// if (sprite[id].room != null) {
+		// 	/* SPRITE POSITION */
+		// 	worldStr += "POS " + sprite[id].room + " " + sprite[id].x + "," + sprite[id].y + "\n";
+		// }
+		// TODO : check whether this is the player avatar!!
+		if (type === "SPR" && object[id].inventory != null) {
+			for(itemId in object[id].inventory) {
+				worldStr += "ITM " + itemId + " " + object[id].inventory[itemId] + "\n";
 			}
 		}
-		worldStr += "\n";
-	}
-	/* ITEMS */
-	for (id in item) {
-		worldStr += "ITM " + id + "\n";
-		worldStr += serializeDrawing( "ITM_" + id );
-		if (item[id].name != null && item[id].name != undefined) {
-			/* NAME */
-			worldStr += "NAME " + item[id].name + "\n";
-		}
-		if (item[id].dlg != null) {
-			worldStr += "DLG " + item[id].dlg + "\n";
-		}
-		if (item[id].col != null && item[id].col != undefined && item[id].col != 2) {
-			/* COLOR OVERRIDE */
-			worldStr += "COL " + item[id].col + "\n";
-		}
-		worldStr += "\n";
 	}
 	/* DIALOG */
 	for (id in dialog) {
@@ -1528,6 +1504,7 @@ function parseTitle(lines, i) {
 
 // TODO : store sprite locations
 // TODO : find a way to make ROOM_FORMAT 1 (comma separated) the default
+// TODO : add a second foreground layer for sprites and items
 function parseRoom(lines, i) {
 	var id = getId(lines[i]);
 	room[id] = {
