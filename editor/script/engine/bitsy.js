@@ -538,7 +538,21 @@ function update() {
 			dialogBuffer.Update( deltaTime );
 		}
 		else if (!isEnding) {
-			moveSprites(); // TODO : I probably need to remove this..
+			// moveSprites(); // TODO : I probably need to remove this..
+
+			// SUPER HACKY PROTOTYPE update sprite actions
+			if (animationCounter == 0) {
+				for (id in sprite) {
+					if (sprite[id].room === curRoom) {
+						for (var i = 0; i < sprite[id].actions.length; i++) {
+							// hacky!
+							var scriptId = sprite[id].actions[i];
+							var scriptStr = dialog[scriptId];
+							startDialog(scriptStr,scriptId,sprite[id]);
+						}
+					}
+				}
+			}
 		}
 
 		// keep moving avatar if player holds down button
@@ -547,8 +561,7 @@ function update() {
 			if( curPlayerDirection != Direction.None ) {
 				playerHoldToMoveTimer -= deltaTime;
 
-				if( playerHoldToMoveTimer <= 0 )
-				{
+				if( playerHoldToMoveTimer <= 0 ) {
 					movePlayer( curPlayerDirection );
 					playerHoldToMoveTimer = 150;
 				}
@@ -682,6 +695,7 @@ function resetAllAnimations() {
 	}
 }
 
+// TODO : remove this old nonsense!!!
 var moveCounter = 0;
 var moveTime = 200;
 function moveSprites() {
@@ -1467,6 +1481,11 @@ function serializeWorld(skipFonts) {
 			/* COLOR OVERRIDE */
 			worldStr += "COL " + sprite[id].col + "\n";
 		}
+		if (sprite[id].actions != null && sprite[id].actions != undefined) {
+			for (var i = 0; i < sprite[id].actions.length; i++) {
+				worldStr += "ACT " + sprite[id].actions[i] + "\n";
+			}
+		}
 		worldStr += "\n";
 	}
 	/* ITEMS */
@@ -1858,6 +1877,8 @@ function parseSprite(lines, i) {
 	var colorIndex = 2; //default palette color index is 2
 	var dialogId = null;
 	var startingInventory = {};
+	var actions = []; // TODO : hack
+
 	while (i < lines.length && lines[i].length > 0) { //look for empty line
 		if (getType(lines[i]) === "COL") {
 			/* COLOR OFFSET INDEX */
@@ -1888,6 +1909,9 @@ function parseSprite(lines, i) {
 			var itemCount = parseFloat( getArg(lines[i], 2) );
 			startingInventory[itemId] = itemCount;
 		}
+		else if (getType(lines[i]) === "ACT") {
+			actions.push(getId(lines[i]));
+		}
 		i++;
 	}
 
@@ -1907,7 +1931,8 @@ function parseSprite(lines, i) {
 			frameCount : renderer.GetFrameCount(drwId)
 		},
 		inventory : startingInventory,
-		name : name
+		name : name,
+		actions : actions,
 	};
 	return i;
 }
