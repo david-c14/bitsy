@@ -5,14 +5,7 @@ var ctx;
 
 var title = "";
 var room = {};
-
-var tile = {};
-var sprite = {};
-var item = {};
-
-// TODO : THIS will replace tile, sprite, and item
 var object = {};
-
 var dialog = {};
 var palette = { //start off with a default palette
 		"default" : {
@@ -69,8 +62,8 @@ function updateNamesFromCurData() {
 
 /* VERSION */
 var version = {
-	major: 6, // major changes
-	minor: 3 // smaller changes
+	major: 7, // major changes
+	minor: 0 // smaller changes
 };
 function getEngineVersion() {
 	return version.major + "." + version.minor;
@@ -1089,17 +1082,6 @@ function getEnding(roomId,x,y) {
 	return null;
 }
 
-// TODO : vNext
-// function getEffect(roomId,x,y) {
-// 	for (i in room[roomId].effects) {
-// 		var e = room[roomId].effects[i];
-// 		if (x == e.x && y == e.y) {
-// 			return e;
-// 		}
-// 	}
-// 	return null;
-// }
-
 function getTile(x,y) {
 	// console.log(x + " " + y);
 	var t = getRoom().tilemap[y][x];
@@ -1107,7 +1089,7 @@ function getTile(x,y) {
 }
 
 function player() {
-	return sprite[playerId];
+	return object[playerId];
 }
 
 // Sort of a hack for legacy palette code (when it was just an array)
@@ -1163,7 +1145,7 @@ function parseWorld(file) {
 			i = parseRoom(lines, i);
 		}
 		else if (getType(curLine) === "TIL" || getType(curLine) === "SPR" || getType(curLine) === "ITM") {
-			i = parseObject(lines, i, getType(curLine));
+			i = parseObject(lines, i, getType(curLine), versionNumber);
 		}
 		else if (getType(curLine) === "DLG") {
 			i = parseDialog(lines, i);
@@ -1193,6 +1175,10 @@ function parseWorld(file) {
 		else {
 			i++;
 		}
+	}
+
+	if (versionNumber < 7) {
+		fixupOldObjectIds();
 	}
 
 	var roomIds = Object.keys(room);
@@ -1300,11 +1286,11 @@ function serializeWorld(skipFonts) {
 			}
 			worldStr += "\n";
 		}
-		if (room[id].items.length > 0) {
-			/* ITEMS */
-			for (j in room[id].items) {
-				var itm = room[id].items[j];
-				worldStr += "ITM " + itm.id + " " + itm.x + "," + itm.y;
+		if (room[id].objects.length > 0) {
+			/* OBJECTS */
+			for (j in room[id].objects) {
+				var obj = room[id].objects[j];
+				worldStr += object[obj.id].type + " " + obj.id + " " + obj.x + "," + obj.y;
 				worldStr += "\n";
 			}
 		}
@@ -1360,7 +1346,7 @@ function serializeWorld(skipFonts) {
 			/* NAME */
 			worldStr += "NAME " + object[id].name + "\n";
 		}
-		if (object[id].col != null && object[id].col != undefined && tile[id].col != 1) {
+		if (object[id].col != null && object[id].col != undefined) {
 			var defaultColor = type === "TIL" ? 1 : 2;
 			if (object[id].col != defaultColor) {
 				/* COLOR OVERRIDE */
@@ -1628,11 +1614,46 @@ function parsePalette(lines,i) { //todo this has to go first right now :(
 	return i;
 }
 
+// TODO : do I need to reset this somewhere?
+var backCompatObjectIDs = { SPR : {}, TIL : {}, ITM : {} };
+function fixupOldObjectIds() {
+	// fixup rooms
+	for (var id in room) {
+		// replace tile IDs
+		var tilemap = room[id].tilemap;
+		for (var y = 0; y < mapsize; y++) {
+			for (var x = 0; x < mapsize; x++) {
+				var oldTileId = room[id].tilemap[y][x];
+				room[id].tilemap[y][x] = backCompatObjectIDs.TIL[oldTileId];
+			}
+		}
+
+		// replace item ids
+		for (var i = 0; i < room[id].objects.length; i++) {
+			var objInfo = room[id].objects[i];
+			var type = object[objInfo.id].type;
+			if (type === "ITM") {
+				objInfo.id = backCompatObjectIDs[type][objInfo.id];
+			}
+		}
+	}
+
+	// TODO : script fixup
+}
+
 // TODO : pick up here..
 // TODO : need a flag to determine if a sprite is the player
 // TODO : handle ID collisions from old versions (or keep the three ID systems???)
-function parseObject(lines, i, type) {
+function parseObject(lines, i, type, versionNumber) {
 	var id = getId(lines[i]);
+	i++;
+
+	// need to de-dupe IDs from old versions and store it for later fixup operations (this might get nasty)
+	if (versionNumber < 7) {
+		var oldId = id;
+		id = id === "A" ? id : type + "_" + oldId;
+		backCompatObjectIDs[type][oldId] = id;
+	}
 
 	// parse drawing
 	var drwId = "DRW_" + id;
@@ -1713,11 +1734,18 @@ function parseObject(lines, i, type) {
 		name : name, // user-supplied name
 		drw: drwId, // drawing ID
 		col: colorIndex, // color index
-		animation : null, // TODO: animation data (this may need to vary per instance)
+		animation : { // animation data // TODO: figure out how this works with instances
+			isAnimated : (renderer.GetFrameCount(drwId) > 1),
+			frameIndex : 0,
+			frameCount : renderer.GetFrameCount(drwId),
+		},
 		inventory : startingInventory, // starting inventory (player only)
 		actions : actions, // scripts (should tiles execute them? I'm tempted to say no to maintain seperation from foreground)
 		isWall : isWall, // wall tile? (tile only)
 	};
+
+	console.log("PARSE OBJECT " + id);
+	console.log(object[id]);
 
 	return i;
 }
