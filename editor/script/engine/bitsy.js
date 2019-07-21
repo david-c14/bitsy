@@ -199,8 +199,6 @@ function load_game(game_data, startWithTitle) {
 
 	setInitialVariables();
 
-	// setInterval(updateLoadingScreen, 300); // hack test
-
 	onready(startWithTitle);
 }
 
@@ -494,15 +492,6 @@ function loadingAnimation() {
 	//update frame
 	loading_anim_frame++;
 	if (loading_anim_frame >= 5) loading_anim_frame = 0;
-}
-
-function updateLoadingScreen() {
-	// TODO : in progress
-	ctx.fillStyle = "rgb(0,0,0)";
-	ctx.fillRect(0,0,canvas.width,canvas.height);
-
-	loadingAnimation();
-	drawSprite( getSpriteImage(sprite["a"],"0",0), 8, 8, ctx );
 }
 
 function update() {
@@ -1853,20 +1842,12 @@ function parseFlag(lines, i) {
 	return i;
 }
 
-function drawTile(img,x,y,context) {
+function drawObject(img,x,y,context) {
 	if (!context) { //optional pass in context; otherwise, use default
 		context = ctx;
 	}
 	// NOTE: images are now canvases, instead of raw image data (for chrome performance reasons)
 	context.drawImage(img,x*tilesize*scale,y*tilesize*scale,tilesize*scale,tilesize*scale);
-}
-
-function drawSprite(img,x,y,context) { //this may differ later (or not haha)
-	drawTile(img,x,y,context);
-}
-
-function drawItem(img,x,y,context) {
-	drawTile(img,x,y,context); //TODO these methods are dumb and repetitive
 }
 
 // var debugLastRoomDrawn = "0";
@@ -1903,44 +1884,24 @@ function drawRoom(room,context,frameIndex) { // context & frameIndex are optiona
 			var id = room.tilemap[i][j];
 			if (id != "0") {
 				//console.log(id);
-				if (tile[id] == null) { // hack-around to avoid corrupting files (not a solution though!)
+				if (object[id] == null) { // hack-around to avoid corrupting files (not a solution though!)
 					id = "0";
 					room.tilemap[i][j] = id;
 				}
 				else {
 					// console.log(id);
-					drawTile( getTileImage(tile[id],paletteId,frameIndex), j, i, context );
+					drawObject( renderer.GetImage(object[id],paletteId,frameIndex), j, i, context );
 				}
 			}
 		}
 	}
 
-	//draw items
-	for (var i = 0; i < room.items.length; i++) {
-		var itm = room.items[i];
-		drawItem( getItemImage(item[itm.id],paletteId,frameIndex), itm.x, itm.y, context );
+	// TODO : need to think about object instances..
+	//draw objects
+	for (var i = 0; i < room.objects.length; i++) {
+		var objInfo = room.objects[i];
+		drawObject( renderer.GetImage(object[objInfo.id],paletteId,frameIndex), objInfo.x, objInfo.y, context );
 	}
-
-	//draw sprites
-	for (id in sprite) {
-		var spr = sprite[id];
-		if (spr.room === room.id) {
-			drawSprite( getSpriteImage(spr,paletteId,frameIndex), spr.x, spr.y, context );
-		}
-	}
-}
-
-// TODO : remove these get*Image methods
-function getTileImage(t,palId,frameIndex) {
-	return renderer.GetImage(t,palId,frameIndex);
-}
-
-function getSpriteImage(s,palId,frameIndex) {
-	return renderer.GetImage(s,palId,frameIndex);
-}
-
-function getItemImage(itm,palId,frameIndex) {
-	return renderer.GetImage(itm,palId,frameIndex);
 }
 
 function curPal() {
