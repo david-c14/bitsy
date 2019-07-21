@@ -374,6 +374,7 @@ function shakyFunc(environment,parameters,onReturn) {
 function moveLeftFunc(environment,parameters,onReturn) {
 	if (environment.HasObject()) {
 		var object = environment.GetObject();
+		// TODO : what about obstacles like walls and other sprites???
 		object.x -= 1;
 	}
 	onReturn(null);
