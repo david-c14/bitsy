@@ -538,8 +538,6 @@ function update() {
 			dialogBuffer.Update( deltaTime );
 		}
 		else if (!isEnding) {
-			// moveSprites(); // TODO : I probably need to remove this..
-
 			// SUPER HACKY PROTOTYPE update sprite actions
 			if (animationCounter == 0) {
 				for (id in sprite) {
@@ -693,72 +691,6 @@ function resetAllAnimations() {
 			itm.animation.frameIndex = 0;
 		}
 	}
-}
-
-// TODO : remove this old nonsense!!!
-var moveCounter = 0;
-var moveTime = 200;
-function moveSprites() {
-	moveCounter += deltaTime;
-
-	if (moveCounter >= moveTime) {
-
-		for (id in sprite) {
-			var spr = sprite[id];
-			if (spr.walkingPath.length > 0) {
-				//move sprite
-				var nextPos = spr.walkingPath.shift();
-				spr.x = nextPos.x;
-				spr.y = nextPos.y;
-
-
-				var end = getEnding( spr.room, spr.x, spr.y );
-				var ext = getExit( spr.room, spr.x, spr.y );
-				var itmIndex = getItemIndex( spr.room, spr.x, spr.y );
-				if (end) { //if the sprite hits an ending
-					if (id === playerId) { // only the player can end the game
-						startNarrating( ending[end.id], true /*isEnding*/ );
-					}
-				}
-				else if (ext) { //if the sprite hits an exit
-					//move it to another scene
-					spr.room = ext.dest.room;
-					spr.x = ext.dest.x;
-					spr.y = ext.dest.y;
-					if (id === playerId) {
-						//if the player changes scenes, change the visible scene
-						curRoom = ext.dest.room;
-					}
-				}
-				else if(itmIndex > -1) {
-					var itm = room[ spr.room ].items[ itmIndex ];
-					room[ spr.room ].items.splice( itmIndex, 1 );
-					if( spr.inventory[ itm.id ] ) {
-						spr.inventory[ itm.id ] += 1;
-					}
-					else {
-						spr.inventory[ itm.id ] = 1;
-					}
-
-					if (onInventoryChanged != null) {
-						onInventoryChanged( itm.id );
-					}
-
-					if (id === playerId) {
-						startItemDialog( itm.id  /*itemId*/ );
-					}
-
-					// stop moving : is this a good idea?
-					spr.walkingPath = [];
-				}
-
-				if (id === playerId) didPlayerMoveThisFrame = true;
-			}
-		}
-
-		moveCounter = 0;
-	}
-
 }
 
 function getSpriteAt(x,y) {
@@ -1924,7 +1856,6 @@ function parseSprite(lines, i) {
 		room : null, //default location is "offstage"
 		x : -1,
 		y : -1,
-		walkingPath : [], //tile by tile movement path (isn't saved)
 		animation : {
 			isAnimated : (renderer.GetFrameCount(drwId) > 1),
 			frameIndex : 0,
