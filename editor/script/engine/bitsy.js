@@ -677,14 +677,15 @@ function resetAllAnimations() {
 }
 
 function getSpriteAt(x,y) {
-	for (id in sprite) {
-		var spr = sprite[id];
-		if (spr.room === curRoom) {
-			if (spr.x == x && spr.y == y) {
-				return id;
+	for (var i = 0; i < room[curRoom].objects.length; i++) {
+		var objInfo = room[curRoom].objects[i];
+		if (object[objInfo.id].type === "SPR") {
+			if (objInfo.x == x && objInfo.y == y) {
+				return objInfo.id;
 			}
 		}
 	}
+
 	return null;
 }
 
@@ -986,11 +987,14 @@ function movePlayerThroughExit(ext) {
 	GoToDest();
 }
 
-function getItemIndex( roomId, x, y ) {
-	for( var i = 0; i < room[roomId].items.length; i++ ) {
-		var itm = room[roomId].items[i];
-		if ( itm.x == x && itm.y == y)
-			return i;
+function getItemIndex(roomId,x,y) {
+	for( var i = 0; i < room[roomId].objects.length; i++ ) {
+		var objInfo = room[roomId].objects[i];
+		if (object[objInfo.id].type === "ITM") {
+			if (objInfo.x == x && objInfo.y == y) {
+				return i;
+			}
+		}
 	}
 	return -1;
 }
@@ -2016,8 +2020,10 @@ function startNarrating(dialogStr,end) {
 	startDialog(dialogStr);
 }
 
+
+// TODO : these two methods are now basically redundant!!
 function startItemDialog(itemId) {
-	var itm = item[itemId];
+	var itm = object[itemId];
 	var dialogId = itm.dlg;
 	// console.log("START ITEM DIALOG " + dialogId);
 	if(dialog[dialogId]){
@@ -2027,7 +2033,8 @@ function startItemDialog(itemId) {
 }
 
 function startSpriteDialog(spriteId) {
-	var spr = sprite[spriteId];
+	var spr = object[spriteId];
+	// TODO ... need to remove the old automatic dialog id stuff
 	var dialogId = spr.dlg ? spr.dlg : spriteId;
 	// console.log("START SPRITE DIALOG " + dialogId);
 	if(dialog[dialogId]){
