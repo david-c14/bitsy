@@ -25,6 +25,7 @@ var TextDirection = {
 };
 var textDirection = TextDirection.LeftToRight;
 
+// TODO : need to redo this for new world of objects
 var names = {
 	room : new Map(),
 	tile : new Map(), // Note: Not currently enabled in the UI
@@ -1645,15 +1646,15 @@ function parseObject(lines, i, type, versionNumber) {
 		dlg : dialogId, // TODO : do I want to consolidate these with the actions?
 		actions : actions, // scripts (should tiles execute them? I'm tempted to say no to maintain seperation from foreground)
 		isWall : isWall, // wall tile? (tile only)
-		// NOTE : coordinates are for the player only! other objects don't use this data TODO : make this less hacky somehow
+		// NOTE : starting coordinates are for the player only! other objects don't use this data //TODO : make this less hacky somehow
 		isPlayer : isPlayer,
 		room : playerRoom,
 		x : playerX,
 		y : playerY,
 	};
 
-	console.log("PARSE OBJECT " + id);
-	console.log(object[id]);
+	// console.log("PARSE OBJECT " + id);
+	// console.log(object[id]);
 
 	return i;
 }
