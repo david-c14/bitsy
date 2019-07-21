@@ -915,11 +915,9 @@ function movePlayer(direction) {
 		player().y += 1;
 		didPlayerMoveThisFrame = true;
 	}
-	
+
 	var ext = getExit( player().room, player().x, player().y );
 	var end = getEnding( player().room, player().x, player().y );
-	// TODO : vNext
-	// var eff = getEffect( player().room, player().x, player().y );
 	var itmIndex = getItemIndex( player().room, player().x, player().y );
 
 	// do items first, because you can pick up an item AND go through a door
@@ -952,10 +950,6 @@ function movePlayer(direction) {
 	else if (ext) {
 		movePlayerThroughExit(ext);
 	}
-	// TODO : vNext
-	// else if (eff) {
-	// 	startDialog( script[eff.id].source, eff.id );
-	// }
 	else if (spr) {
 		startSpriteDialog( spr /*spriteId*/ );
 	}
@@ -1034,22 +1028,24 @@ function isWallDown() {
 }
 
 function isWall(x,y,roomId) {
-	if(roomId == undefined || roomId == null)
+	if(roomId == undefined || roomId == null) {
 		roomId = curRoom;
+	}
 
-	var tileId = getTile( x, y );
+	var tileId = getTile(x, y);
 
-	if( tileId === '0' )
+	if (tileId === '0') {
 		return false; // Blank spaces aren't walls, ya doofus
+	}
 
-	if( tile[tileId].isWall === undefined || tile[tileId].isWall === null ) {
+	if (object[tileId].isWall === undefined || object[tileId].isWall === null) {
 		// No wall-state defined: check room-specific walls
 		var i = room[roomId].walls.indexOf( getTile(x,y) );
 		return i > -1;
 	}
 
 	// Otherwise, use the tile's own wall-state
-	return tile[tileId].isWall;
+	return object[tileId].isWall;
 }
 
 function getItem(roomId,x,y) {
@@ -1357,10 +1353,10 @@ function serializeWorld(skipFonts) {
 			}
 		}
 		// TODO : implement this ONLY for player avatar!!
-		// if (sprite[id].room != null) {
-		// 	/* SPRITE POSITION */
-		// 	worldStr += "POS " + sprite[id].room + " " + sprite[id].x + "," + sprite[id].y + "\n";
-		// }
+		if (type === "SPR" && object[id].isPlayer && object[id].room != null) {
+			/* SPRITE POSITION */
+			worldStr += "POS " + object[id].room + " " + object[id].x + "," + object[id].y + "\n";
+		}
 		// TODO : check whether this is the player avatar!!
 		if (type === "SPR" && object[id].inventory != null) {
 			for(itemId in object[id].inventory) {
@@ -1655,6 +1651,12 @@ function parseObject(lines, i, type, versionNumber) {
 	var drwId = "DRW_" + id;
 	i = parseDrawingCore(lines, i, drwId);
 
+	// TODO .. need to be sure player detection is safe
+	var isPlayer = type === "SPR" && id === "A";
+	var playerRoom = null;
+	var playerX = -1;
+	var playerY = -1;
+
 	// default color for tiles is index 1, but for sprites & items it's index 2
 	var colorIndex = (type === "TIL" ? 1 : 2);
 
@@ -1704,12 +1706,19 @@ function parseObject(lines, i, type, versionNumber) {
 			var roomId = posArgs[1];
 			var coordArgs = posArgs[2].split(",");
 
-			// NOTE: assumes rooms have all been created!
-			room[roomId].objects.push({
-				id: id,
-				x : parseInt(coordArgs[0]),
-				y : parseInt(coordArgs[1]),
-			});
+			if (isPlayer) {
+				playerRoom = roomId;
+				playerX = parseInt(coordArgs[0]);
+				playerY = parseInt(coordArgs[1]);
+			}
+			else {
+				// NOTE: assumes rooms have all been created!
+				room[roomId].objects.push({
+					id: id,
+					x : parseInt(coordArgs[0]),
+					y : parseInt(coordArgs[1]),
+				});
+			}
 
 			// TODO : do I need special handling for player avatar start position?
 		}
@@ -1739,6 +1748,11 @@ function parseObject(lines, i, type, versionNumber) {
 		dlg : dialogId, // TODO : do I want to consolidate these with the actions?
 		actions : actions, // scripts (should tiles execute them? I'm tempted to say no to maintain seperation from foreground)
 		isWall : isWall, // wall tile? (tile only)
+		// NOTE : coordinates are for the player only! other objects don't use this data TODO : make this less hacky somehow
+		isPlayer : isPlayer,
+		room : playerRoom,
+		x : playerX,
+		y : playerY,
 	};
 
 	console.log("PARSE OBJECT " + id);
@@ -1925,7 +1939,12 @@ function drawRoom(room,context,frameIndex) { // context & frameIndex are optiona
 	//draw objects
 	for (var i = 0; i < room.objects.length; i++) {
 		var objInfo = room.objects[i];
-		drawObject( renderer.GetImage(object[objInfo.id],paletteId,frameIndex), objInfo.x, objInfo.y, context );
+		drawObject(renderer.GetImage(object[objInfo.id],paletteId,frameIndex), objInfo.x, objInfo.y, context);
+	}
+
+	//draw player
+	if (player().room === room.id) {
+		drawObject(renderer.GetImage(player(),paletteId,frameIndex), player().x, player().y, context)
 	}
 }
 
