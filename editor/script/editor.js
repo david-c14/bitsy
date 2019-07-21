@@ -73,13 +73,6 @@ new notes from forum
 */
 
 /* MODES */
-var TileType = {
-	Tile : 0,
-	Sprite : 1,
-	Avatar : 2,
-	Item : 3
-};
-
 var EditMode = {
 	Edit : 0,
 	Play : 1
@@ -90,6 +83,13 @@ var EditorInputMode = {
 	Touch : 1
 };
 var curEditorInputMode = EditorInputMode.Mouse;
+
+// now I'm just using this as another way to refer to the engine type strings
+var TileType = {
+	Tile : "TIL",
+	Sprite : "SPR",
+	Item : "ITM",
+};
 
 /* EVENTS */
 var events = new EventManager();

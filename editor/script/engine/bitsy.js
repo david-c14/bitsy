@@ -1226,7 +1226,7 @@ function serializeWorld(skipFonts) {
 
 		var type = object[id].type;
 		worldStr += type + " " + id + "\n";
-		worldStr += serializeDrawing("DRW_" + id);
+		worldStr += serializeDrawing(id);
 		if (object[id].name != null && object[id].name != undefined) {
 			/* NAME */
 			worldStr += "NAME " + object[id].name + "\n";
@@ -1546,7 +1546,7 @@ function parseObject(lines, i, type, versionNumber) {
 	}
 
 	// parse drawing
-	var drwId = "DRW_" + id;
+	var drwId = id; // TODO ... am I sure it's ok for these to be the same now?
 	i = parseDrawingCore(lines, i, drwId);
 
 	// TODO .. need to be sure player detection is safe
