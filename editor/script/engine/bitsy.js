@@ -67,8 +67,6 @@ function updateNamesFromCurData() {
 	}
 }
 
-var spriteStartLocations = {};
-
 /* VERSION */
 var version = {
 	major: 6, // major changes
@@ -110,8 +108,6 @@ function clearGameData() {
 	variable = {};
 
 	// TODO RENDERER : clear data?
-
-	spriteStartLocations = {};
 
 	names = {
 		room : new Map(),
@@ -1148,8 +1144,6 @@ function parseWorld(file) {
 
 	// var parseTimer = new Timer();
 
-	spriteStartLocations = {};
-
 	resetFlags();
 
 	var versionNumber = 0;
@@ -1224,8 +1218,6 @@ function parseWorld(file) {
 		}
 	}
 
-	placeSprites();
-
 	var roomIds = Object.keys(room);
 	if (player() != undefined && player().room != null && roomIds.includes(player().room)) {
 		// player has valid room
@@ -1253,8 +1245,9 @@ function parseWorld(file) {
 
 //TODO this is in progress and doesn't support all features
 function serializeWorld(skipFonts) {
-	if (skipFonts === undefined || skipFonts === null)
+	if (skipFonts === undefined || skipFonts === null) {
 		skipFonts = false;
+	}
 
 	var worldStr = "";
 	/* TITLE */
@@ -1510,18 +1503,6 @@ function isExitValid(e) {
 	return hasValidStartPos && hasDest && hasValidRoomDest;
 }
 
-function placeSprites() {
-	for (id in spriteStartLocations) {
-		//console.log(id);
-		//console.log( spriteStartLocations[id] );
-		//console.log(sprite[id]);
-		sprite[id].room = spriteStartLocations[id].room;
-		sprite[id].x = spriteStartLocations[id].x;
-		sprite[id].y = spriteStartLocations[id].y;
-		//console.log(sprite[id]);
-	}
-}
-
 /* ARGUMENT GETTERS */
 function getType(line) {
 	return getArg(line,0);
@@ -1545,6 +1526,8 @@ function parseTitle(lines, i) {
 	return i;
 }
 
+// TODO : store sprite locations
+// TODO : find a way to make ROOM_FORMAT 1 (comma separated) the default
 function parseRoom(lines, i) {
 	var id = getId(lines[i]);
 	room[id] = {
@@ -1553,11 +1536,11 @@ function parseRoom(lines, i) {
 		walls : [],
 		exits : [],
 		endings : [],
-		// effects : [], // TODO vNext
-		items : [],
+		objects : [],
 		pal : null,
 		name : null
 	};
+
 	i++;
 
 	// create tile map
@@ -1589,49 +1572,18 @@ function parseRoom(lines, i) {
 
 	while (i < lines.length && lines[i].length > 0) { //look for empty line
 		// console.log(getType(lines[i]));
-		if (getType(lines[i]) === "SPR") {
-			/* NOTE SPRITE START LOCATIONS */
-			var sprId = getId(lines[i]);
-			if (sprId.indexOf(",") == -1 && lines[i].split(" ").length >= 3) { //second conditional checks for coords
-				/* PLACE A SINGLE SPRITE */
-				var sprCoord = lines[i].split(" ")[2].split(",");
-				spriteStartLocations[sprId] = {
-					room : id,
-					x : parseInt(sprCoord[0]),
-					y : parseInt(sprCoord[1])
-				};
-			}
-			else if ( flags.ROOM_FORMAT == 0 ) { // TODO: right now this shortcut only works w/ the old comma separate format
-				/* PLACE MULTIPLE SPRITES*/ 
-				//Does find and replace in the tilemap (may be hacky, but its convenient)
-				var sprList = sprId.split(",");
-				for (row in room[id].tilemap) {
-					for (s in sprList) {
-						var col = room[id].tilemap[row].indexOf( sprList[s] );
-						//if the sprite is in this row, replace it with the "null tile" and set its starting position
-						if (col != -1) {
-							room[id].tilemap[row][col] = "0";
-							spriteStartLocations[ sprList[s] ] = {
-								room : id,
-								x : parseInt(col),
-								y : parseInt(row)
-							};
-						}
-					}
-				}
-			}
-		}
-		else if (getType(lines[i]) === "ITM") {
-			var itmId = getId(lines[i]);
-			var itmCoord = lines[i].split(" ")[2].split(",");
-			var itm = {
-				id: itmId,
-				x : parseInt(itmCoord[0]),
-				y : parseInt(itmCoord[1])
+		if (getType(lines[i]) === "SPR" || getType(lines[i]) === "ITM") {
+			var objId = getId(lines[i]);
+			var objCoord = lines[i].split(" ")[2].split(",");
+			var obj = {
+				id: objId,
+				x : parseInt(objCoord[0]),
+				y : parseInt(objCoord[1])
 			};
-			room[id].items.push( itm );
+			room[id].objects.push(obj);
 		}
 		else if (getType(lines[i]) === "WAL") {
+			// this is deprecated, but I'm not removing it yet
 			/* DEFINE COLLISIONS (WALLS) */
 			room[id].walls = getId(lines[i]).split(",");
 		}
@@ -1651,8 +1603,6 @@ function parseRoom(lines, i) {
 					y : parseInt(destCoords[1])
 				},
 				transition_effect : null,
-				// TODO : vNext
-				// script_id : null,
 			};
 
 			// optional arguments
@@ -1662,11 +1612,7 @@ function parseRoom(lines, i) {
 					ext.transition_effect = exitArgs[exitArgIndex+1];
 					exitArgIndex += 2;
 				}
-				// TODO : vNext
-				// else if (exitArgs[exitArgIndex] == "PRG") {
-				// 	ext.script_id = exitArgs[exitArgIndex+1];
-				// 	exitArgIndex += 2;
-				// }
+				// TODO : add names here, so it can be referenced from script
 				else {
 					exitArgIndex += 1;
 				}
@@ -1675,6 +1621,7 @@ function parseRoom(lines, i) {
 			room[id].exits.push(ext);
 		}
 		else if (getType(lines[i]) === "END") {
+			// TODO : add optional name arg for scripting purposes
 			/* ADD ENDING */
 			var endId = getId( lines[i] );
 			var endCoords = getCoord( lines[i], 2 );
@@ -1685,18 +1632,6 @@ function parseRoom(lines, i) {
 			};
 			room[id].endings.push(end);
 		}
-		// TODO : vNext
-		// else if (getType(lines[i]) === "EFF") {
-		// 	/* ADD EFFECT */
-		// 	var effectId = getId( lines[i] );
-		// 	var effectCoords = getCoord( lines[i], 2 );
-		// 	var effect = {
-		// 		id : effectId,
-		// 		x : parseInt( effectCoords[0] ),
-		// 		y : parseInt( effectCoords[1] ),
-		// 	};
-		// 	room[id].effects.push(effect);
-		// }
 		else if (getType(lines[i]) === "PAL") {
 			/* CHOOSE PALETTE (that's not default) */
 			room[id].pal = getId(lines[i]);
@@ -1708,6 +1643,7 @@ function parseRoom(lines, i) {
 		}
 		i++;
 	}
+
 	return i;
 }
 
@@ -1739,33 +1675,100 @@ function parsePalette(lines,i) { //todo this has to go first right now :(
 }
 
 // TODO : pick up here..
+// TODO : need a flag to determine if a sprite is the player
+// TODO : handle ID collisions from old versions (or keep the three ID systems???)
 function parseObject(lines, i, type) {
 	var id = getId(lines[i]);
 
-	// hack to stop freezing
-	i++;
-	while (i < lines.length && lines[i].length > 0) {
-		i++;
-	} 
+	// parse drawing
+	var drwId = "DRW_" + id;
+	i = parseDrawingCore(lines, i, drwId);
 
-	// TODO : handle POS from sprites.. add to the room sprite info
+	// default color for tiles is index 1, but for sprites & items it's index 2
+	var colorIndex = (type === "TIL" ? 1 : 2);
+
+	// wall property is only used by tiles
+	// null indicates it can vary from room to room (original version)
+	var isWall = null;
+
+	var name = null;
+	var dialogId = null;
+	var startingInventory = {};
+	var actions = []; // TODO : hack
+
+	// read all other properties
+	while (i < lines.length && lines[i].length > 0) { //look for empty line
+		if (getType(lines[i]) === "NAME") {
+			/* NAME */
+			name = lines[i].split(/\s(.+)/)[1];
+			names.sprite.set( name, id );
+		}
+		else if (getType(lines[i]) === "COL") {
+			/* COLOR OFFSET INDEX */
+			colorIndex = parseInt( getId(lines[i]) );
+		}
+		else if (getType(lines[i]) === "WAL" && type === "TIL") {
+			// only tiles set their initial collision mode
+			var wallArg = getArg( lines[i], 1 );
+			if( wallArg === "true" ) {
+				isWall = true;
+			}
+			else if( wallArg === "false" ) {
+				isWall = false;
+			}
+		}
+		else if(getType(lines[i]) === "DLG" && type != "TIL") {
+			// TODO ... consolidate dialog & action code
+			dialogId = getId(lines[i]);
+		}
+		else if (getType(lines[i]) === "ACT" && type != "TIL") {
+			// TODO... do I really want to NOT have actions on tiles?
+			actions.push(getId(lines[i]));
+		}
+		else if (getType(lines[i]) === "POS" && type === "SPR") {
+			// I still need this to support old single-position data from sprites
+			// Also, I suppose this could be useful for the player avatar
+			/* STARTING POSITION */
+			var posArgs = lines[i].split(" ");
+			var roomId = posArgs[1];
+			var coordArgs = posArgs[2].split(",");
+
+			// NOTE: assumes rooms have all been created!
+			room[roomId].objects.push({
+				id: id,
+				x : parseInt(coordArgs[0]),
+				y : parseInt(coordArgs[1]),
+			});
+
+			// TODO : do I need special handling for player avatar start position?
+		}
+		else if (getType(lines[i]) === "ITM" && type === "SPR") {
+			// This is only used by the player avatar -- should I move it out of sprite data?
+			/* ITEM STARTING INVENTORY */
+			var itemId = getId(lines[i]);
+			var itemCount = parseFloat( getArg(lines[i], 2) );
+			startingInventory[itemId] = itemCount;
+		}
+		i++;
+	}
 
 	// object data
 	object[id] = {
-		id: null, // unique ID
+		id: id, // unique ID
 		type: type, // default behavior: is it a sprite, item, or tile?
-		name : null, // user-supplied name
-		drw: null, // drawing ID
-		col: null, // color index
-		animation : null, // animation data (this may need to vary per instance)
-		inventory : null, // starting inventory (player only)
-		actions : null, // scripts (should tiles execute them? I'm tempted to say no to maintain seperation from foreground)
-		isWall : null, // wall tile? (tile only)
+		name : name, // user-supplied name
+		drw: drwId, // drawing ID
+		col: colorIndex, // color index
+		animation : null, // TODO: animation data (this may need to vary per instance)
+		inventory : startingInventory, // starting inventory (player only)
+		actions : actions, // scripts (should tiles execute them? I'm tempted to say no to maintain seperation from foreground)
+		isWall : isWall, // wall tile? (tile only)
 	};
 
 	return i;
 }
 
+// TODO : remove
 function parseTile(lines, i) {
 	var id = getId(lines[i]);
 	var drwId = null;
@@ -1824,6 +1827,7 @@ function parseTile(lines, i) {
 	return i;
 }
 
+// TODO : remove
 function parseSprite(lines, i) {
 	var id = getId(lines[i]);
 	var drwId = null;
@@ -1904,6 +1908,7 @@ function parseSprite(lines, i) {
 	return i;
 }
 
+// TODO : remove
 function parseItem(lines, i) {
 	var id = getId(lines[i]);
 	var drwId = null;
@@ -1929,17 +1934,6 @@ function parseItem(lines, i) {
 			/* COLOR OFFSET INDEX */
 			colorIndex = parseInt( getArg( lines[i], 1 ) );
 		}
-		// else if (getType(lines[i]) === "POS") {
-		// 	/* STARTING POSITION */
-		// 	var posArgs = lines[i].split(" ");
-		// 	var roomId = posArgs[1];
-		// 	var coordArgs = posArgs[2].split(",");
-		// 	spriteStartLocations[id] = {
-		// 		room : roomId,
-		// 		x : parseInt(coordArgs[0]),
-		// 		y : parseInt(coordArgs[1])
-		// 	};
-		// }
 		else if(getType(lines[i]) === "DLG") {
 			dialogId = getId(lines[i]);
 		}
