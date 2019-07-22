@@ -86,44 +86,15 @@ function RoomTool(canvas) {
 				//room[curRoom].tilemap[y] = row;
 			}
 			// TODO... avatar case
-			else if (GetCurDrawing().type === TileType.Sprite) {
-				var otherSprite = getSpriteAt(x,y);
-				var isThisSpriteAlreadyHere = sprite[GetCurDrawing().id].room === curRoom &&
-											sprite[GetCurDrawing().id].x === x &&
-											sprite[GetCurDrawing().id].y === y;
+			else if (GetCurDrawing().type === TileType.Sprite || GetCurDrawing().type == TileType.Item) {
+				var otherObject = getObject(curRoom,x,y);
+				var isThisObjectAlreadyHere = otherObject != null && otherObject.id === GetCurDrawing().id;
 
-				if (otherSprite) {
-					//remove other sprite from map
-					sprite[otherSprite].room = null;
-					sprite[otherSprite].x = -1;
-					sprite[otherSprite].y = -1;
+				if (otherObject) {
+					getRoom().objects.splice( getRoom().objects.indexOf(otherObject), 1 );
 				}
 
-				if (!isThisSpriteAlreadyHere) {
-					//add sprite to map
-					sprite[GetCurDrawing().id].room = curRoom;
-					sprite[GetCurDrawing().id].x = x;
-					sprite[GetCurDrawing().id].y = y;
-					//row = row.substr(0, x) + "0" + row.substr(x+1); //is this necessary? no
-				}
-				else {
-					//remove sprite from map
-					sprite[GetCurDrawing().id].room = null;
-					sprite[GetCurDrawing().id].x = -1;
-					sprite[GetCurDrawing().id].y = -1;
-				}
-			}
-			else if (GetCurDrawing().type == TileType.Item ) {
-				// TODO : is this the final behavior I want?
-
-				var otherItem = getItem(curRoom,x,y);
-				var isThisItemAlreadyHere = otherItem != null && otherItem.id === GetCurDrawing().id;
-
-				if(otherItem) {
-					getRoom().objects.splice( getRoom().objects.indexOf(otherItem), 1 );
-				}
-
-				if(!isThisItemAlreadyHere) {
+				if(!isThisObjectAlreadyHere) {
 					getRoom().objects.push( {id:GetCurDrawing().id, x:x, y:y} );
 				}
 			}

@@ -931,11 +931,11 @@ function isWall(x,y,roomId) {
 	return object[tileId].isWall;
 }
 
-function getItem(roomId,x,y) {
-	for (i in room[roomId].items) {
-		var item = room[roomId].items[i];
-		if (x == item.x && y == item.y) {
-			return item;
+function getObject(roomId,x,y) {
+	for (i in room[roomId].objects) {
+		var obj = room[roomId].objects[i];
+		if (x == obj.x && y == obj.y) {
+			return obj;
 		}
 	}
 	return null;

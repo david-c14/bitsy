@@ -516,6 +516,7 @@ function PaintTool(canvas) {
 		var shouldDelete = true;
 
 		// TODO ... make nicer prompt not using default browser stuff?
+		// TODO .. if I had UNDO / REDO this warning wouldn't be necessary
 		shouldDelete = confirm("Are you sure you want to delete this drawing?");
 
 		if (shouldDelete) {

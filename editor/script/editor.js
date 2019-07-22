@@ -427,8 +427,7 @@ function on_change_dialog() {
 	}
 	else {
 		if(!dialogId) {
-			var prefix = (paintTool.drawing.type == TileType.Item) ? "ITM_" : "SPR_";
-			dialogId = nextAvailableDialogId( prefix );
+			dialogId = nextAvailableDialogId();
 			paintTool.GetCurDrawing().dlg = dialogId;
 		}
 		dialog[dialogId] = scriptUtils.EnsureDialogBlockFormat(dialogStr);
