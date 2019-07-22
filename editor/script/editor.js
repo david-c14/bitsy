@@ -428,7 +428,7 @@ function reloadDialogUICore() { // TODO: name is terrible
 
 // hacky - assumes global paintTool object
 function getCurDialogId() {
-	return paintTool.drawing.getDialogId();
+	return paintTool.GetCurDialogId();
 }
 
 function on_change_dialog_finished() {
@@ -443,7 +443,7 @@ function on_change_dialog() {
 	var dialogStr = document.getElementById("dialogText").value;
 	if(dialogStr.length <= 0){
 		if(dialogId) {
-			paintTool.getCurObject().dlg = null;
+			paintTool.GetCurDrawing().dlg = null;
 			delete dialog[dialogId];
 		}
 	}
@@ -451,7 +451,7 @@ function on_change_dialog() {
 		if(!dialogId) {
 			var prefix = (paintTool.drawing.type == TileType.Item) ? "ITM_" : "SPR_";
 			dialogId = nextAvailableDialogId( prefix );
-			paintTool.getCurObject().dlg = dialogId;
+			paintTool.GetCurDrawing().dlg = dialogId;
 		}
 		dialog[dialogId] = scriptUtils.EnsureDialogBlockFormat(dialogStr);
 	}
@@ -758,10 +758,6 @@ function start() {
 	roomTool.editDrawingAtCoordinateCallback = editDrawingAtCoordinate;
 
 	paintTool = new PaintTool(document.getElementById("paint"));
-	// TODO.. get rid of these..
-	paintTool.onReloadTile = function(){ reloadTile() };
-	paintTool.onReloadSprite = function(){ reloadSprite() };
-	paintTool.onReloadItem = function(){ reloadItem() };
 
 	markerTool = new RoomMarkerTool(document.getElementById("markerCanvas1"), document.getElementById("markerCanvas2") );
 	console.log("MARKER TOOL " + markerTool);
@@ -984,21 +980,24 @@ function on_room_name_change() {
 
 function on_drawing_name_change() {
 	var str = document.getElementById("drawingName").value;
-	var obj = paintTool.getCurObject();
+	var obj = paintTool.GetCurDrawing();
+
 	var oldName = obj.name;
-	if(str.length > 0)
+	if(str.length > 0) {
 		obj.name = str;
-	else
+	}
+	else {
 		obj.name = null;
+	}
 
 	updateNamesFromCurData()
 
 	// update display name for thumbnail
-	var displayName = obj.name ? obj.name : getCurPaintModeStr() + " " + drawing.id;
-	paintExplorer.ChangeThumbnailCaption(drawing.id, displayName);
+	var displayName = obj.name ? obj.name : getCurPaintModeStr() + " " + obj.id;
+	paintExplorer.ChangeThumbnailCaption(obj.id, displayName);
 
 	// make sure items referenced in scripts update their names
-	if(drawing.type === TileType.Item) {
+	if(obj.type === TileType.Item) {
 		// console.log("SWAP ITEM NAMES");
 
 		var ItemNameSwapVisitor = function() {
@@ -1023,8 +1022,12 @@ function on_drawing_name_change() {
 		};
 
 		var newName = obj.name;
-		if(newName === null || newName === undefined) newName = drawing.id;
-		if(oldName === null || oldName === undefined) oldName = drawing.id;
+		if (newName === null || newName === undefined) {
+			newName = obj.id;
+		}
+		if (oldName === null || oldName === undefined) {
+			oldName = obj.id;
+		}
 
 		// console.log(oldName + " <-> " + newName);
 
@@ -1050,7 +1053,7 @@ function on_drawing_name_change() {
 	}
 
 	refreshGameData();
-	console.log(names);
+	// console.log(names);
 }
 
 function on_palette_name_change(event) {
@@ -1454,46 +1457,6 @@ function removeAllItems( id ) {
 	}
 }
 
-function updateAnimationUI() {
-	//todo
-}
-
-function reloadTile() {
-	// animation UI
-	if ( tile[drawing.id] && tile[drawing.id].animation.isAnimated ) {
-		paintTool.isCurDrawingAnimated = true;
-		document.getElementById("animatedCheckbox").checked = true;
-
-		if( paintTool.curDrawingFrameIndex == 0)
-		{
-			document.getElementById("animationKeyframe1").className = "animationThumbnail left selected";
-			document.getElementById("animationKeyframe2").className = "animationThumbnail right unselected";
-		}
-		else if( paintTool.curDrawingFrameIndex == 1 )
-		{
-			document.getElementById("animationKeyframe1").className = "animationThumbnail left unselected";
-			document.getElementById("animationKeyframe2").className = "animationThumbnail right selected";
-		}
-
-		document.getElementById("animation").setAttribute("style","display:block;");
-		document.getElementById("animatedCheckboxIcon").innerHTML = "expand_more";
-		renderAnimationPreview( drawing.id );
-	}
-	else {
-		paintTool.isCurDrawingAnimated = false;
-		document.getElementById("animatedCheckbox").checked = false;
-		document.getElementById("animation").setAttribute("style","display:none;");
-		document.getElementById("animatedCheckboxIcon").innerHTML = "expand_less";
-	}
-
-	// wall UI
-	updateWallCheckboxOnCurrentTile();
-
-	updateDrawingNameUI(true);
-
-	paintTool.updateCanvas();
-}
-
 function updateWallCheckboxOnCurrentTile() {
 	var isCurTileWall = false;
 
@@ -1522,7 +1485,11 @@ var scriptEditorModule = new ScriptEditor();
 var curScriptEditor = null;
 function reloadAdvDialogUI() {
 	// var dialogId = getCurDialogId(); // necessary?
-	if( drawing.type === TileType.Sprite || drawing.type === TileType.Item ) {
+
+	// TODO.. the global use of the paint tool is a little unfortunate
+	var curDrawing = paintTool.GetCurDrawing();
+
+	if (curDrawing.type === TileType.Sprite || curDrawing.type === TileType.Item) {
 
 		document.getElementById("dialogEditorHasContent").style.display = "block";
 		document.getElementById("dialogEditorNoContent").style.display = "none";
@@ -1555,83 +1522,6 @@ function reloadAdvDialogUI() {
 		document.getElementById("dialogEditorHasContent").style.display = "none";
 		document.getElementById("dialogEditorNoContent").style.display = "block";
 	}
-}
-
-function reloadSprite() {
-	// animation UI
-	if ( sprite[drawing.id] && sprite[drawing.id].animation.isAnimated ) {
-		paintTool.isCurDrawingAnimated = true;
-		document.getElementById("animatedCheckbox").checked = true;
-
-		if( paintTool.curDrawingFrameIndex == 0)
-		{
-			document.getElementById("animationKeyframe1").className = "animationThumbnail left selected";
-			document.getElementById("animationKeyframe2").className = "animationThumbnail right unselected";
-		}
-		else if( paintTool.curDrawingFrameIndex == 1 )
-		{
-			document.getElementById("animationKeyframe1").className = "animationThumbnail left unselected";
-			document.getElementById("animationKeyframe2").className = "animationThumbnail right selected";
-		}
-
-		document.getElementById("animation").setAttribute("style","display:block;");
-		document.getElementById("animatedCheckboxIcon").innerHTML = "expand_more";
-		renderAnimationPreview( drawing.id );
-	}
-	else {
-		paintTool.isCurDrawingAnimated = false;
-		document.getElementById("animatedCheckbox").checked = false;
-		document.getElementById("animation").setAttribute("style","display:none;");
-		document.getElementById("animatedCheckboxIcon").innerHTML = "expand_less";
-	}
-
-	// dialog UI
-	reloadDialogUI()
-
-	updateDrawingNameUI( drawing.id != "A" );
-
-	// update paint canvas
-	paintTool.updateCanvas();
-
-}
-
-// TODO consolidate these drawing related methods
-function reloadItem() {
-	// animation UI
-	if ( item[drawing.id] && item[drawing.id].animation.isAnimated ) {
-		paintTool.isCurDrawingAnimated = true;
-		document.getElementById("animatedCheckbox").checked = true;
-
-		if( paintTool.curDrawingFrameIndex == 0)
-		{
-			document.getElementById("animationKeyframe1").className = "animationThumbnail left selected";
-			document.getElementById("animationKeyframe2").className = "animationThumbnail right unselected";
-		}
-		else if( paintTool.curDrawingFrameIndex == 1 )
-		{
-			document.getElementById("animationKeyframe1").className = "animationThumbnail left unselected";
-			document.getElementById("animationKeyframe2").className = "animationThumbnail right selected";
-		}
-
-		document.getElementById("animation").setAttribute("style","display:block;");
-		document.getElementById("animatedCheckboxIcon").innerHTML = "expand_more";
-		renderAnimationPreview( drawing.id );
-	}
-	else {
-		paintTool.isCurDrawingAnimated = false;
-		document.getElementById("animatedCheckbox").checked = false;
-		document.getElementById("animation").setAttribute("style","display:none;");
-		document.getElementById("animatedCheckboxIcon").innerHTML = "expand_less";
-	}
-
-	// dialog UI
-	reloadDialogUI()
-
-	updateDrawingNameUI(true);
-
-	// update paint canvas
-	paintTool.updateCanvas();
-
 }
 
 function deleteDrawing() {
@@ -1860,14 +1750,17 @@ function roomPaletteChange(event) {
 
 function updateDrawingNameUI(visible) {
 	document.getElementById("drawingNameUI").setAttribute("style", visible ? "display:initial;" : "display:none;");
-	var obj = paintTool.getCurObject();
-	console.log("update drawing name ui");
-	console.log(obj);
-	if( obj.name != null )
+
+	var obj = paintTool.GetCurDrawing();
+
+	if(obj.name != null) {
 		document.getElementById("drawingName").value = obj.name;
-	else
+	}
+	else {
 		document.getElementById("drawingName").value = "";
-	document.getElementById("drawingName").placeholder = getCurPaintModeStr() + " " + drawing.id;
+	}
+
+	document.getElementById("drawingName").placeholder = getCurPaintModeStr() + " " + obj.id;
 }
 
 function on_paint_avatar() {
@@ -2069,14 +1962,17 @@ function selectPaint() {
 	}
 }
 
+// TODO.. should I remove this?
 function getCurPaintModeStr() {
-	if(drawing.type == TileType.Sprite || drawing.type == TileType.Avatar) {
+	var curDrawingType = paintTool.GetCurDrawing().type;
+
+	if (curDrawingType === TileType.Sprite) {
 		return localization.GetStringOrFallback("sprite_label", "sprite");
 	}
-	else if(drawing.type == TileType.Item) {
+	else if (curDrawingType === TileType.Item) {
 		return localization.GetStringOrFallback("item_label", "item");
 	}
-	else if(drawing.type == TileType.Tile) {
+	else if (curDrawingType === TileType.Tile) {
 		return localization.GetStringOrFallback("tile_label", "tile");
 	}
 }
@@ -2150,72 +2046,14 @@ function on_game_data_change_core() {
 
 	convertGameDataToCurVersion(version);
 
-	var curPaintMode = drawing.type; //save current paint mode (hacky)
+	console.log(paintTool.GetCurDrawing());
 
-	//fallback if there are no tiles, sprites, map
-	// TODO : switch to using stored default file data (requires separated parser / game data code)
-	if (Object.keys(sprite).length == 0) {
-		drawing.type = TileType.Avatar;
-		drawing.id = "A";
-		makeSprite(drawing.id);
-		sprite["A"].room = null;
-		sprite["A"].x = -1;
-		sprite["A"].y = -1;
-	}
-	if (Object.keys(tile).length == 0) {
-		drawing.type = TileType.Tile;
-		drawing.id = "a";
-		makeTile(drawing.id);
-	}
-	// if (Object.keys(room).length == 0) {
-	// 	room["0"] = {
-	// 		id : "0",
-	// 		tilemap : [
-	// 				["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-	// 				["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-	// 				["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-	// 				["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-	// 				["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-	// 				["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-	// 				["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-	// 				["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-	// 				["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-	// 				["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-	// 				["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-	// 				["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-	// 				["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-	// 				["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-	// 				["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"],
-	// 				["0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"]
-	// 			],
-	// 		walls : [],
-	// 		exits : [],
-	// 		pal : "0"
-	// 	};
-	// }
-	if (Object.keys(item).length == 0) {
-		drawing.type = TileType.Item;
-		drawing.id = "0";
-		makeItem( drawing.id );
-	}
+	// TODO : fallback if there are no tiles, sprites, map
 
 	// TODO RENDERER : refresh images
 
 	roomTool.drawEditMap();
 
-	drawing.type = curPaintMode;
-	if (drawing.type == TileType.Tile) {
-		drawing.id = sortedTileIdList()[0];
-	}
-	else if (drawing.type === TileType.Item) {
-		drawing.id = sortedItemIdList()[0];
-	}
-	else if (drawing.type === TileType.Avatar) {
-		drawing.id = "A";
-	}
-	else if (drawing.type === TileType.Sprite) {
-		drawing.id = sortedSpriteIdList().filter(function (id) { return id != "A"; })[0];
-	}
 	paintTool.reloadDrawing();
 
 	// if user pasted in a custom font into game data - update the stored custom font

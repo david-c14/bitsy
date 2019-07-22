@@ -26,6 +26,22 @@ function PaintTool(canvas) {
 		// TODO... what else needs to go here?
 	});
 
+	// TODO: this is kind of a weird place for this to live
+	this.GetCurDialogId = function() {
+		// TODO : this can be simplified if I stop inferring the ID of dialog from the drawing ID
+		var dialogId = null;
+		if (self.GetCurDrawing().type === TileType.Sprite) {
+			dialogId = object[self.GetCurDrawing().id].dlg;
+			if(dialogId == null && dialog[self.GetCurDrawing().id] != null) {
+				dialogId = self.GetCurDrawing().id;
+			}
+		}
+		else if (self.GetCurDrawing().type === TileType.Item) {
+			dialogId = object[self.GetCurDrawing().id].dlg;
+		}
+		return dialogId;
+	}
+
 	// renderer object access
 	var imageSource = null;
 	function ReloadImageSource() {
@@ -33,7 +49,7 @@ function PaintTool(canvas) {
 			return;
 		}
 
-		imageSource = (renderer.GetImageSource(self.GetCurDrawing()).drw).slice();
+		imageSource = (renderer.GetImageSource(self.GetCurDrawing().drw)).slice();
 	}
 	function UpdateImageSource() {
 		if (imageSource === null || imageSource === undefined) {
@@ -203,28 +219,53 @@ function PaintTool(canvas) {
 		UpdateImageSource();
 	}
 
-	// methods for updating the UI
-	this.onReloadTile = null;
-	this.onReloadSprite = null;
-	this.onReloadItem = null;
+	// NOTE: This does some global UI stuff now
+	// but it's still better than the old version
 	this.reloadDrawing = function() {
 		ReloadImageSource();
 
-		if ( self.GetCurDrawing().type === TileType.Tile) {
-			if(self.onReloadTile) {
-				self.onReloadTile();
+		// animation UI
+		if (self.GetCurDrawing() && self.GetCurDrawing().animation.isAnimated) {
+			self.isCurDrawingAnimated = true;
+			document.getElementById("animatedCheckbox").checked = true;
+
+			if (self.curDrawingFrameIndex == 0)
+			{
+				document.getElementById("animationKeyframe1").className = "animationThumbnail left selected";
+				document.getElementById("animationKeyframe2").className = "animationThumbnail right unselected";
 			}
-		}
-		else if( self.GetCurDrawing().type === TileType.Sprite ) {
-			if(self.onReloadSprite) {
-				self.onReloadSprite();
+			else if (self.curDrawingFrameIndex == 1)
+			{
+				document.getElementById("animationKeyframe1").className = "animationThumbnail left unselected";
+				document.getElementById("animationKeyframe2").className = "animationThumbnail right selected";
 			}
+
+			document.getElementById("animation").setAttribute("style","display:block;");
+			document.getElementById("animatedCheckboxIcon").innerHTML = "expand_more";
+
+			renderAnimationPreview(self.GetCurDrawing().id);
 		}
-		else if( self.GetCurDrawing().type === TileType.Item ) {
-			if(self.onReloadItem) {
-				self.onReloadItem();
-			}
+		else {
+			self.isCurDrawingAnimated = false;
+			document.getElementById("animatedCheckbox").checked = false;
+			document.getElementById("animation").setAttribute("style","display:none;");
+			document.getElementById("animatedCheckboxIcon").innerHTML = "expand_less";
 		}
+
+		if (self.GetCurDrawing().type === TileType.Tile) {
+			updateWallCheckboxOnCurrentTile();
+		}
+		else {
+			// TODO : need to account for player avatar too somewhere
+			// TODO : this will eventually be replaced w/ scripting stuff
+			reloadDialogUI()
+		}
+
+		// ??? what's the boolean for?
+		updateDrawingNameUI( self.GetCurDrawing().id != "A" );
+
+		// update paint canvas
+		self.updateCanvas();
 	}
 
 	this.selectDrawing = function(drawingId) {
@@ -257,11 +298,6 @@ function PaintTool(canvas) {
 		if(toggleWallUI != null && toggleWallUI != undefined) {
 			toggleWallUI(checked);
 		}
-	}
-
-	// TODO : redundant... where is this used??
-	this.getCurObject = function() {
-		return self.GetCurDrawing();
 	}
 
 	this.newDrawing = function() {
