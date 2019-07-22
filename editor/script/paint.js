@@ -563,7 +563,7 @@ function PaintTool(canvas) {
 
 		if( self.isCurDrawingAnimated ) {
 			// TODO -- this animation stuff needs to be moved in here I think?
-			renderAnimationPreview( drawing.id );
+			renderAnimationPreview( curDrawingId );
 		}
 	});
 }
