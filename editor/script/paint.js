@@ -19,7 +19,8 @@ function PaintTool(canvas) {
 	}
 	events.Listen("select_drawing", function(event) {
 		curDrawingId = event.id;
-		// TODO... what else needs to go here?
+		self.curDrawingFrameIndex = 0;
+		self.reloadDrawing();
 	});
 
 	// TODO: this is kind of a weird place for this to live
@@ -453,9 +454,7 @@ function PaintTool(canvas) {
 		var ids = sortedObjectIdList();
 		var objectIndex = ids.indexOf(curDrawingId);
 		objectIndex = (objectIndex + 1) % ids.length;
-		curDrawingId = ids[objectIndex];
-		self.curDrawingFrameIndex = 0;
-		self.reloadDrawing();
+		events.Raise("select_drawing", {id:ids[objectIndex]});
 	}
 
 	this.PrevDrawing = function() {
@@ -465,11 +464,10 @@ function PaintTool(canvas) {
 		if (objectIndex < 0) {
 			objectIndex = (ids.length-1);
 		}
-		curDrawingId = ids[objectIndex];
-		self.curDrawingFrameIndex = 0;
-		self.reloadDrawing();
+		events.Raise("select_drawing", {id:ids[objectIndex]});
 	}
 
+	// TODO : need to make this work for ALL object types (currently creates sprites)
 	this.newDrawing = function() {
 		curDrawingId = nextObjectId(sortedObjectIdList());
 		makeObject(curDrawingId);
