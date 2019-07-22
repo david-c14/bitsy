@@ -263,14 +263,15 @@ function findAndReplaceTileInAllRooms( findTile, replaceTile ) {
 }
 
 /* MAKE DRAWING OBJECTS */
-function makeObject(id,imageData) {
+// todo : need to share some of this code w/ the engine!
+function makeObject(id,type,imageData) {
 	var drwId = id;
 	object[id] = {
 		id : id,
-		type : "SPR", // TODO ... specialize based on desired type!
+		type : type,
 		name : null,
 		drw: drwId,
-		col: 2, // TODO ... specialize based on desired type!
+		col: (type === "TIL" ? 1 : 2),
 		animation : { //todo
 			isAnimated : (!imageData) ? false : (imageData.length>1), // more duplication :(
 			frameIndex : 0,
@@ -1241,103 +1242,7 @@ function prev() {
 }
 
 function duplicateDrawing() {
-	if (drawing.type == TileType.Tile) {
-
-		//copy drawing data
-		var sourceImageData = renderer.GetImageSource( "TIL_" + drawing.id );
-		var copiedImageData = [];
-		for (f in sourceImageData) {
-			copiedImageData.push([]);
-			for (y in sourceImageData[f]) {
-				copiedImageData[f].push([]);
-				for (x in sourceImageData[f][y]) {
-					copiedImageData[f][y].push( sourceImageData[f][y][x] );
-				}
-			}
-		}
-
-		var tmpIsWall = tile[ drawing.id ].isWall;
-
-		drawing.id = nextTileId();
-
-		console.log("DUPLICATE TILE");		
-		console.log(drawing.id);
-		console.log(copiedImageData);
-
-		makeTile( drawing.id, copiedImageData );
-
-		tile[ drawing.id ].isWall = tmpIsWall;
-
-		paintTool.updateCanvas();
-		refreshGameData();
-
-		tileIndex = Object.keys(tile).length - 1;
-
-		paintTool.reloadDrawing(); //hack for ui consistency
-	}
-	else if(drawing.type == TileType.Avatar || drawing.type == TileType.Sprite) {
-
-		//copy drawing data -- hacky duplication as usual between sprite and tile :(
-		var sourceImageData = renderer.GetImageSource( "SPR_" + drawing.id );
-		var copiedImageData = [];
-		for (f in sourceImageData) {
-			copiedImageData.push([]);
-			for (y in sourceImageData[f]) {
-				copiedImageData[f].push([]);
-				for (x in sourceImageData[f][y]) {
-					copiedImageData[f][y].push( sourceImageData[f][y][x] );
-				}
-			}
-		}
-
-		drawing.id = nextSpriteId();
-
-		console.log("DUPLICATE SPRITE");	
-		console.log(drawing.id);
-		console.log(copiedImageData);
-
-		makeSprite( drawing.id, copiedImageData );
-
-		paintTool.updateCanvas();
-		refreshGameData();
-
-		spriteIndex = Object.keys(sprite).length - 1;
-
-		paintTool.reloadDrawing(); //hack
-	}
-	else if(drawing.type == TileType.Item) {
-
-		//copy drawing data -- hacky duplication as usual between sprite and tile :(
-		var sourceImageData = renderer.GetImageSource( "ITM_" + drawing.id );
-		var copiedImageData = [];
-		for (f in sourceImageData) {
-			copiedImageData.push([]);
-			for (y in sourceImageData[f]) {
-				copiedImageData[f].push([]);
-				for (x in sourceImageData[f][y]) {
-					copiedImageData[f][y].push( sourceImageData[f][y][x] );
-				}
-			}
-		}
-
-		drawing.id = nextItemId();
-
-		console.log("DUPLICATE ITEM");	
-		console.log(drawing.id);
-		console.log(copiedImageData);
-
-		makeItem( drawing.id, copiedImageData );
-
-		paintTool.updateCanvas();
-		refreshGameData();
-
-		itemIndex = Object.keys(item).length - 1;
-
-		paintTool.reloadDrawing(); //hack
-		updateInventoryItemUI();
-	}
-	paintExplorer.AddThumbnail( drawing.id );
-	paintExplorer.ChangeSelection( drawing.id );
+	paintTool.DuplicateDrawing();
 }
 
 function removeAllItems( id ) {

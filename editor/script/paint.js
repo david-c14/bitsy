@@ -470,11 +470,45 @@ function PaintTool(canvas) {
 	// TODO : need to make this work for ALL object types (currently creates sprites)
 	this.newDrawing = function() {
 		curDrawingId = nextObjectId(sortedObjectIdList());
-		makeObject(curDrawingId);
+		makeObject(curDrawingId, "SPR"); // TODO multiple types!
 		self.reloadDrawing(); //hack for ui consistency (hack x 2: order matters for animated tiles)
 		self.updateCanvas();
 		refreshGameData();
 		events.Raise("paint_add_drawing", {id:curDrawingId});
+	}
+
+	this.DuplicateDrawing = function() {
+		var copyType = self.GetCurDrawing().type;
+
+		//copy drawing data
+		var sourceImageData = renderer.GetImageSource( self.GetCurDrawing().drw );
+		var copiedImageData = [];
+		for (f in sourceImageData) {
+			copiedImageData.push([]);
+			for (y in sourceImageData[f]) {
+				copiedImageData[f].push([]);
+				for (x in sourceImageData[f][y]) {
+					copiedImageData[f][y].push( sourceImageData[f][y][x] );
+				}
+			}
+		}
+
+		var copyId = nextObjectId(sortedObjectIdList());
+
+		makeObject( copyId, copyType, copiedImageData );
+
+		if (copyType === TileType.Tile) {
+			object[copyId].isWall = self.GetCurDrawing().isWall;
+		}
+
+		refreshGameData();
+
+		if (copyType === TileType.Item) {
+			updateInventoryItemUI();
+		}
+
+		events.Raise("paint_add_drawing", {id:copyId});
+		events.Raise("select_drawing", {id:copyId});
 	}
 
 	// TODO - may need to extract this for different tools beyond the paint tool (put it in core.js?)
