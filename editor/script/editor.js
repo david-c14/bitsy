@@ -1245,20 +1245,20 @@ function duplicateDrawing() {
 	paintTool.DuplicateDrawing();
 }
 
-function removeAllItems( id ) {
-	function getFirstItemIndex(roomId, itemId) {
-		for(var i = 0; i < room[roomId].items.length; i++) {
-			if(room[roomId].items[i].id === itemId)
+function removeAllObjects( id ) {
+	function getFirstObjectIndex(roomId, objId) {
+		for(var i = 0; i < room[roomId].objects.length; i++) {
+			if(room[roomId].objects[i].id === objId)
 				return i;
 		}
 		return -1;
 	}
 
-	for(roomId in room) {
-		var i = getFirstItemIndex(roomId, id );
-		while(i > -1) {
-			room[roomId].items.splice(i,1);
-			i = getFirstItemIndex(roomId, id );
+	for (roomId in room) {
+		var i = getFirstObjectIndex(roomId, id);
+		while (i > -1) {
+			room[roomId].objects.splice(i,1);
+			i = getFirstObjectIndex(roomId, id);
 		}
 	}
 }

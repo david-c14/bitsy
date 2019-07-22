@@ -514,48 +514,46 @@ function PaintTool(canvas) {
 	// TODO - may need to extract this for different tools beyond the paint tool (put it in core.js?)
 	this.deleteDrawing = function() {
 		var shouldDelete = true;
+
+		// TODO ... make nicer prompt not using default browser stuff?
 		shouldDelete = confirm("Are you sure you want to delete this drawing?");
 
-		if ( shouldDelete ) {
-			if (self.drawing.type == TileType.Tile) {
-				if ( Object.keys( tile ).length <= 1 ) { alert("You can't delete your last tile!"); return; }
-				delete tile[ self.drawing.id ];
-				findAndReplaceTileInAllRooms( self.drawing.id, "0" );
-				refreshGameData();
-				// TODO RENDERER : refresh images
-				nextTile();
+		if (shouldDelete) {
+			// TODO: Let's see what happens if we don't have this guard
+			// if (Object.keys(object).length <= 1) {
+			// 	alert("You can't delete your last object!");
+			// 	return;
+			// }
+
+			var tempType = self.GetCurDrawing().type;
+
+			// delete any dialog the object may be attached to
+			// (TODO: do I really want this when I allow multiple objects to reference scripts?)
+			var dialogId = self.GetCurDrawing().dlg;
+			// hacky --- I really want to get rid of this feature!! (I can import it away I think)
+			if (dialogId == null && tempType === TileType.Sprite) {
+				dialogId = curDrawingId;
 			}
-			else if( self.drawing.type == TileType.Avatar || self.drawing.type == TileType.Sprite ){
-				if ( Object.keys( sprite ).length <= 2 ) { alert("You can't delete your last sprite!"); return; }
-
-				// todo: share with items
-				var dlgId = sprite[ self.drawing.id ].dlg == null ? self.drawing.id : sprite[ self.drawing.id ].dlg;
-				if( dlgId && dialog[ dlgId ] )
-					delete dialog[ dlgId ];
-
-				delete sprite[ self.drawing.id ];
-
-				refreshGameData();
-				// TODO RENDERER : refresh images
-				nextSprite();
+			if (dialogId && dialog[dialogId]) {
+				delete dialog[dialogId];
 			}
-			else if( self.drawing.type == TileType.Item ){
-				if ( Object.keys( item ).length <= 1 ) { alert("You can't delete your last item!"); return; }
 
-				var dlgId = item[ self.drawing.id ].dlg;
-				if( dlgId && dialog[ dlgId ] )
-					delete dialog[ dlgId ];
+			// delete object definition
+			delete object[curDrawingId];
 
-				delete item[ self.drawing.id ];
-
-				removeAllItems( self.drawing.id );
-				refreshGameData();
-				// TODO RENDERER : refresh images
-				nextItem();
-				updateInventoryItemUI();
+			// remove references to object in rooms
+			if (tempType === TileType.Tile) {
+				findAndReplaceTileInAllRooms(curDrawingId, "0");
 			}
+			else {
+				removeAllObjects(curDrawingId);
+			}
+
+			refreshGameData();
 
 			events.Raise("paint_delete_drawing", {id:curDrawingId});
+
+			self.NextDrawing();
 		}
 	}
 
