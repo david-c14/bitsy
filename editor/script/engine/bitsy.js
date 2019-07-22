@@ -511,6 +511,7 @@ function updateInput() {
 	}
 }
 
+// TODO -- this will need to be re-thought to work with object instances (not just global objects?)
 var animationCounter = 0;
 var animationTime = 400;
 function updateAnimation() {
@@ -518,27 +519,11 @@ function updateAnimation() {
 
 	if ( animationCounter >= animationTime ) {
 
-		// animate sprites
-		for (id in sprite) {
-			var spr = sprite[id];
-			if (spr.animation.isAnimated) {
-				spr.animation.frameIndex = ( spr.animation.frameIndex + 1 ) % spr.animation.frameCount;
-			}
-		}
-
-		// animate tiles
-		for (id in tile) {
-			var til = tile[id];
-			if (til.animation.isAnimated) {
-				til.animation.frameIndex = ( til.animation.frameIndex + 1 ) % til.animation.frameCount;
-			}
-		}
-
-		// animate items
-		for (id in item) {
-			var itm = item[id];
-			if (itm.animation.isAnimated) {
-				itm.animation.frameIndex = ( itm.animation.frameIndex + 1 ) % itm.animation.frameCount;
+		// animate objects
+		for (id in object) {
+			var obj = object[id];
+			if (obj.animation.isAnimated) {
+				obj.animation.frameIndex = ( obj.animation.frameIndex + 1 ) % obj.animation.frameCount;
 			}
 		}
 
