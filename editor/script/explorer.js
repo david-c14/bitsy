@@ -359,6 +359,26 @@ function PaintExplorer(idPrefix,selectCallback) {
 		changeSelection( paintTool.drawing.id );
 		refresh( paintTool.drawing.type, false /*doKeepOldThumbnails*/ );
 	});
+
+	events.Listen("paint_add_drawing", function(event) {
+		// update paint explorer
+		self.AddThumbnail(event.id);
+		self.ChangeSelection(event.id);
+		// super hacky
+		document.getElementById("paintExplorerFilterInput").value = "";
+		// this is a bit hacky feeling
+		self.Refresh(object[event.id].type, true /*doKeepOldThumbnails*/, document.getElementById("paintExplorerFilterInput").value /*filterString*/, true /*skipRenderStep*/);
+	});
+
+	events.Listen("paint_change_drawing", function(event) {
+		self.RenderThumbnail( event.id );
+	});
+
+	events.Listen("paint_delete_drawing", function(event) {
+		self.DeleteThumbnail( event.id );
+
+		//self.explorer.ChangeSelection( self.drawing.id ); // do I need this now?
+	});
 } // PaintExplorer()
 
 // TODO : should this really live in this file?

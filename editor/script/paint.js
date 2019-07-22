@@ -1,9 +1,5 @@
 /*
 	PAINT
-
-TODO :
-- create a select drawing event
-- can I remove the reference to the room tool??
 */
 function PaintTool(canvas) {
 	// TODO : variables
@@ -65,9 +61,6 @@ function PaintTool(canvas) {
 
 		return imageSource[frameIndex];
 	}
-
-
-	this.explorer = null; // TODO: hacky way to tie this to a paint explorer -- should use events instead
 
 	//paint canvas & context
 	canvas.width = tilesize * paint_scale;
@@ -132,11 +125,9 @@ function PaintTool(canvas) {
 			isPainting = false;
 			UpdateImageSource();
 			refreshGameData();
-			roomTool.drawEditMap(); // TODO : events instead of direct coupling
 
-			if(self.explorer != null) {
-				self.explorer.RenderThumbnail( curDrawingId );
-			}
+			events.Raise("paint_change_drawing", {id:curDrawingId});
+
 			if( self.isCurDrawingAnimated ) {
 				renderAnimationPreview( curDrawingId );
 			}
@@ -480,63 +471,12 @@ function PaintTool(canvas) {
 	}
 
 	this.newDrawing = function() {
-		RemoveAnimation();
-
-		// update paint explorer
-		self.explorer.AddThumbnail(curDrawingId);
-		self.explorer.ChangeSelection(curDrawingId);
-		// super hacky
-		document.getElementById("paintExplorerFilterInput").value = "";
-		// this is a bit hacky feeling
-		self.explorer.Refresh(self.GetCurDrawing().type, true /*doKeepOldThumbnails*/, document.getElementById("paintExplorerFilterInput").value /*filterString*/, true /*skipRenderStep*/);
-	}
-
-	// TODO .. replace ALL of these with one method?
-	// TODO -- sould these newDrawing methods be internal to PaintTool?
-	function newTile(id) {
-		if (id)
-			self.drawing.id = id; //this optional parameter lets me override the default next id
-		else
-			self.drawing.id = nextTileId();
-
-		makeTile(self.drawing.id);
+		curDrawingId = nextObjectId(sortedObjectIdList());
+		makeObject(curDrawingId);
 		self.reloadDrawing(); //hack for ui consistency (hack x 2: order matters for animated tiles)
-
 		self.updateCanvas();
 		refreshGameData();
-
-		tileIndex = Object.keys(tile).length - 1;
-	}
-
-	function newSprite(id) {
-		if (id)
-			self.drawing.id = id; //this optional parameter lets me override the default next id
-		else
-			self.drawing.id = nextSpriteId();
-
-		makeSprite(self.drawing.id);
-		self.reloadDrawing(); //hack (order matters for animated tiles)
-
-		self.updateCanvas();
-		refreshGameData();
-
-		spriteIndex = Object.keys(sprite).length - 1;
-	}
-
-	function newItem(id) {
-		if (id)
-			self.drawing.id = id; //this optional parameter lets me override the default next id
-		else
-			self.drawing.id = nextItemId();
-
-		makeItem(self.drawing.id);
-		self.reloadDrawing(); //hack (order matters for animated tiles)
-
-		self.updateCanvas();
-		updateInventoryItemUI();
-		refreshGameData();
-
-		itemIndex = Object.keys(item).length - 1;
+		events.Raise("paint_add_drawing", {id:curDrawingId});
 	}
 
 	// TODO - may need to extract this for different tools beyond the paint tool (put it in core.js?)
@@ -545,15 +485,12 @@ function PaintTool(canvas) {
 		shouldDelete = confirm("Are you sure you want to delete this drawing?");
 
 		if ( shouldDelete ) {
-			self.explorer.DeleteThumbnail( self.drawing.id );
-
 			if (self.drawing.type == TileType.Tile) {
 				if ( Object.keys( tile ).length <= 1 ) { alert("You can't delete your last tile!"); return; }
 				delete tile[ self.drawing.id ];
 				findAndReplaceTileInAllRooms( self.drawing.id, "0" );
 				refreshGameData();
 				// TODO RENDERER : refresh images
-				roomTool.drawEditMap();
 				nextTile();
 			}
 			else if( self.drawing.type == TileType.Avatar || self.drawing.type == TileType.Sprite ){
@@ -568,7 +505,6 @@ function PaintTool(canvas) {
 
 				refreshGameData();
 				// TODO RENDERER : refresh images
-				roomTool.drawEditMap();
 				nextSprite();
 			}
 			else if( self.drawing.type == TileType.Item ){
@@ -583,12 +519,11 @@ function PaintTool(canvas) {
 				removeAllItems( self.drawing.id );
 				refreshGameData();
 				// TODO RENDERER : refresh images
-				roomTool.drawEditMap();
 				nextItem();
 				updateInventoryItemUI();
 			}
 
-			self.explorer.ChangeSelection( self.drawing.id );
+			events.Raise("paint_delete_drawing", {id:curDrawingId});
 		}
 	}
 

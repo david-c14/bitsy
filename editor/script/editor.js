@@ -263,58 +263,28 @@ function findAndReplaceTileInAllRooms( findTile, replaceTile ) {
 }
 
 /* MAKE DRAWING OBJECTS */
-function makeTile(id,imageData) {
-	var drwId = "TIL_" + id;
-	tile[id] = {
+function makeObject(id,imageData) {
+	var drwId = id;
+	object[id] = {
 		id : id,
-		drw : drwId,
-		col : 1,
+		type : "SPR", // TODO ... specialize based on desired type!
+		name : null,
+		drw: drwId,
+		col: 2, // TODO ... specialize based on desired type!
 		animation : { //todo
-			isAnimated : (!imageData) ? false : (imageData.length>1),
+			isAnimated : (!imageData) ? false : (imageData.length>1), // more duplication :(
 			frameIndex : 0,
 			frameCount : (!imageData) ? 2 : imageData.length
 		},
-		name : null
-	};
-	makeDrawing(drwId,imageData);
-}
-
-function makeSprite(id,imageData) {
-	var drwId = "SPR_" + id;
-	sprite[id] = { //todo create default sprite creation method
-		id : id,
-		drw : drwId,
-		col : 2,
+		inventory : {},
+		dlg : null,
+		actions : [],
+		isWall : null,
+		isPlayer : false,
 		room : null,
 		x : -1,
 		y : -1,
-		animation : { //todo
-			isAnimated : (!imageData) ? false : (imageData.length>1), // more duplication :(
-			frameIndex : 0,
-			frameCount : (!imageData) ? 2 : imageData.length
-		},
-		dlg : null,
-		name : null
-	};
-	makeDrawing(drwId,imageData);
-}
-
-function makeItem(id,imageData) { // NOTE : same as tile right now? make more like sprite?
-	// console.log(id);
-	var drwId = "ITM_" + id;
-	// console.log(drwId);
-	item[id] = {
-		id : id,
-		drw : drwId,
-		col : 2, // TODO color not column (bad name)
-		animation : { //todo
-			isAnimated : (!imageData) ? false : (imageData.length>1), // more duplication :(
-			frameIndex : 0,
-			frameCount : (!imageData) ? 2 : imageData.length
-		},
-		dlg : null,
-		name : null
-	};
+	}
 	makeDrawing(drwId,imageData);
 }
 
@@ -844,7 +814,6 @@ function start() {
 	paintExplorer = new PaintExplorer("paintExplorer",selectPaint);
 	paintExplorer.Refresh(TileType.Avatar); // TODO : remove this
 	paintExplorer.ChangeSelection("A"); // TODO : remove this too!
-	paintTool.explorer = paintExplorer;
 	paintExplorer.SetDisplayCaptions( true );
 
 	//unsupported feature stuff

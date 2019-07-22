@@ -291,6 +291,14 @@ function RoomTool(canvas) {
 	events.Listen("palette_change", function(event) {
 		self.drawEditMap();
 	});
+
+	events.Listen("paint_change_drawing", function(event) {
+		self.drawEditMap();
+	});
+
+	events.Listen("paint_delete_drawing", function(event) {
+		self.drawEditMap();
+	});
 } // RoomTool()
 
 /* METHODS */
