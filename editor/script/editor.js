@@ -130,6 +130,7 @@ function nextPaletteId() {
 	return nextObjectId( sortedPaletteIdList() );
 }
 
+// TODO : this naming is confusing now
 function nextObjectId(idList) {
 	if (idList.length <= 0) {
 		return "0";
@@ -139,6 +140,12 @@ function nextObjectId(idList) {
 	var idInt = parseInt( lastId, 36 );
 	idInt++;
 	return idInt.toString(36);
+}
+
+// TODO... figure out how to move away from base36
+// maybe sort alphabetically??
+function sortedObjectIdList() {
+	return sortedBase36IdList( object );
 }
 
 function sortedTileIdList() {
@@ -552,10 +559,6 @@ var editMode = EditMode.Edit; // TODO : move to core.js?
 var roomTool;
 var paintTool;
 
-var tileIndex = 0;
-var spriteIndex = 0;
-var itemIndex = 0;
-
 /* ROOM */
 var roomIndex = 0;
 
@@ -927,23 +930,6 @@ function newDrawing() {
 	paintTool.newDrawing();
 }
 
-function nextTile() {
-	var ids = sortedTileIdList();
-	tileIndex = (tileIndex + 1) % ids.length;
-	drawing.id = ids[tileIndex];
-	paintTool.curDrawingFrameIndex = 0;
-	paintTool.reloadDrawing();
-}
-
-function prevTile() {
-	var ids = sortedTileIdList();
-	tileIndex = (tileIndex - 1) % ids.length;
-	if (tileIndex < 0) tileIndex = (ids.length-1);
-	drawing.id = ids[tileIndex];
-	paintTool.curDrawingFrameIndex = 0;
-	paintTool.reloadDrawing();
-}
-
 function updateRoomName() {
 	if (curRoom == null) { 
 		return;
@@ -1080,7 +1066,7 @@ function selectRoom(roomId) {
 		paintExplorer.Refresh( paintTool.drawing.type, true /*doKeepOldThumbnails*/ );
 
 		if (drawing.type === TileType.Tile) {
-			updateWallCheckboxOnCurrentTile();
+			paintTool.updateWallCheckboxOnCurrentTile();
 		}
 
 		updateRoomName();
@@ -1098,7 +1084,7 @@ function nextRoom() {
 	paintExplorer.Refresh( paintTool.drawing.type, true /*doKeepOldThumbnails*/ );
 
 	if (drawing.type === TileType.Tile) {
-		updateWallCheckboxOnCurrentTile();
+		paintTool.updateWallCheckboxOnCurrentTile();
 	}
 
 	updateRoomName();
@@ -1116,7 +1102,7 @@ function prevRoom() {
 	paintExplorer.Refresh( paintTool.drawing.type, true /*doKeepOldThumbnails*/ );
 
 	if (drawing.type === TileType.Tile) {
-		updateWallCheckboxOnCurrentTile();
+		paintTool.updateWallCheckboxOnCurrentTile();
 	}
 
 	updateRoomName();
@@ -1275,65 +1261,14 @@ function deleteRoom() {
 	}
 }
 
-function nextItem() {
-	var ids = sortedItemIdList();
-	itemIndex = (itemIndex + 1) % ids.length;
-	drawing.id = ids[itemIndex];
-	paintTool.curDrawingFrameIndex = 0;
-	paintTool.reloadDrawing();
-}
-
-function prevItem() {
-	var ids = sortedItemIdList();
-	itemIndex = (itemIndex - 1) % ids.length;
-	if (itemIndex < 0) itemIndex = (ids.length-1); // loop
-	drawing.id = ids[itemIndex];
-	paintTool.curDrawingFrameIndex = 0;
-	paintTool.reloadDrawing();
-}
-
-function nextSprite() {
-	var ids = sortedSpriteIdList();
-	spriteIndex = (spriteIndex + 1) % ids.length;
-	if (spriteIndex === 0) spriteIndex = 1; //skip avatar
-	drawing.id = ids[spriteIndex];
-	paintTool.curDrawingFrameIndex = 0;
-	paintTool.reloadDrawing();
-}
-
-function prevSprite() {
-	var ids = sortedSpriteIdList();
-	spriteIndex = (spriteIndex - 1) % ids.length;
-	if (spriteIndex <= 0) spriteIndex = (ids.length-1); //loop and skip avatar
-	drawing.id = ids[spriteIndex];
-	paintTool.curDrawingFrameIndex = 0;
-	paintTool.reloadDrawing();
-}
-
 function next() {
-	if (drawing.type == TileType.Tile) {
-		nextTile();
-	}
-	else if( drawing.type == TileType.Avatar || drawing.type == TileType.Sprite ) {
-		nextSprite();
-	}
-	else if( drawing.type == TileType.Item ) {
-		nextItem();
-	}
-	paintExplorer.ChangeSelection( drawing.id );
+	paintTool.NextDrawing();
+	// paintExplorer.ChangeSelection( drawing.id );
 }
 
 function prev() {
-	if (drawing.type == TileType.Tile) {
-		prevTile();
-	}
-	else if( drawing.type == TileType.Avatar || drawing.type == TileType.Sprite ) {
-		prevSprite();
-	}
-	else if( drawing.type == TileType.Item ) {
-		prevItem();
-	}
-	paintExplorer.ChangeSelection( drawing.id );
+	paintTool.PrevDrawing();
+	// paintExplorer.ChangeSelection( drawing.id );
 }
 
 function duplicateDrawing() {
@@ -1451,28 +1386,6 @@ function removeAllItems( id ) {
 			room[roomId].items.splice(i,1);
 			i = getFirstItemIndex(roomId, id );
 		}
-	}
-}
-
-function updateWallCheckboxOnCurrentTile() {
-	var isCurTileWall = false;
-
-	if( tile[ drawing.id ].isWall == undefined || tile[ drawing.id ].isWall == null ) {
-		if (room[curRoom]) {
-			isCurTileWall = (room[curRoom].walls.indexOf(drawing.id) != -1);
-		}
-	}
-	else {
-		isCurTileWall = tile[ drawing.id ].isWall;
-	}
-
-	if (isCurTileWall) {
-		document.getElementById("wallCheckbox").checked = true;
-		document.getElementById("wallCheckboxIcon").innerHTML = "border_outer";
-	}
-	else {
-		document.getElementById("wallCheckbox").checked = false;
-		document.getElementById("wallCheckboxIcon").innerHTML = "border_clear";
 	}
 }
 

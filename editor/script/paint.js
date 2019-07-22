@@ -247,7 +247,7 @@ function PaintTool(canvas) {
 		}
 
 		if (self.GetCurDrawing().type === TileType.Tile) {
-			updateWallCheckboxOnCurrentTile();
+			self.updateWallCheckboxOnCurrentTile();
 		}
 		else {
 			// TODO : need to account for player avatar too somewhere
@@ -260,6 +260,29 @@ function PaintTool(canvas) {
 
 		// update paint canvas
 		self.updateCanvas();
+	}
+
+	// have to expose for legacy reasons (per-room wall settings)
+	this.updateWallCheckboxOnCurrentTile = function() {
+		var isCurTileWall = false;
+
+		if (self.GetCurDrawing().isWall == undefined || self.GetCurDrawing().isWall == null) {
+			if (room[curRoom]) {
+				isCurTileWall = (room[curRoom].walls.indexOf(curDrawingId) != -1);
+			}
+		}
+		else {
+			isCurTileWall = self.GetCurDrawing().isWall;
+		}
+
+		if (isCurTileWall) {
+			document.getElementById("wallCheckbox").checked = true;
+			document.getElementById("wallCheckboxIcon").innerHTML = "border_outer";
+		}
+		else {
+			document.getElementById("wallCheckbox").checked = false;
+			document.getElementById("wallCheckboxIcon").innerHTML = "border_clear";
+		}
 	}
 
 	this.selectDrawing = function(drawingId) {
@@ -413,6 +436,26 @@ function PaintTool(canvas) {
 		renderAnimationThumbnail( "animationThumbnailFrame2", id, 1 );
 	}
 
+	this.NextDrawing = function() {
+		var ids = sortedObjectIdList();
+		var objectIndex = ids.indexOf(curDrawingId);
+		objectIndex = (objectIndex + 1) % ids.length;
+		curDrawingId = ids[objectIndex];
+		self.curDrawingFrameIndex = 0;
+		self.reloadDrawing();
+	}
+
+	this.PrevDrawing = function() {
+		var ids = sortedObjectIdList();
+		var objectIndex = ids.indexOf(curDrawingId);
+		objectIndex = (objectIndex - 1) % ids.length;
+		if (objectIndex < 0) {
+			objectIndex = (ids.length-1);
+		}
+		curDrawingId = ids[objectIndex];
+		self.curDrawingFrameIndex = 0;
+		self.reloadDrawing();
+	}
 
 	this.newDrawing = function() {
 		RemoveAnimation();
