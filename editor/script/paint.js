@@ -300,17 +300,122 @@ function PaintTool(canvas) {
 		}
 	}
 
+	function AddAnimation() {
+		//set editor mode
+		self.isCurDrawingAnimated = true;
+		self.curDrawingFrameIndex = 0;
+
+		//mark drawing as animated
+		self.GetCurDrawing().animation.isAnimated = true;
+		self.GetCurDrawing().animation.frameIndex = 0;
+		self.GetCurDrawing().animation.frameCount = 2;
+
+		//add blank frame (or restore removed animation)
+		if (self.GetCurDrawing().cachedAnimation != null) {
+			restoreDrawingAnimation(self.GetCurDrawing().drw, self.GetCurDrawing().cachedAnimation);
+		}
+		else {
+			addNewFrameToDrawing(self.GetCurDrawing().drw);
+		}
+
+		// TODO RENDERER : refresh images
+
+		//refresh data model
+		refreshGameData();
+		self.reloadDrawing();
+
+		// reset animations
+		resetAllAnimations();
+	}
+
+	function RemoveAnimation() {
+		//set editor mode
+		self.isCurDrawingAnimated = false;
+
+		//mark drawing as non-animated
+		self.GetCurDrawing().animation.isAnimated = false;
+		self.GetCurDrawing().animation.frameIndex = 0;
+		self.GetCurDrawing().animation.frameCount = 0;
+
+		//remove all but the first frame
+		cacheDrawingAnimation( self.GetCurDrawing(), self.GetCurDrawing().drw );
+		removeDrawingAnimation( self.GetCurDrawing().drw );
+
+		// TODO RENDERER : refresh images
+
+		//refresh data model
+		refreshGameData();
+		self.reloadDrawing();
+
+		// reset animations
+		resetAllAnimations();
+	}
+
+	function addNewFrameToDrawing(drwId) {
+		// copy first frame data into new frame
+		var imageSource = renderer.GetImageSource(drwId);
+		var firstFrame = imageSource[0];
+		var newFrame = [];
+		for (var y = 0; y < tilesize; y++) {
+			newFrame.push([]);
+			for (var x = 0; x < tilesize; x++) {
+				newFrame[y].push( firstFrame[y][x] );
+			}
+		}
+		imageSource.push( newFrame );
+		renderer.SetImageSource(drwId, imageSource);
+	}
+
+	function removeDrawingAnimation(drwId) {
+		var imageSource = renderer.GetImageSource(drwId);
+		var oldImageData = imageSource.slice(0);
+		renderer.SetImageSource( drwId, [ oldImageData[0] ] );
+	}
+
+	// let's us restore the animation during the session if the user wants it back
+	function cacheDrawingAnimation(drawing,sourceId) {
+		var imageSource = renderer.GetImageSource(sourceId);
+		var oldImageData = imageSource.slice(0);
+		drawing.cachedAnimation = [ oldImageData[1] ]; // ah the joys of javascript
+	}
+
+	function restoreDrawingAnimation(sourceId,cachedAnimation) {
+		var imageSource = renderer.GetImageSource(sourceId);
+		for (f in cachedAnimation) {
+			imageSource.push( cachedAnimation[f] );
+		}
+		renderer.SetImageSource(sourceId, imageSource);
+	}
+
+	this.toggleAnimated = function(checked) {
+		if (checked) {
+			AddAnimation();
+
+			document.getElementById("animation").setAttribute("style","display:block;");
+			document.getElementById("animatedCheckboxIcon").innerHTML = "expand_more";
+			renderAnimationPreview(self.GetCurDrawing().id);
+		}
+		else {
+			// TODO ... make this ONE function
+			if (self.GetCurDrawing().type === TileType.Sprite) {
+				removeSpriteAnimation();
+			}
+			else if (self.GetCurDrawing().type === TileType.Tile) {
+				removeTileAnimation();
+			}
+			else if (self.GetCurDrawing().type === TileType.Item) {
+				removeItemAnimation();
+			}
+
+			document.getElementById("animation").setAttribute("style","display:none;");
+			document.getElementById("animatedCheckboxIcon").innerHTML = "expand_less";
+		}
+
+		renderPaintThumbnail(self.GetCurDrawing().id);
+	}
+
 	this.newDrawing = function() {
-		// TODO : simplify please..
-		if (self.GetCurDrawing().type == TileType.Tile) {
-			newTile();
-		}
-		else if (self.GetCurDrawing().type == TileType.Sprite) {
-			newSprite();
-		}
-		else if (self.GetCurDrawing().type == TileType.Item) {
-			newItem();
-		}
+		RemoveAnimation();
 
 		// update paint explorer
 		self.explorer.AddThumbnail(self.GetCurDrawing().id);
