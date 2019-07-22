@@ -258,6 +258,28 @@ function PaintTool(canvas) {
 		// ??? what's the boolean for?
 		updateDrawingNameUI( curDrawingId != "A" );
 
+		// toggle type-specific UI
+		if (self.GetCurDrawing().type != TileType.Tile) {
+			document.getElementById("dialog").setAttribute("style","display:block;");
+		}
+		else {
+			document.getElementById("dialog").setAttribute("style","display:none;");
+		}
+
+		if (self.GetCurDrawing().type === TileType.Tile) {
+			document.getElementById("wall").setAttribute("style","display:block;");
+		}
+		else {
+			document.getElementById("wall").setAttribute("style","display:none;");
+		}
+
+		if (self.GetCurDrawing().type === TileType.Item) {
+			document.getElementById("showInventoryButton").setAttribute("style","display:inline-block;");
+		}
+		else {
+			document.getElementById("showInventoryButton").setAttribute("style","display:none;");
+		}
+
 		// update paint canvas
 		self.updateCanvas();
 	}
