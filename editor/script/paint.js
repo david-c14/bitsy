@@ -31,13 +31,13 @@ function PaintTool(canvas) {
 		// TODO : this can be simplified if I stop inferring the ID of dialog from the drawing ID
 		var dialogId = null;
 		if (self.GetCurDrawing().type === TileType.Sprite) {
-			dialogId = object[self.GetCurDrawing().id].dlg;
-			if(dialogId == null && dialog[self.GetCurDrawing().id] != null) {
-				dialogId = self.GetCurDrawing().id;
+			dialogId = object[curDrawingId].dlg;
+			if(dialogId == null && dialog[curDrawingId] != null) {
+				dialogId = curDrawingId;
 			}
 		}
 		else if (self.GetCurDrawing().type === TileType.Item) {
-			dialogId = object[self.GetCurDrawing().id].dlg;
+			dialogId = object[curDrawingId].dlg;
 		}
 		return dialogId;
 	}
@@ -128,18 +128,17 @@ function PaintTool(canvas) {
 	}
 
 	function onMouseUp(e) {
-		console.log("?????");
 		if (isPainting) {
 			isPainting = false;
-			updateDrawingData();
+			UpdateImageSource();
 			refreshGameData();
 			roomTool.drawEditMap(); // TODO : events instead of direct coupling
 
 			if(self.explorer != null) {
-				self.explorer.RenderThumbnail( self.GetCurDrawing().id );
+				self.explorer.RenderThumbnail( curDrawingId );
 			}
 			if( self.isCurDrawingAnimated ) {
-				renderAnimationPreview( roomTool.drawing.id );
+				renderAnimationPreview( curDrawingId );
 			}
 		}
 	}
@@ -214,11 +213,6 @@ function PaintTool(canvas) {
 		return GetFrameData(frameIndex);
 	}
 
-	// TODO : redundant
-	function updateDrawingData() {
-		UpdateImageSource();
-	}
-
 	// NOTE: This does some global UI stuff now
 	// but it's still better than the old version
 	this.reloadDrawing = function() {
@@ -243,7 +237,7 @@ function PaintTool(canvas) {
 			document.getElementById("animation").setAttribute("style","display:block;");
 			document.getElementById("animatedCheckboxIcon").innerHTML = "expand_more";
 
-			renderAnimationPreview(self.GetCurDrawing().id);
+			renderAnimationPreview(curDrawingId);
 		}
 		else {
 			self.isCurDrawingAnimated = false;
@@ -262,7 +256,7 @@ function PaintTool(canvas) {
 		}
 
 		// ??? what's the boolean for?
-		updateDrawingNameUI( self.GetCurDrawing().id != "A" );
+		updateDrawingNameUI( curDrawingId != "A" );
 
 		// update paint canvas
 		self.updateCanvas();
@@ -283,7 +277,7 @@ function PaintTool(canvas) {
 			// clear out any existing wall settings for this tile in any rooms
 			// (this is back compat for old-style wall settings)
 			for (roomId in room) {
-				var i = room[roomId].walls.indexOf(self.GetCurDrawing().id);
+				var i = room[roomId].walls.indexOf(curDrawingId);
 				if(i > -1) {
 					room[roomId].walls.splice(i, 1);
 				}
@@ -300,6 +294,8 @@ function PaintTool(canvas) {
 		}
 	}
 
+	// TODO .. seperate into its own little tool someday?
+	/* ANIMATION CONTROLS */
 	function AddAnimation() {
 		//set editor mode
 		self.isCurDrawingAnimated = true;
@@ -373,10 +369,10 @@ function PaintTool(canvas) {
 	}
 
 	// let's us restore the animation during the session if the user wants it back
-	function cacheDrawingAnimation(drawing,sourceId) {
+	function cacheDrawingAnimation(object,sourceId) {
 		var imageSource = renderer.GetImageSource(sourceId);
 		var oldImageData = imageSource.slice(0);
-		drawing.cachedAnimation = [ oldImageData[1] ]; // ah the joys of javascript
+		object.cachedAnimation = [ oldImageData[1] ]; // ah the joys of javascript
 	}
 
 	function restoreDrawingAnimation(sourceId,cachedAnimation) {
@@ -393,33 +389,37 @@ function PaintTool(canvas) {
 
 			document.getElementById("animation").setAttribute("style","display:block;");
 			document.getElementById("animatedCheckboxIcon").innerHTML = "expand_more";
-			renderAnimationPreview(self.GetCurDrawing().id);
+			renderAnimationPreview(curDrawingId);
 		}
 		else {
-			// TODO ... make this ONE function
-			if (self.GetCurDrawing().type === TileType.Sprite) {
-				removeSpriteAnimation();
-			}
-			else if (self.GetCurDrawing().type === TileType.Tile) {
-				removeTileAnimation();
-			}
-			else if (self.GetCurDrawing().type === TileType.Item) {
-				removeItemAnimation();
-			}
+			RemoveAnimation();
 
 			document.getElementById("animation").setAttribute("style","display:none;");
 			document.getElementById("animatedCheckboxIcon").innerHTML = "expand_less";
 		}
 
-		renderPaintThumbnail(self.GetCurDrawing().id);
+		// renderPaintThumbnail(curDrawingId);
 	}
+
+	var animationThumbnailRenderer = new ThumbnailRenderer();
+	function renderAnimationThumbnail(imgId,id,frameIndex) {
+		animationThumbnailRenderer.Render(imgId, curDrawingId, frameIndex);
+	}
+
+	function renderAnimationPreview(id) {
+		// console.log("RENDRE ANIM PREVIW");
+		renderAnimationThumbnail( "animationThumbnailPreview", id );
+		renderAnimationThumbnail( "animationThumbnailFrame1", id, 0 );
+		renderAnimationThumbnail( "animationThumbnailFrame2", id, 1 );
+	}
+
 
 	this.newDrawing = function() {
 		RemoveAnimation();
 
 		// update paint explorer
-		self.explorer.AddThumbnail(self.GetCurDrawing().id);
-		self.explorer.ChangeSelection(self.GetCurDrawing().id);
+		self.explorer.AddThumbnail(curDrawingId);
+		self.explorer.ChangeSelection(curDrawingId);
 		// super hacky
 		document.getElementById("paintExplorerFilterInput").value = "";
 		// this is a bit hacky feeling

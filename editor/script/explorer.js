@@ -363,8 +363,6 @@ function PaintExplorer(idPrefix,selectCallback) {
 
 // TODO : should this really live in this file?
 function ThumbnailRenderer() {
-	console.log("NEW THUMB RENDERER");
-
 	var drawingThumbnailCanvas, drawingThumbnailCtx;
 	drawingThumbnailCanvas = document.createElement("canvas");
 	drawingThumbnailCanvas.width = 8 * scale; // TODO: scale constants need to be contained somewhere
@@ -392,11 +390,11 @@ function ThumbnailRenderer() {
 		var drawingFrameData = [];
 
 		if( isAnimated || frameIndex == 0 ) {
-			drawingId.draw( drawingThumbnailCtx, 0, 0, palId, 0 /*frameIndex*/ );
+			drawObject(renderer.GetImage(object[drawingId], palId, 0 /*frameIndex*/), 0, 0, drawingThumbnailCtx);
 			drawingFrameData.push( drawingThumbnailCtx.getImageData(0,0,8*scale,8*scale).data );
 		}
 		if( isAnimated || frameIndex == 1 ) {
-			drawingId.draw( drawingThumbnailCtx, 0, 0, palId, 1 /*frameIndex*/ );
+			drawObject(renderer.GetImage(object[drawingId], palId, 1 /*frameIndex*/), 0, 0, drawingThumbnailCtx);
 			drawingFrameData.push( drawingThumbnailCtx.getImageData(0,0,8*scale,8*scale).data );
 		}
 

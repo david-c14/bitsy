@@ -1898,19 +1898,6 @@ function editDrawingAtCoordinate(x,y) {
 	}
 }
 
-var animationThumbnailRenderer = new ThumbnailRenderer();
-function renderAnimationThumbnail(imgId,id,frameIndex) {
-	var drawingId = new DrawingId(drawing.type,id); // HACK!!! - need consistency on how type + id should be coupled
-	animationThumbnailRenderer.Render(imgId,drawingId,frameIndex);
-}
-
-function renderAnimationPreview(id) {
-	// console.log("RENDRE ANIM PREVIW");
-	renderAnimationThumbnail( "animationThumbnailPreview", id );
-	renderAnimationThumbnail( "animationThumbnailFrame1", id, 0 );
-	renderAnimationThumbnail( "animationThumbnailFrame2", id, 1 );
-}
-
 function selectPaint() {
 	if(drawing.id === this.value && document.getElementById("paintPanel").style.display === "none") {
 		togglePanelCore("paintPanel", true /*visible*/); // animate?
