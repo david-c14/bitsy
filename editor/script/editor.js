@@ -1544,6 +1544,9 @@ function updateDrawingNameUI(visible) {
 	}
 
 	document.getElementById("drawingName").placeholder = getCurPaintModeStr() + " " + obj.id;
+
+	// hacky update to type indicator
+	document.getElementById("drawingTypeLabel").innerText = obj.type + (obj.isPlayer ? "*" : "");
 }
 
 function paintExplorerFilterChange( e ) {
