@@ -473,12 +473,12 @@ function PaintTool(canvas) {
 			type = "SPR"; // default to sprite just in case
 		}
 
-		curDrawingId = nextObjectId(sortedObjectIdList());
-		makeObject(curDrawingId, type);
-		self.reloadDrawing(); //hack for ui consistency (hack x 2: order matters for animated tiles)
-		self.updateCanvas();
+		var newDrawingId = nextObjectId(sortedObjectIdList());
+		makeObject(newDrawingId, type);
 		refreshGameData();
-		events.Raise("paint_add_drawing", {id:curDrawingId});
+
+		events.Raise("paint_add_drawing", {id:newDrawingId});
+		events.Raise("select_drawing", {id:newDrawingId});
 	}
 
 	this.DuplicateDrawing = function() {
