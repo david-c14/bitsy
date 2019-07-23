@@ -895,8 +895,8 @@ function start() {
 	events.Raise("select_drawing", {id:"A"});
 }
 
-function newDrawing() {
-	paintTool.newDrawing();
+function newDrawing(type) {
+	paintTool.newDrawing(type);
 }
 
 function updateRoomName() {

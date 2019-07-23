@@ -468,9 +468,13 @@ function PaintTool(canvas) {
 	}
 
 	// TODO : need to make this work for ALL object types (currently creates sprites)
-	this.newDrawing = function() {
+	this.newDrawing = function(type) {
+		if (type === undefined || type === null) {
+			type = "SPR"; // default to sprite just in case
+		}
+
 		curDrawingId = nextObjectId(sortedObjectIdList());
-		makeObject(curDrawingId, "SPR"); // TODO multiple types!
+		makeObject(curDrawingId, type);
 		self.reloadDrawing(); //hack for ui consistency (hack x 2: order matters for animated tiles)
 		self.updateCanvas();
 		refreshGameData();

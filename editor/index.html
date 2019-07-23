@@ -673,9 +673,9 @@
 							</button>
 						</div>
 						<div id="paintCommands" class="buttonGroup">
-							<button title="add drawing" class="color0" onclick="newDrawing();">
+							<!-- <button title="add drawing" class="color0" onclick="newDrawing();">
 								<i class="material-icons">add</i>
-							</button>
+							</button> -->
 							<button title="duplicate drawing" class="color0" onclick="duplicateDrawing();">
 								<i class="material-icons">content_copy</i>
 							</button>
@@ -689,6 +689,18 @@
 								<i class="material-icons" id="paintGridIcon">visibility</i> 
 								<span class="localize grid_toggle_visible">grid</span>
 							</label>
+						</div>
+						<!-- hack temp alert DO NOT KEEP -->
+						<div id="tempNewDrawingCommands" class="buttonGroup" style="display:block;">
+							<button title="add sprite" class="color0" onclick="newDrawing('SPR');">
+								<i class="material-icons">add</i> sprite
+							</button>
+							<button title="add item" class="color0" onclick="newDrawing('ITM');">
+								<i class="material-icons">add</i> item
+							</button>
+							<button title="add tile" class="color0" onclick="newDrawing('TIL');">
+								<i class="material-icons">add</i> tile
+							</button>
 						</div>
 						<div style="margin-bottom: 5px;">
 							<!-- hacky type indicator -->
