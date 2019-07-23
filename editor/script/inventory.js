@@ -32,31 +32,33 @@ function updateInventoryItemUI(){
 
 	// console.log("UPDATE!!!!");
 	var itemLabel = localization.GetStringOrFallback("item_label", "item");
-	for(id in item) {
-		var itemName = item[id].name != null ? item[id].name : itemLabel + " " + id;
-		// console.log( id );
-		// console.log( player() );
-		// console.log( player().inventory );
-		var itemCount = player().inventory[id] != undefined ? parseFloat( player().inventory[id] ) : 0;
+	for(id in object) {
+		if (object[id].type === TileType.Item) {
+			var itemName = object[id].name != null ? object[id].name : itemLabel + " " + id;
+			// console.log( id );
+			// console.log( player() );
+			// console.log( player().inventory );
+			var itemCount = player().inventory[id] != undefined ? parseFloat( player().inventory[id] ) : 0;
 
-		var itemDiv = document.createElement("div");
-		itemDiv.classList.add("controlBox");
-		itemDiv.id = "inventoryItem_" + id;
-		itemDiv.title = itemName;
-		viewport.appendChild(itemDiv);
+			var itemDiv = document.createElement("div");
+			itemDiv.classList.add("controlBox");
+			itemDiv.id = "inventoryItem_" + id;
+			itemDiv.title = itemName;
+			viewport.appendChild(itemDiv);
 
-		var itemNameSpan = document.createElement("span");
-		itemNameSpan.innerText = itemName + " : ";
-		itemDiv.appendChild( itemNameSpan );
+			var itemNameSpan = document.createElement("span");
+			itemNameSpan.innerText = itemName + " : ";
+			itemDiv.appendChild( itemNameSpan );
 
-		var itemValueInput = document.createElement("input");
-		itemValueInput.type = "number";
-		itemValueInput.min = 0;
-		itemValueInput.value = itemCount;
-		itemValueInput.style.fontSize = "100%";
-		itemValueInput.style.width = "30%";
-		itemValueInput.addEventListener('change', createOnItemValueChange(id));
-		itemDiv.appendChild( itemValueInput );
+			var itemValueInput = document.createElement("input");
+			itemValueInput.type = "number";
+			itemValueInput.min = 0;
+			itemValueInput.value = itemCount;
+			itemValueInput.style.fontSize = "100%";
+			itemValueInput.style.width = "30%";
+			itemValueInput.addEventListener('change', createOnItemValueChange(id));
+			itemDiv.appendChild( itemValueInput );
+		}
 	}
 }
 
