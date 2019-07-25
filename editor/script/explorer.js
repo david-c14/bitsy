@@ -351,13 +351,15 @@ function PaintExplorer(idPrefix,selectCallback) {
 	}
 
 	events.Listen("palette_change", function(event) {
-		refresh( paintTool.GetCurDrawing().type, true /*doKeepOldThumbnails*/ );
+		// TODO - fix
+		// refresh( paintTool.GetCurDrawing().type, true /*doKeepOldThumbnails*/ );
 	});
 
 	events.Listen("game_data_change", function(event) {
+		// TODO - fix
 		// the code in the paint and find drawing tools is so messy it hurts :(
-		changeSelection( paintTool.drawing.id );
-		refresh( paintTool.GetCurDrawing().type, false /*doKeepOldThumbnails*/ );
+		// changeSelection( paintTool.drawing.id );
+		// refresh( paintTool.GetCurDrawing().type, false /*doKeepOldThumbnails*/ );
 	});
 
 	events.Listen("paint_add_drawing", function(event) {

@@ -6,6 +6,7 @@ var ctx;
 var title = "";
 var room = {};
 var object = {};
+var action = {};
 var dialog = {};
 var palette = { //start off with a default palette
 		"default" : {
@@ -1026,6 +1027,9 @@ function parseWorld(file) {
 		else if (getType(curLine) === "TIL" || getType(curLine) === "SPR" || getType(curLine) === "ITM") {
 			i = parseObject(lines, i, getType(curLine), versionNumber);
 		}
+		else if (getType(curLine) === "ACT") {
+			i = parseAction(lines, i);
+		}
 		else if (getType(curLine) === "DLG") {
 			i = parseDialog(lines, i);
 		}
@@ -1247,6 +1251,18 @@ function serializeWorld(skipFonts) {
 			}
 		}
 
+		worldStr += "\n";
+	}
+	/* ACTIONS */
+	for (id in action) {
+		worldStr += "ACT " + id + "\n";
+		if (action[id].name != null) {
+			worldStr += "NAME " + action[id].name + "\n";
+		}
+		worldStr += "TRG " + action[id].trigger.type + " " + action[id].trigger.args.join(" ") + "\n";
+		worldStr += "SRC\n"; // TODO : not sure how I feel about this syntax yet?
+		worldStr += action[id].source;
+		worldStr += "END_SRC\n";
 		worldStr += "\n";
 	}
 	/* DIALOG */
@@ -1683,6 +1699,7 @@ function parseDrawingCore(lines, i, drwId) {
 // 	Ending : 2,
 // };
 
+// TODO ... this isn't great, and I should remove it
 function parseScript(lines, i, objectStore) {
 	// TODO : vNext
 	// if (scriptType === undefined || scriptType === null) {
@@ -1703,6 +1720,54 @@ function parseScript(lines, i, objectStore) {
 	objectStore[id] = results.script;
 
 	i = results.index;
+
+	return i;
+}
+
+function parseAction(lines, i) {
+	var id = getId(lines[i]);
+	i++;
+
+	var newAction = {
+		id : id,
+		name : null,
+		trigger : null,
+		source : null,
+	};
+
+	var isReadingSource = false;
+
+	while (i < lines.length && lines[i].length > 0) { //look for empty line
+		if (isReadingSource) {
+			if (lines[i] === "END_SRC") {
+				isReadingSource = false;
+			}
+			else {
+				newAction.source = lines[i] + "\n";
+			}
+		}
+		else {
+			if (lines[i] === "SRC") {
+				newAction.source = "";
+				isReadingSource = true;
+			}
+			else if (getType(lines[i]) === "TRG") {
+				newAction.trigger = {
+					type : getArg(lines[i], 1),
+					args : lines[i].split(" ").slice(2),
+				};
+			}
+			else if (getType(lines[i]) === "NAME") {
+				/* NAME */
+				newAction.name = lines[i].split(/\s(.+)/)[1];
+				// names.sprite.set( name, id ); // TODO ?
+			}
+		}
+
+		i++;
+	}
+
+	action[id] = newAction;
 
 	return i;
 }
