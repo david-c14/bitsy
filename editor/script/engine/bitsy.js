@@ -417,18 +417,8 @@ function update() {
 			dialogBuffer.Update( deltaTime );
 		}
 		else if (!isEnding) {
-			// SUPER HACKY PROTOTYPE update sprite actions
 			if (animationCounter == 0) {
-				for (id in sprite) {
-					if (sprite[id].room === curRoom) {
-						for (var i = 0; i < sprite[id].actions.length; i++) {
-							// hacky!
-							var scriptId = sprite[id].actions[i];
-							var scriptStr = dialog[scriptId];
-							startDialog(scriptStr,scriptId,sprite[id]);
-						}
-					}
-				}
+				updateStepActions();
 			}
 		}
 
@@ -508,6 +498,25 @@ function updateInput() {
 		if (curPlayerDirection != Direction.None && curPlayerDirection != prevPlayerDirection) {
 			movePlayer( curPlayerDirection );
 			playerHoldToMoveTimer = 500;
+		}
+	}
+}
+
+function updateStepActions() {
+	for (var i = 0; i < room[curRoom].objects.length; i++) {
+		var objInfo = room[curRoom].objects[i];
+		tryTriggerAction("step", objInfo);
+	}
+}
+
+function tryTriggerAction(type, objInfo) { // TODO rename : objInfo to objInstance everywhere?
+	var objectActions = object[objInfo.id].actions;
+
+	for (var i = 0; i < objectActions.length; i++) {
+		var actionId = objectActions[i];
+		if (action[actionId].trigger.type === type) {
+			// DO ACTION! (hacky)
+			startDialog(action[actionId].source, actionId, objInfo); // will operating on the object info work??
 		}
 	}
 }
@@ -1261,7 +1270,7 @@ function serializeWorld(skipFonts) {
 		}
 		worldStr += "TRG " + action[id].trigger.type + " " + action[id].trigger.args.join(" ") + "\n";
 		worldStr += "SRC\n"; // TODO : not sure how I feel about this syntax yet?
-		worldStr += action[id].source;
+		worldStr += action[id].source + "\n";
 		worldStr += "END_SRC\n";
 		worldStr += "\n";
 	}
@@ -1740,6 +1749,9 @@ function parseAction(lines, i) {
 	while (i < lines.length && lines[i].length > 0) { //look for empty line
 		if (isReadingSource) {
 			if (lines[i] === "END_SRC") {
+				// hack: cut off trailing newline
+				newAction.source = newAction.source.slice(0,newAction.source.length-1);
+
 				isReadingSource = false;
 			}
 			else {
