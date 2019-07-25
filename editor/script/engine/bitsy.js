@@ -847,6 +847,7 @@ function movePlayer(direction) {
 
 var transition = new TransitionManager();
 
+// TODO : since I'm not doing effects I should refactor to get rid of this right?
 function movePlayerThroughExit(ext) {
 	var GoToDest = function() {
 		if (ext.transition_effect != null) {
@@ -858,6 +859,8 @@ function movePlayerThroughExit(ext) {
 		player().x = ext.dest.x;
 		player().y = ext.dest.y;
 		curRoom = ext.dest.room;
+
+		createObjectInstances(curRoom);
 	};
 
 	// TODO : vNext
@@ -874,6 +877,14 @@ function movePlayerThroughExit(ext) {
 	// }
 
 	GoToDest();
+}
+
+function createObjectInstances(roomId) {
+	// TODO
+	// need to think hard about instances work
+	// how does item pick up work?
+	// how does debug room rendering?
+	// should I rename room.objects to room.object_locations?
 }
 
 function getItemIndex(roomId,x,y) {
@@ -1374,6 +1385,7 @@ function parseRoom(lines, i) {
 		exits : [],
 		endings : [],
 		objects : [],
+		object_instances : [],
 		pal : null,
 		name : null
 	};
