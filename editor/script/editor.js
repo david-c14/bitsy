@@ -1246,8 +1246,8 @@ function duplicateDrawing() {
 
 function removeAllObjects( id ) {
 	function getFirstObjectIndex(roomId, objId) {
-		for(var i = 0; i < room[roomId].objects.length; i++) {
-			if(room[roomId].objects[i].id === objId)
+		for(var i = 0; i < room[roomId].objectLocations.length; i++) {
+			if(room[roomId].objectLocations[i].id === objId)
 				return i;
 		}
 		return -1;
@@ -1256,7 +1256,7 @@ function removeAllObjects( id ) {
 	for (roomId in room) {
 		var i = getFirstObjectIndex(roomId, id);
 		while (i > -1) {
-			room[roomId].objects.splice(i,1);
+			room[roomId].objectLocations.splice(i,1);
 			i = getFirstObjectIndex(roomId, id);
 		}
 	}
@@ -2110,10 +2110,10 @@ function takeSnapshotGif(e) {
 	gifCaptureCanvas.width = 512; // stop hardcoding 512?
 	gifCaptureCanvas.height = 512;
 
-	drawRoom( room[curRoom], gifCaptureCtx, 0 );
+	drawRoom( room[curRoom], true, gifCaptureCtx, 0 );
 	var frame0 = gifCaptureCtx.getImageData(0,0,512,512);
 
-	drawRoom( room[curRoom], gifCaptureCtx, 1 );
+	drawRoom( room[curRoom], true, gifCaptureCtx, 1 );
 	var frame1 = gifCaptureCtx.getImageData(0,0,512,512);
 
 	if(e.altKey) {

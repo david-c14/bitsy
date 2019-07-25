@@ -194,6 +194,8 @@ function load_game(game_data, startWithTitle) {
 
 	setInitialVariables();
 
+	createObjectInstances(curRoom);
+
 	onready(startWithTitle);
 }
 
@@ -503,9 +505,9 @@ function updateInput() {
 }
 
 function updateStepActions() {
-	for (var i = 0; i < room[curRoom].objects.length; i++) {
-		var objInfo = room[curRoom].objects[i];
-		tryTriggerAction("step", objInfo);
+	for (var i = 0; i < room[curRoom].objectInstances.length; i++) {
+		var objectInstance = room[curRoom].objectInstances[i];
+		tryTriggerAction("step", objectInstance);
 	}
 }
 
@@ -529,9 +531,17 @@ function updateAnimation() {
 
 	if ( animationCounter >= animationTime ) {
 
-		// animate objects
+		// animate object definitions
 		for (id in object) {
 			var obj = object[id];
+			if (obj.animation.isAnimated) {
+				obj.animation.frameIndex = ( obj.animation.frameIndex + 1 ) % obj.animation.frameCount;
+			}
+		}
+
+		// AND their instances (hacky?)
+		for (var i = 0; i < room[curRoom].objectInstances.length; i++) {
+			var obj = room[curRoom].objectInstances[i];
 			if (obj.animation.isAnimated) {
 				obj.animation.frameIndex = ( obj.animation.frameIndex + 1 ) % obj.animation.frameCount;
 			}
@@ -567,11 +577,11 @@ function resetAllAnimations() {
 }
 
 function getSpriteAt(x,y) {
-	for (var i = 0; i < room[curRoom].objects.length; i++) {
-		var objInfo = room[curRoom].objects[i];
-		if (object[objInfo.id].type === "SPR") {
-			if (objInfo.x == x && objInfo.y == y) {
-				return objInfo.id;
+	for (var i = 0; i < room[curRoom].objectInstances.length; i++) {
+		var objectInstance = room[curRoom].objectInstances[i];
+		if (objectInstance.type === "SPR") {
+			if (objectInstance.x == x && objectInstance.y == y) {
+				return objectInstance.id;
 			}
 		}
 	}
@@ -813,23 +823,23 @@ function movePlayer(direction) {
 
 	// do items first, because you can pick up an item AND go through a door
 	if (itmIndex > -1) {
-		// console.log("HIT ITM ");
-		// console.log( itmIndex );
-		var itm = room[ player().room ].objects[ itmIndex ];
-		// console.log(itm);
-		room[ player().room ].objects.splice( itmIndex, 1 );
-		if( player().inventory[ itm.id ] ) {
-			player().inventory[ itm.id ] += 1;
+		// remove item instance and mark it as picked up so it isn't created again
+		var itemInstance = room[ player().room ].objectInstances[ itmIndex ]
+		room[ player().room ].objectInstances.splice( itmIndex, 1 );
+		itemInstance.location.isPickedUp = true;
+
+		if( player().inventory[ itemInstance.id ] ) {
+			player().inventory[ itemInstance.id ] += 1;
 		}
 		else {
-			player().inventory[ itm.id ] = 1;
+			player().inventory[ itemInstance.id ] = 1;
 		}
 
 		if(onInventoryChanged != null) {
-			onInventoryChanged( itm.id );
+			onInventoryChanged( itemInstance.id );
 		}
 
-		startItemDialog( itm.id  /*itemId*/ );
+		startItemDialog( itemInstance.id /*itemId*/ );
 
 		// console.log( player().inventory );
 	}
@@ -880,18 +890,35 @@ function movePlayerThroughExit(ext) {
 }
 
 function createObjectInstances(roomId) {
-	// TODO
-	// need to think hard about instances work
-	// how does item pick up work?
-	// how does debug room rendering?
-	// should I rename room.objects to room.object_locations?
+	room[roomId].objectInstances = [];
+
+	for (var i = 0; i < room[roomId].objectLocations.length; i++) {
+		var location = room[roomId].objectLocations[i];
+
+		var isPickedUp = (object[location.id].type === "ITM" &&
+			location.isPickedUp != undefined && location.isPickedUp != null && location.isPickedUp);
+
+		if (!isPickedUp) {
+			// clone the original version of the object
+			var instance = JSON.parse(JSON.stringify(object[location.id]));
+
+			// add the location information
+			instance.location = location;
+			instance.x = location.x;
+			instance.y = location.y;
+
+			console.log(instance);
+
+			room[roomId].objectInstances.push(instance);
+		}
+	}
 }
 
 function getItemIndex(roomId,x,y) {
-	for( var i = 0; i < room[roomId].objects.length; i++ ) {
-		var objInfo = room[roomId].objects[i];
-		if (object[objInfo.id].type === "ITM") {
-			if (objInfo.x == x && objInfo.y == y) {
+	for( var i = 0; i < room[roomId].objectInstances.length; i++ ) {
+		var objectInstance = room[roomId].objectInstances[i];
+		if (objectInstance.type === "ITM") {
+			if (objectInstance.x == x && objectInstance.y == y) {
 				return i;
 			}
 		}
@@ -953,8 +980,8 @@ function isWall(x,y,roomId) {
 }
 
 function getObject(roomId,x,y) {
-	for (i in room[roomId].objects) {
-		var obj = room[roomId].objects[i];
+	for (i in room[roomId].objectInstances) {
+		var obj = room[roomId].objectInstances[i];
 		if (x == obj.x && y == obj.y) {
 			return obj;
 		}
@@ -1189,10 +1216,10 @@ function serializeWorld(skipFonts) {
 			}
 			worldStr += "\n";
 		}
-		if (room[id].objects.length > 0) {
+		if (room[id].objectLocations.length > 0) {
 			/* OBJECTS */
-			for (j in room[id].objects) {
-				var obj = room[id].objects[j];
+			for (j in room[id].objectLocations) {
+				var obj = room[id].objectLocations[j];
 				worldStr += object[obj.id].type + " " + obj.id + " " + obj.x + "," + obj.y;
 				worldStr += "\n";
 			}
@@ -1384,10 +1411,10 @@ function parseRoom(lines, i) {
 		walls : [],
 		exits : [],
 		endings : [],
-		objects : [],
-		object_instances : [],
+		objectLocations : [],
+		objectInstances : [],
 		pal : null,
-		name : null
+		name : null,
 	};
 
 	i++;
@@ -1427,9 +1454,9 @@ function parseRoom(lines, i) {
 			var obj = {
 				id: objId,
 				x : parseInt(objCoord[0]),
-				y : parseInt(objCoord[1])
+				y : parseInt(objCoord[1]),
 			};
-			room[id].objects.push(obj);
+			room[id].objectLocations.push(obj);
 		}
 		else if (getType(lines[i]) === "WAL") {
 			// this is deprecated, but I'm not removing it yet
@@ -1540,8 +1567,8 @@ function fixupOldObjectIds() {
 		}
 
 		// replace item ids
-		for (var i = 0; i < room[id].objects.length; i++) {
-			var objInfo = room[id].objects[i];
+		for (var i = 0; i < room[id].objectLocations.length; i++) {
+			var objInfo = room[id].objectLocations[i];
 			var type = object[objInfo.id].type;
 			if (type === "ITM") {
 				objInfo.id = backCompatObjectIDs[type][objInfo.id];
@@ -1633,7 +1660,7 @@ function parseObject(lines, i, type, versionNumber) {
 			}
 			else {
 				// NOTE: assumes rooms have all been created!
-				room[roomId].objects.push({
+				room[roomId].objectLocations.push({
 					id: id,
 					x : parseInt(coordArgs[0]),
 					y : parseInt(coordArgs[1]),
@@ -1863,9 +1890,13 @@ function drawObject(img,x,y,context) {
 
 // var debugLastRoomDrawn = "0";
 
-function drawRoom(room,context,frameIndex) { // context & frameIndex are optional
+function drawRoom(room,doDrawObjectLocations,context,frameIndex) { // every parameter after room is optional
 	if (!context) { //optional pass in context; otherwise, use default (ok this is REAL hacky isn't it)
 		context = ctx;
+	}
+
+	if (doDrawObjectLocations === undefined || doDrawObjectLocations === null) {
+		doDrawObjectLocations = false;
 	}
 
 	// if (room.id != debugLastRoomDrawn) {
@@ -1907,11 +1938,21 @@ function drawRoom(room,context,frameIndex) { // context & frameIndex are optiona
 		}
 	}
 
-	// TODO : need to think about object instances..
 	//draw objects
-	for (var i = 0; i < room.objects.length; i++) {
-		var objInfo = room.objects[i];
-		drawObject(renderer.GetImage(object[objInfo.id],paletteId,frameIndex), objInfo.x, objInfo.y, context);
+	if (doDrawObjectLocations) {
+		for (var i = 0; i < room.objectLocations.length; i++) {
+			var objectLocation = room.objectLocations[i];
+			var objectDefinition = object[objectLocation.id];
+			var objectImage = renderer.GetImage(objectDefinition, paletteId, frameIndex);
+			drawObject(objectImage, objectLocation.x, objectLocation.y, context);
+		}
+	}
+	else {
+		for (var i = 0; i < room.objectInstances.length; i++) {
+			var objectInstance = room.objectInstances[i];
+			var objectImage = renderer.GetImage(objectInstance, paletteId, frameIndex);
+			drawObject(objectImage, objectInstance.x, objectInstance.y, context);
+		}
 	}
 
 	//draw player

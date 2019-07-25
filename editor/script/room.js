@@ -91,11 +91,11 @@ function RoomTool(canvas) {
 				var isThisObjectAlreadyHere = otherObject != null && otherObject.id === GetCurDrawing().id;
 
 				if (otherObject) {
-					getRoom().objects.splice( getRoom().objects.indexOf(otherObject), 1 );
+					getRoom().objectLocations.splice( getRoom().objectLocations.indexOf(otherObject), 1 );
 				}
 
 				if(!isThisObjectAlreadyHere) {
-					getRoom().objects.push( {id:GetCurDrawing().id, x:x, y:y} );
+					getRoom().objectLocations.push( {id:GetCurDrawing().id, x:x, y:y} );
 				}
 			}
 			refreshGameData();
@@ -220,7 +220,7 @@ function RoomTool(canvas) {
 		ctx.fillRect(0,0,canvas.width,canvas.height);
 
 		//draw map
-		drawRoom( room[curRoom] );
+		drawRoom( room[curRoom], true );
 
 		//draw grid
 		if (self.drawMapGrid) {
