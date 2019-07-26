@@ -581,7 +581,7 @@ function getSpriteAt(x,y) {
 		var objectInstance = room[curRoom].objectInstances[i];
 		if (objectInstance.type === "SPR") {
 			if (objectInstance.x == x && objectInstance.y == y) {
-				return objectInstance.id;
+				return objectInstance;
 			}
 		}
 	}
@@ -798,21 +798,21 @@ function movePlayer(direction) {
 		return; // player room is missing or invalid.. can't move them!
 	}
 
-	var spr = null;
+	var spriteInstance = null;
 
-	if ( curPlayerDirection == Direction.Left && !(spr = getSpriteLeft()) && !isWallLeft()) {
+	if ( curPlayerDirection == Direction.Left && !(spriteInstance = getSpriteLeft()) && !isWallLeft()) {
 		player().x -= 1;
 		didPlayerMoveThisFrame = true;
 	}
-	else if ( curPlayerDirection == Direction.Right && !(spr = getSpriteRight()) && !isWallRight()) {
+	else if ( curPlayerDirection == Direction.Right && !(spriteInstance = getSpriteRight()) && !isWallRight()) {
 		player().x += 1;
 		didPlayerMoveThisFrame = true;
 	}
-	else if ( curPlayerDirection == Direction.Up && !(spr = getSpriteUp()) && !isWallUp()) {
+	else if ( curPlayerDirection == Direction.Up && !(spriteInstance = getSpriteUp()) && !isWallUp()) {
 		player().y -= 1;
 		didPlayerMoveThisFrame = true;
 	}
-	else if ( curPlayerDirection == Direction.Down && !(spr = getSpriteDown()) && !isWallDown()) {
+	else if ( curPlayerDirection == Direction.Down && !(spriteInstance = getSpriteDown()) && !isWallDown()) {
 		player().y += 1;
 		didPlayerMoveThisFrame = true;
 	}
@@ -839,6 +839,9 @@ function movePlayer(direction) {
 			onInventoryChanged( itemInstance.id );
 		}
 
+		// TODO : replace dialog with action triggers
+		tryTriggerAction("collide", itemInstance);
+
 		startItemDialog( itemInstance.id /*itemId*/ );
 
 		// console.log( player().inventory );
@@ -850,8 +853,11 @@ function movePlayer(direction) {
 	else if (ext) {
 		movePlayerThroughExit(ext);
 	}
-	else if (spr) {
-		startSpriteDialog( spr /*spriteId*/ );
+	else if (spriteInstance) {
+		// TODO : replace dialog with action triggers
+		tryTriggerAction("collide", spriteInstance); // TODO : refactor sprite & item collisions to share more
+
+		startSpriteDialog( spriteInstance.id /*spriteId*/ );
 	}
 }
 
