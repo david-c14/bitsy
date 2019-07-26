@@ -194,7 +194,7 @@ function load_game(game_data, startWithTitle) {
 
 	setInitialVariables();
 
-	createObjectInstances(curRoom);
+	instantiateRoomObjects(curRoom);
 
 	onready(startWithTitle);
 }
@@ -876,7 +876,7 @@ function movePlayerThroughExit(ext) {
 		player().y = ext.dest.y;
 		curRoom = ext.dest.room;
 
-		createObjectInstances(curRoom);
+		instantiateRoomObjects(curRoom);
 	};
 
 	// TODO : vNext
@@ -895,7 +895,7 @@ function movePlayerThroughExit(ext) {
 	GoToDest();
 }
 
-function createObjectInstances(roomId) {
+function instantiateRoomObjects(roomId) {
 	room[roomId].objectInstances = [];
 
 	for (var i = 0; i < room[roomId].objectLocations.length; i++) {
@@ -905,19 +905,23 @@ function createObjectInstances(roomId) {
 			location.isPickedUp != undefined && location.isPickedUp != null && location.isPickedUp);
 
 		if (!isPickedUp) {
-			// clone the original version of the object
-			var instance = JSON.parse(JSON.stringify(object[location.id]));
-
-			// add the location information
-			instance.location = location;
-			instance.x = location.x;
-			instance.y = location.y;
-
-			room[roomId].objectInstances.push(instance);
-
-			tryTriggerAction("start", instance);
+			createObjectInstance(roomId, location.id, location);
 		}
 	}
+}
+
+function createObjectInstance(roomId, objectId, location) {
+	// clone the original version of the object
+	var instance = JSON.parse(JSON.stringify(object[objectId]));
+
+	// add the location information
+	instance.location = location;
+	instance.x = location.x;
+	instance.y = location.y;
+
+	room[roomId].objectInstances.push(instance);
+
+	tryTriggerAction("start", instance);
 }
 
 function getItemIndex(roomId,x,y) {

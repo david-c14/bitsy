@@ -398,6 +398,15 @@ function moveDownFunc(environment,parameters,onReturn) {
 	onReturn(null);
 }
 
+function createObjectFunc(environment,parameters,onReturn) {
+	var objectId = parameters[0];
+	if (environment.HasObject()) {
+		var object = environment.GetObject();
+		createObjectInstance(curRoom, objectId, {x:object.x, y:object.y});
+	}
+	onReturn(null);
+}
+
 /* BUILT-IN OPERATORS */
 function setExp(environment,left,right,onReturn) {
 	// console.log("SET " + left.name);
@@ -510,7 +519,8 @@ var Environment = function() {
 	functionMap.set("moveLeft", moveLeftFunc);
 	functionMap.set("moveRight", moveRightFunc);
 	functionMap.set("moveUp", moveUpFunc);
-	functionMap.set("moveDown", moveUpFunc);
+	functionMap.set("moveDown", moveDownFunc);
+	functionMap.set("createObject", createObjectFunc);
 
 	// TODO : vNext
 	// functionMap.set("changeAvatar", changeAvatarFunc);
@@ -1328,7 +1338,7 @@ var ParserNext = function(env) {
 		if (environment.HasFunction(firstSymbol)) {
 			var funcName = codeContents.split(" ")[0];
 			// TODO ... I should create a smarter way to parse arguments that skips ALL white space (except stuff inside code blocks etc)
-			var funcArgs = codeContents.split(" ").slice(1);
+			var funcArgs = codeContents.split(" ").slice(1).map(function(a) { return new LiteralNode(a); }); // TODO need REAL parsing
 			parentNode.AddChild(new FuncNode(funcName, funcArgs)); // also the args need to actually be parsed..
 		}
 		else if (IsSequenceName(firstSymbol)) {
