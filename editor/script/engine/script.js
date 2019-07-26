@@ -374,10 +374,26 @@ function moveLeftFunc(environment,parameters,onReturn) {
 	onReturn(null);
 }
 
+function moveRightFunc(environment,parameters,onReturn) {
+	if (environment.HasObject()) {
+		var object = environment.GetObject();
+		object.x += 1;
+	}
+	onReturn(null);
+}
+
 function moveUpFunc(environment,parameters,onReturn) {
 	if (environment.HasObject()) {
 		var object = environment.GetObject();
 		object.y -= 1;
+	}
+	onReturn(null);
+}
+
+function moveDownFunc(environment,parameters,onReturn) {
+	if (environment.HasObject()) {
+		var object = environment.GetObject();
+		object.y += 1;
 	}
 	onReturn(null);
 }
@@ -489,8 +505,12 @@ var Environment = function() {
 	functionMap.set("printTile", printTileFunc);
 	functionMap.set("printItem", printItemFunc);
 	functionMap.set("debugOnlyPrintFont", printFontFunc); // DEBUG ONLY
+
+	/* EXPERIMENTAL WIP */
 	functionMap.set("moveLeft", moveLeftFunc);
+	functionMap.set("moveRight", moveRightFunc);
 	functionMap.set("moveUp", moveUpFunc);
+	functionMap.set("moveDown", moveUpFunc);
 
 	// TODO : vNext
 	// functionMap.set("changeAvatar", changeAvatarFunc);
