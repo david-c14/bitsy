@@ -908,6 +908,8 @@ function createObjectInstances(roomId) {
 			instance.y = location.y;
 
 			room[roomId].objectInstances.push(instance);
+
+			tryTriggerAction("start", instance);
 		}
 	}
 }
