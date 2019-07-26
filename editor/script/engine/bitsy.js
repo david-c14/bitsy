@@ -511,14 +511,14 @@ function updateStepActions() {
 	}
 }
 
-function tryTriggerAction(type, objInfo) { // TODO rename : objInfo to objInstance everywhere?
-	var objectActions = object[objInfo.id].actions;
+function tryTriggerAction(type, objectInstance) {
+	var objectActions = objectInstance.actions;
 
 	for (var i = 0; i < objectActions.length; i++) {
 		var actionId = objectActions[i];
 		if (action[actionId].trigger.type === type) {
 			// DO ACTION! (hacky)
-			startDialog(action[actionId].source, actionId, objInfo); // will operating on the object info work??
+			startDialog(action[actionId].source, actionId, objectInstance);
 		}
 	}
 }
@@ -906,8 +906,6 @@ function createObjectInstances(roomId) {
 			instance.location = location;
 			instance.x = location.x;
 			instance.y = location.y;
-
-			console.log(instance);
 
 			room[roomId].objectInstances.push(instance);
 		}
@@ -1568,10 +1566,10 @@ function fixupOldObjectIds() {
 
 		// replace item ids
 		for (var i = 0; i < room[id].objectLocations.length; i++) {
-			var objInfo = room[id].objectLocations[i];
-			var type = object[objInfo.id].type;
+			var objectLocation = room[id].objectLocations[i];
+			var type = object[objectLocation.id].type;
 			if (type === "ITM") {
-				objInfo.id = backCompatObjectIDs[type][objInfo.id];
+				objectLocation.id = backCompatObjectIDs[type][objectLocation.id];
 			}
 		}
 	}
