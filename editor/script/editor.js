@@ -1267,45 +1267,58 @@ function removeAllObjects( id ) {
 var scriptEditorModule = new ScriptEditor();
 var curScriptEditor = null;
 function reloadAdvDialogUI() {
-	// var dialogId = getCurDialogId(); // necessary?
+	// TODO : should I remove this entirely?
 
-	// TODO.. the global use of the paint tool is a little unfortunate
-	var curDrawing = paintTool.GetCurDrawing();
+	// // TODO.. the global use of the paint tool is a little unfortunate
+	// var curDrawing = paintTool.GetCurDrawing();
 
-	if (curDrawing.type === TileType.Sprite || curDrawing.type === TileType.Item) {
+	// if (curDrawing.type === TileType.Sprite || curDrawing.type === TileType.Item) {
 
-		document.getElementById("dialogEditorHasContent").style.display = "block";
-		document.getElementById("dialogEditorNoContent").style.display = "none";
+	// 	document.getElementById("dialogEditorHasContent").style.display = "block";
+	// 	document.getElementById("dialogEditorNoContent").style.display = "none";
 
-		var dialogStr = document.getElementById("dialogText").value;
-		// document.getElementById("dialogCodeText").value = dialogStr;
+	// 	var dialogStr = document.getElementById("dialogText").value;
 
-		// OLD STUFF
-		// var scriptTree = scriptInterpreter.Parse( dialogStr );
-		// console.log("~~~~ RELOAD ADV DIALOG UI ~~~~~");
-		// console.log(scriptTree);
-		// createAdvDialogEditor(scriptTree);
-		// previewDialogScriptTree = scriptTree;
+	// 	// clear out the old editor
+	// 	var dialogFormDiv = document.getElementById("advDialogViewport");
+	// 	dialogFormDiv.innerHTML = "";
 
-		// clear out the old editor
-		var dialogFormDiv = document.getElementById("advDialogViewport");
-		dialogFormDiv.innerHTML = "";
-
-		curScriptEditor = scriptEditorModule.CreateEditor(dialogStr);
-		curScriptEditor.OnChangeHandler = function() {
-			// TODO... respond to changes (needs to handle all cases, such as deletion!)
-			console.log("CHANGE!!!!");
-			console.log(curScriptEditor.Serialize());
-			dialog[getCurDialogId()] = curScriptEditor.Serialize();
-			refreshGameData();
-		};
-		dialogFormDiv.appendChild(curScriptEditor.GetElement());
-	}
-	else {
-		document.getElementById("dialogEditorHasContent").style.display = "none";
-		document.getElementById("dialogEditorNoContent").style.display = "block";
-	}
+	// 	curScriptEditor = scriptEditorModule.CreateEditor(dialogStr);
+	// 	curScriptEditor.OnChangeHandler = function() {
+	// 		// TODO... respond to changes (needs to handle all cases, such as deletion!)
+	// 		console.log("CHANGE!!!!");
+	// 		console.log(curScriptEditor.Serialize());
+	// 		dialog[getCurDialogId()] = curScriptEditor.Serialize();
+	// 		refreshGameData();
+	// 	};
+	// 	dialogFormDiv.appendChild(curScriptEditor.GetElement());
+	// }
+	// else {
+	// 	document.getElementById("dialogEditorHasContent").style.display = "none";
+	// 	document.getElementById("dialogEditorNoContent").style.display = "block";
+	// }
 }
+
+// TODO ... is this the right place for this?
+events.Listen("select_action", function(event) {
+	// TODO : rename things to be non-dialog-y
+	var actionScriptSource = action[event.id].source;
+
+	// clear out the old editor
+	var dialogFormDiv = document.getElementById("advDialogViewport");
+	dialogFormDiv.innerHTML = "";
+
+	curScriptEditor = scriptEditorModule.CreateEditor(actionScriptSource);
+	curScriptEditor.OnChangeHandler = function() {
+		// TODO... respond to changes (needs to handle all cases, such as deletion!)
+		console.log("CHANGE!!!!");
+		console.log(curScriptEditor.Serialize());
+		// dialog[getCurDialogId()] = curScriptEditor.Serialize();
+		action[event.id].source = curScriptEditor.Serialize();
+		refreshGameData();
+	};
+	dialogFormDiv.appendChild(curScriptEditor.GetElement());
+});
 
 function deleteDrawing() {
 	paintTool.deleteDrawing();

@@ -13,7 +13,8 @@ function EventManager() {
 	// this.Remove // TODO (use indexOf)
 
 	this.Raise = function(eventName, eventObj) {
-		// console.log(">>> EVENT > " + eventName);
+		console.log(">>> EVENT > " + eventName);
+		console.log(eventObj);
 
 		if (callbacks[eventName] == null) {
 			return;

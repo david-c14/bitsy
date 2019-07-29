@@ -726,6 +726,7 @@
 							<span class="localize wall_toggle">wall</span>
 						</label>
 					</div>
+
 					<div id="dialog" class="controlBox" style="display:none;">
 						<span style="float:left;">
 							<span class="localize dialog_tool_name">dialog</span>
@@ -735,6 +736,13 @@
 						</button>
 						<br>
 						<textarea title="dialog text will be displayed when player approaches this sprite" id="dialogText" class="dialogTextArea gameTextDir" onkeydown="on_change_dialog();" onkeyup="on_change_dialog();" onchange="on_change_dialog_finished();"></textarea> <!-- rows="2" cols="32" -->
+					</div>
+
+					<!-- TODO action controls prototype!! --->
+					<div id="actionControls" class="controlBox">
+						<span>actions</span>
+						<div id="actionList">
+						</div>
 					</div>
 
 					<div id="animationOuter" class="controlBox">

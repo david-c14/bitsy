@@ -272,6 +272,29 @@ function PaintTool(canvas) {
 			document.getElementById("showInventoryButton").setAttribute("style","display:none;");
 		}
 
+
+		// TODO : hacky actions UI
+		function addActionSelectButton(actionListRoot, actionId) {
+			var actionSelectButton = document.createElement("button");
+			actionSelectButton.innerText = "action " + (i + 1);
+			actionSelectButton.onclick = function() {
+				events.Raise("select_action", { id: actionId });
+			}
+
+			actionListRoot.appendChild(actionSelectButton);
+		}
+
+		if (self.GetCurDrawing().type != TileType.Tile) {
+			var actionListRoot = document.getElementById("actionList");
+			actionListRoot.innerHTML = "";
+
+			var actions = self.GetCurDrawing().actions;
+			for (var i = 0; i < actions.length; i++) {
+				addActionSelectButton(actionListRoot, actions[i]);
+			}
+		}
+
+
 		// update paint canvas
 		self.updateCanvas();
 	}

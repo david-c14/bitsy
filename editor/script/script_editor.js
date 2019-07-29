@@ -100,7 +100,8 @@ function BlockNodeEditor(blockNode, parentNode) {
 
 	this.Serialize = function() {
 		// TODO: I **need** to get rid of the triple quotes thing it sucks
-		return '"""\n' + blockNode.Serialize() + '\n"""';
+		// return '"""\n' + blockNode.Serialize() + '\n"""';
+		return blockNode.Serialize();
 	}
 
 	this.SetNotifyChangeHandler = function(handler) {

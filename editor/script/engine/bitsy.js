@@ -1804,7 +1804,7 @@ function parseAction(lines, i) {
 				isReadingSource = false;
 			}
 			else {
-				newAction.source = lines[i] + "\n";
+				newAction.source += lines[i] + "\n";
 			}
 		}
 		else {
