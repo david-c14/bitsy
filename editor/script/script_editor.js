@@ -1,4 +1,10 @@
 /*
+**** NEW TODO ****
+- refactor nodes to use templates of some kind
+- add a function node
+- move dialog block logic into parser?
+- auto populate the script builder menus (category, function name, later: function parameters)
+
 - TODO
 	- add nodes
 		X dialog
