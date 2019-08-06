@@ -93,6 +93,14 @@ function BlockNodeEditor(blockNode, parentNode) {
 
 				childEditors.push(sequenceNodeEditor);
 			}
+			else if (childNode.type === "function") {
+				AddGatheredDialogNodes(div);
+
+				var functionNodeEditor = new FunctionNodeEditor(childNode, self);
+				div.appendChild(functionNodeEditor.GetElement());
+
+				childEditors.push(functionNodeEditor);
+			}
 			else {
 				// gather dialog nodes
 				dialogNodeList.push(childNode);
@@ -346,6 +354,68 @@ function SequenceNodeEditor(sequenceNode, parentNode) {
 		if (parentNode != null) {
 			parentNode.UpdateChild(self);
 		}
+	}
+
+	this.RequiresFullRefresh = function() {
+		return false; // TODO : move into base?
+	}
+}
+
+// TODO : too much copy / paste between these node editors :( -- I need templates!
+function FunctionNodeEditor(functionNode, parentNode) {
+	Object.assign( this, new NodeEditorBase() );
+
+	var self = this; // I don't like this pattern :(
+
+	this.div.classList.add("functionNode");
+
+	var topDiv = document.createElement("div");
+	this.div.appendChild(topDiv);
+
+	var span = document.createElement("span");
+	span.innerText = functionNode.name;
+	topDiv.appendChild(span);
+
+	// TODO : THIS WHOLE THING IS A DUPLICATE
+	var controlDiv = document.createElement("div");
+	controlDiv.style.float = "right";
+	topDiv.appendChild(controlDiv);
+
+	var moveUpButton = document.createElement("button");
+	moveUpButton.innerText = "up";
+	moveUpButton.onclick = function() {
+		var insertIndex = parentNode.IndexOfChild(self);
+		parentNode.RemoveChild(self);
+		insertIndex -= 1;
+		parentNode.InsertChild(self,insertIndex);
+	}
+	controlDiv.appendChild(moveUpButton);
+
+	var moveDownButton = document.createElement("button");
+	moveDownButton.innerText = "down";
+	// deleteButton.style.float = "right";
+	moveDownButton.onclick = function() {
+		var insertIndex = parentNode.IndexOfChild(self);
+		parentNode.RemoveChild(self);
+		insertIndex += 1;
+		parentNode.InsertChild(self,insertIndex);
+	}
+	controlDiv.appendChild(moveDownButton);
+
+	var deleteButton = document.createElement("button");
+	deleteButton.innerText = "delete";
+	// deleteButton.style.float = "right";
+	deleteButton.onclick = function() {
+		parentNode.RemoveChild(self);
+	}
+	controlDiv.appendChild(deleteButton);
+
+	this.GetNodes = function() {
+		return [functionNode];
+	}
+
+	this.UpdateChild = function(childEditor) {
+		// TODO ??
 	}
 
 	this.RequiresFullRefresh = function() {

@@ -31,6 +31,7 @@
 	border: 1px solid #6767b2;
 	min-width: 100px;
 	margin-bottom: 4px;
+	padding: 10px;
 	/*min-height: 200px;*/
 	/*margin: 10px;*/
 	/*background: #7d828a;*/
@@ -47,6 +48,15 @@
 	/*background: #acbfe6;*/
 	padding: 10px;
 	/*border-bottom: 4px solid #8291ad;*/
+}
+
+/* TODO : share styles between node types!! */
+.functionNode {
+	background: white;
+	border: 1px solid #6767b2;
+	min-width: 100px;
+	margin-bottom: 4px;
+	padding: 10px;
 }
 
 .sequenceNode .blockNode {
