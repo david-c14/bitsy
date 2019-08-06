@@ -1,8 +1,9 @@
 /*
 **** NEW TODO ****
 - refactor nodes to use templates of some kind
-- add a function node
+X add a function node
 - move dialog block logic into parser?
+	- need something like this to fix dialog editor creation that is hidden by function editor
 - auto populate the script builder menus (category, function name, later: function parameters)
 
 - TODO
