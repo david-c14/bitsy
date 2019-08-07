@@ -676,6 +676,7 @@ var Environment = function() {
 
 		builtInFunctionDefinitions[name].func(env, parameters, onReturn);
 	}
+	// TODO : this.IsDialogFunction
 
 	var variableMap = new Map();
 
@@ -1494,6 +1495,10 @@ var ParserNext = function(env) {
 		return index;
 	}
 
+	function GroupDialogBlockFunctions(blockNode) {
+		// TODO
+	}
+
 	// TODO .. should I be more consistent by inputting entire source string, but with start and end indices??
 	function ParseBlockContents(blockNode, sourceStr, index, earlyStopSymbols) {
 		while (index < sourceStr.length && earlyStopSymbols.indexOf(sourceStr[index]) == -1) {
@@ -1505,7 +1510,7 @@ var ParserNext = function(env) {
 			}
 		}
 
-		// TODO -- group dialog blocks here???
+		GroupDialogBlockFunctions(blockNode);
 
 		return index;
 	}
