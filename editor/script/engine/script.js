@@ -368,6 +368,7 @@ function shakyFunc(environment,parameters,onReturn) {
 function moveLeftFunc(environment,parameters,onReturn) {
 	if (environment.HasObject()) {
 		var object = environment.GetObject();
+		console.log(object);
 		// TODO : what about obstacles like walls and other sprites???
 		object.x -= 1;
 	}
@@ -378,6 +379,7 @@ function moveRightFunc(environment,parameters,onReturn) {
 	if (environment.HasObject()) {
 		var object = environment.GetObject();
 		object.x += 1;
+		console.log(object);
 	}
 	onReturn(null);
 }
@@ -385,7 +387,9 @@ function moveRightFunc(environment,parameters,onReturn) {
 function moveUpFunc(environment,parameters,onReturn) {
 	if (environment.HasObject()) {
 		var object = environment.GetObject();
+		console.log(object);
 		object.y -= 1;
+		console.log(object);
 	}
 	onReturn(null);
 }
@@ -499,40 +503,178 @@ var Environment = function() {
 	this.SetDialogBuffer = function(buffer) { dialogBuffer = buffer; };
 	this.GetDialogBuffer = function() { return dialogBuffer; };
 
-	var functionMap = new Map();
-	functionMap.set("print", printFunc);
-	functionMap.set("say", printFunc);
-	functionMap.set("br", linebreakFunc);
-	functionMap.set("item", itemFunc);
-	functionMap.set("rbw", rainbowFunc);
-	functionMap.set("clr1", color1Func);
-	functionMap.set("clr2", color2Func);
-	functionMap.set("clr3", color3Func);
-	functionMap.set("wvy", wavyFunc);
-	functionMap.set("shk", shakyFunc);
-	functionMap.set("printSprite", printSpriteFunc);
-	functionMap.set("printTile", printTileFunc);
-	functionMap.set("printItem", printItemFunc);
-	functionMap.set("debugOnlyPrintFont", printFontFunc); // DEBUG ONLY
+	// OLD FUNCTION MAP
+	// var functionMap = new Map();
+	// functionMap.set("print", printFunc);
+	// functionMap.set("say", printFunc);
+	// functionMap.set("br", linebreakFunc);
+	// functionMap.set("item", itemFunc);
+	// functionMap.set("rbw", rainbowFunc);
+	// functionMap.set("clr1", color1Func);
+	// functionMap.set("clr2", color2Func);
+	// functionMap.set("clr3", color3Func);
+	// functionMap.set("wvy", wavyFunc);
+	// functionMap.set("shk", shakyFunc);
+	// functionMap.set("printSprite", printSpriteFunc);
+	// functionMap.set("printTile", printTileFunc);
+	// functionMap.set("printItem", printItemFunc);
+	// functionMap.set("debugOnlyPrintFont", printFontFunc); // DEBUG ONLY
+	// /* EXPERIMENTAL WIP */
+	// functionMap.set("moveLeft", moveLeftFunc);
+	// functionMap.set("moveRight", moveRightFunc);
+	// functionMap.set("moveUp", moveUpFunc);
+	// functionMap.set("moveDown", moveDownFunc);
+	// functionMap.set("createObject", createObjectFunc);
 
-	/* EXPERIMENTAL WIP */
-	functionMap.set("moveLeft", moveLeftFunc);
-	functionMap.set("moveRight", moveRightFunc);
-	functionMap.set("moveUp", moveUpFunc);
-	functionMap.set("moveDown", moveDownFunc);
-	functionMap.set("createObject", createObjectFunc);
-
+	// TODO : probably remove this...
 	// TODO : vNext
 	// functionMap.set("changeAvatar", changeAvatarFunc);
 	// functionMap.set("return", returnFunc);
 
-	this.HasFunction = function(name) { return functionMap.has(name); };
+	var FunctionCategory = {
+		DialogInner : "Dialog Inner",
+		DebugOnly : "Debug Only",
+		Movement : "Movement",
+		Other : "Other",
+	};
+
+	var builtInFunctionDefinitions = {
+		"print" : {
+			func : printFunc,
+			meta : {
+				category : FunctionCategory.DialogInner
+			},
+		},
+		"say" : {
+			func : printFunc,
+			meta : {
+				category : FunctionCategory.DialogInner
+			},
+		},
+		"br" : {
+			func : linebreakFunc,
+			meta : {
+				category : FunctionCategory.DialogInner
+			},
+		},
+		"item" : {
+			func : itemFunc,
+			meta : {
+				category : FunctionCategory.Other,
+				description : "",
+				parameterInfo : [],
+			},
+		},
+		"rbw" : {
+			func : rainbowFunc,
+			meta : {
+				category : FunctionCategory.DialogInner
+			},
+		},
+		"clr1" : {
+			func : color1Func,
+			meta : {
+				category : FunctionCategory.DialogInner
+			},
+		},
+		"clr2" : {
+			func : color2Func,
+			meta : {
+				category : FunctionCategory.DialogInner
+			},
+		},
+		"clr3" : {
+			func : color3Func,
+			meta : {
+				category : FunctionCategory.DialogInner
+			},
+		},
+		"wvy" : {
+			func : wavyFunc,
+			meta : {
+				category : FunctionCategory.DialogInner
+			},
+		},
+		"shk" : {
+			func : shakyFunc,
+			meta : {
+				category : FunctionCategory.DialogInner
+			},
+		},
+		"printSprite" : {
+			func : printSpriteFunc,
+			meta : {
+				category : FunctionCategory.DialogInner
+			},
+		},
+		"printTile" : {
+			func : printTileFunc,
+			meta : {
+				category : FunctionCategory.DialogInner
+			},
+		},
+		"printItem" : {
+			func : printItemFunc,
+			meta : {
+				category : FunctionCategory.DialogInner
+			},
+		},
+		"debugOnlyPrintFont" : {
+			func : printFontFunc,
+			meta : {
+				category : FunctionCategory.DebugOnly
+			},
+		},
+		/* EXPERIMENTAL WIP */
+		"moveLeft" : {
+			func : moveLeftFunc,
+			meta : {
+				category : FunctionCategory.Movement,
+				description : "move this object one step right", // TODO - how should I use these?
+				parameterInfo : [],
+			},
+		},
+		"moveRight" : {
+			func : moveRightFunc,
+			meta : {
+				category : FunctionCategory.Movement,
+				description : "",
+				parameterInfo : [],
+			},
+		},
+		"moveUp" : {
+			func : moveUpFunc,
+			meta : {
+				category : FunctionCategory.Movement,
+				description : "",
+				parameterInfo : [],
+			},
+		},
+		"moveDown" : {
+			func : moveDownFunc,
+			meta : {
+				category : FunctionCategory.Movement,
+				description : "",
+				parameterInfo : [],
+			},
+		},
+		"createObject" : {
+			func : createObjectFunc,
+			meta : {
+				category : FunctionCategory.Other,
+				description : "",
+				parameterInfo : [],
+			},
+		},
+	};
+
+	this.HasFunction = function(name) { return builtInFunctionDefinitions[name] != undefined && builtInFunctionDefinitions[name] != null; };
 	this.EvalFunction = function(name,parameters,onReturn,env) {
 		if (env == undefined || env == null) {
 			env = this;
 		}
 
-		functionMap.get( name )( env, parameters, onReturn );
+		builtInFunctionDefinitions[name].func(env, parameters, onReturn);
 	}
 
 	var variableMap = new Map();
@@ -1356,12 +1498,14 @@ var ParserNext = function(env) {
 	function ParseBlockContents(blockNode, sourceStr, index, earlyStopSymbols) {
 		while (index < sourceStr.length && earlyStopSymbols.indexOf(sourceStr[index]) == -1) {
 			if (sourceStr[index] === Sym.CodeOpen) {
-				index = ParseCode(blockNode,sourceStr,index);
+				index = ParseCode(blockNode, sourceStr, index);
 			}
 			else {
-				index = ParseDialog(blockNode,sourceStr,index, earlyStopSymbols.concat([Sym.CodeOpen]));
+				index = ParseDialog(blockNode, sourceStr, index, earlyStopSymbols.concat([Sym.CodeOpen]));
 			}
 		}
+
+		// TODO -- group dialog blocks here???
 
 		return index;
 	}
