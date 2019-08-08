@@ -531,8 +531,9 @@ var Environment = function() {
 	// functionMap.set("changeAvatar", changeAvatarFunc);
 	// functionMap.set("return", returnFunc);
 
+	// TODO -- should be public???
 	var FunctionCategory = {
-		DialogInner : "Dialog Inner",
+		DialogInner : "DialogInner",
 		DebugOnly : "Debug Only",
 		Movement : "Movement",
 		Other : "Other",
@@ -562,7 +563,7 @@ var Environment = function() {
 			meta : {
 				category : FunctionCategory.Other,
 				description : "",
-				parameterInfo : [],
+				parameterInfo : [], // TODO
 			},
 		},
 		"rbw" : {
@@ -631,7 +632,6 @@ var Environment = function() {
 			meta : {
 				category : FunctionCategory.Movement,
 				description : "move this object one step right", // TODO - how should I use these?
-				parameterInfo : [],
 			},
 		},
 		"moveRight" : {
@@ -639,7 +639,6 @@ var Environment = function() {
 			meta : {
 				category : FunctionCategory.Movement,
 				description : "",
-				parameterInfo : [],
 			},
 		},
 		"moveUp" : {
@@ -647,7 +646,6 @@ var Environment = function() {
 			meta : {
 				category : FunctionCategory.Movement,
 				description : "",
-				parameterInfo : [],
 			},
 		},
 		"moveDown" : {
@@ -655,7 +653,6 @@ var Environment = function() {
 			meta : {
 				category : FunctionCategory.Movement,
 				description : "",
-				parameterInfo : [],
 			},
 		},
 		"createObject" : {
@@ -663,7 +660,7 @@ var Environment = function() {
 			meta : {
 				category : FunctionCategory.Other,
 				description : "",
-				parameterInfo : [],
+				parameterInfo : [], // TODO
 			},
 		},
 	};
@@ -676,7 +673,13 @@ var Environment = function() {
 
 		builtInFunctionDefinitions[name].func(env, parameters, onReturn);
 	}
-	// TODO : this.IsDialogFunction
+	this.CreateFunctionNode = function(name, parameters) {
+		if (parameters === undefined || parameters === null) {
+			parameters = [];
+		}
+
+		return new FuncNode(name, parameters, builtInFunctionDefinitions[name].meta);
+	}
 
 	var variableMap = new Map();
 
@@ -957,12 +960,13 @@ var UndefinedCodeNode = function(sourceStr) {
 	}
 }
 
-var FuncNode = function(name,arguments) {
+var FuncNode = function(name,arguments,metadata) {
 	Object.assign( this, new TreeRelationship() );
 	// Object.assign( this, new Runnable() );
 	this.type = "function";
 	this.name = name;
 	this.arguments = arguments;
+	this.metadata = metadata;
 
 	this.Eval = function(environment,onReturn) {
 
@@ -1377,7 +1381,7 @@ var ParserNext = function(env) {
 
 		function TryAddCurText() {
 			if (curDialogText.length > 0) {
-				parentNode.AddChild(new FuncNode("print", [new LiteralNode(curDialogText)]));
+				parentNode.AddChild(environment.CreateFunctionNode("print", [new LiteralNode(curDialogText)]));
 				curDialogText = "";
 			}
 		}
@@ -1385,7 +1389,7 @@ var ParserNext = function(env) {
 		while (index < sourceStr.length && earlyStopSymbols.indexOf(sourceStr[index]) == -1) {
 			if (sourceStr[index] === Sym.Linebreak) {
 				TryAddCurText();
-				parentNode.AddChild(new FuncNode("br", []));
+				parentNode.AddChild(environment.CreateFunctionNode("br"));
 			}
 			else {
 				curDialogText += sourceStr[index];
@@ -1482,7 +1486,7 @@ var ParserNext = function(env) {
 			var funcName = codeContents.split(" ")[0];
 			// TODO ... I should create a smarter way to parse arguments that skips ALL white space (except stuff inside code blocks etc)
 			var funcArgs = codeContents.split(" ").slice(1).map(function(a) { return new LiteralNode(a); }); // TODO need REAL parsing
-			parentNode.AddChild(new FuncNode(funcName, funcArgs)); // also the args need to actually be parsed..
+			parentNode.AddChild(environment.CreateFunctionNode(funcName, funcArgs)); // also the args need to actually be parsed..
 		}
 		else if (IsSequenceName(firstSymbol)) {
 			ParseSequence(parentNode, codeContents, firstSymbol);
@@ -1495,8 +1499,32 @@ var ParserNext = function(env) {
 		return index;
 	}
 
+	// TODO : name???
 	function GroupDialogBlockFunctions(blockNode) {
-		// TODO
+		var childrenTemp = blockNode.children.slice();
+		blockNode.children = [];
+
+		var dialogBlock = new BlockNode(BlockMode.Dialog); // TODO need to refactor the block nodes..
+		function TryAddDialogBlock() {
+			if (dialogBlock.children.length > 0) {
+				blockNode.AddChild(dialogBlock);
+				dialogBlock = new BlockNode(BlockMode.Dialog);
+			}
+		}
+
+		for (var i = 0; i < childrenTemp.length; i++) {
+			var child = childrenTemp[i];
+			// TODO... do I need a better way to query the metadata???
+			if (child.type === "function" && child.metadata.category === "DialogInner") {
+				dialogBlock.AddChild(child);
+			}
+			else {
+				TryAddDialogBlock();
+				blockNode.AddChild(child);
+			}
+		}
+
+		TryAddDialogBlock();
 	}
 
 	// TODO .. should I be more consistent by inputting entire source string, but with start and end indices??

@@ -72,43 +72,27 @@ function BlockNodeEditor(blockNode, parentNode) {
 	function InitChildEditors(div) {
 		childNodeEditors = [];
 
-		var dialogNodeList = [];
-		function AddGatheredDialogNodes(div) {
-			if (dialogNodeList.length > 0) {
-				var dialogNodeEditor = new DialogNodeEditor(dialogNodeList, self);
-				div.appendChild(dialogNodeEditor.GetElement());
-
-				dialogNodeList = [];
-
-				childEditors.push(dialogNodeEditor);
-			}
-		}
-
 		for (var i = 0; i < blockNode.children.length; i++) {
 			var childNode = blockNode.children[i];
 			if (childNode.type === "sequence" || childNode.type === "cycle" || childNode.type === "shuffle") {
-				AddGatheredDialogNodes(div);
-
 				var sequenceNodeEditor = new SequenceNodeEditor(childNode, self);
 				div.appendChild(sequenceNodeEditor.GetElement());
 
 				childEditors.push(sequenceNodeEditor);
 			}
 			else if (childNode.type === "function") {
-				AddGatheredDialogNodes(div);
-
 				var functionNodeEditor = new FunctionNodeEditor(childNode, self);
 				div.appendChild(functionNodeEditor.GetElement());
 
 				childEditors.push(functionNodeEditor);
 			}
-			else {
-				// gather dialog nodes
-				dialogNodeList.push(childNode);
+			else if (childNode.type === "block") { // TODO : need a special dialog block type
+				var dialogNodeEditor = new DialogNodeEditor(childNode, self);
+				div.appendChild(dialogNodeEditor.GetElement());
+
+				childEditors.push(dialogNodeEditor);
 			}
 		}
-
-		AddGatheredDialogNodes(div);
 
 		var actionBuilder = new ActionBuilder(self);
 	}
@@ -184,7 +168,7 @@ function BlockNodeEditor(blockNode, parentNode) {
 	function UpdateNodeChildren() {
 		var updatedChildren = [];
 		for (var i = 0; i < childEditors.length; i++) {
-			updatedChildren = updatedChildren.concat(childEditors[i].GetNodes());
+			updatedChildren.push(childEditors[i].GetNode());
 		}
 
 		blockNode.children = updatedChildren;
@@ -211,7 +195,7 @@ function BlockNodeEditor(blockNode, parentNode) {
 	InitChildEditors(this.div);
 }
 
-function DialogNodeEditor(dialogNodeList, parentNode) {
+function DialogNodeEditor(dialogNode, parentNode) {
 	Object.assign( this, new NodeEditorBase() );
 
 	this.div.classList.add("dialogNode");
@@ -258,18 +242,14 @@ function DialogNodeEditor(dialogNodeList, parentNode) {
 	}
 	controlDiv.appendChild(deleteButton);
 
-	// TODO: I still find this hacky
-	var fakeDialogRoot = scriptUtils.CreateDialogBlock(dialogNodeList);
-
 	var textArea = document.createElement("textarea");
-	textArea.value = fakeDialogRoot.Serialize();
+	textArea.value = dialogNode.Serialize();
 	this.div.appendChild(textArea);
 
 	var self = this;
 	var OnChangeText = function() {
 		console.log(textArea.value);
-		fakeDialogRoot = scriptInterpreter.Parse(textArea.value);
-		dialogNodeList = fakeDialogRoot.children;
+		dialogNode = scriptInterpreter.Parse(textArea.value);
 
 		if (parentNode != null) {
 			parentNode.UpdateChild(self);
@@ -278,17 +258,17 @@ function DialogNodeEditor(dialogNodeList, parentNode) {
 	textArea.addEventListener("change", OnChangeText);
 	textArea.addEventListener("keyup", OnChangeText);
 
-	this.GetNodes = function() {
-		return dialogNodeList;
+	this.GetNode = function() {
+		return dialogNode;
 	}
-
 
 	this.UpdateChild = function(childEditor) {
 		// TODO ??
 	}
 
 	this.RequiresFullRefresh = function() {
-		return dialogNodeList.some(function(node) {
+		// TODO -- will this even work anymore? what about non-dialog functions???
+		return dialogNode.children.some(function(node) {
 			return node.type === "sequence" || node.type === "cycle" || node.type === "shuffle";
 		});
 	}
@@ -346,8 +326,8 @@ function SequenceNodeEditor(sequenceNode, parentNode) {
 		this.div.appendChild(optionBlockNodeEditor.GetElement());
 	}
 
-	this.GetNodes = function() {
-		return [sequenceNode];
+	this.GetNode = function() {
+		return sequenceNode;
 	}
 
 	var self = this;
@@ -411,8 +391,8 @@ function FunctionNodeEditor(functionNode, parentNode) {
 	}
 	controlDiv.appendChild(deleteButton);
 
-	this.GetNodes = function() {
-		return [functionNode];
+	this.GetNode = function() {
+		return functionNode;
 	}
 
 	this.UpdateChild = function(childEditor) {
