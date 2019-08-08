@@ -354,8 +354,18 @@ function FunctionNodeEditor(functionNode, parentNode) {
 	this.div.appendChild(topDiv);
 
 	var span = document.createElement("span");
-	span.innerText = functionNode.name;
+	span.innerText = functionNode.metadata.description;
 	topDiv.appendChild(span);
+
+	// TODO -- work on this
+	if (functionNode.metadata.parameterInfo != undefined) {
+		for (var i = 0; i < functionNode.metadata.parameterInfo.length; i++) {
+			var info = functionNode.metadata.parameterInfo[i];
+			var paramSpan = document.createElement("div");
+			paramSpan.innerText = info.name;
+			topDiv.appendChild(paramSpan);
+		}
+	}
 
 	// TODO : THIS WHOLE THING IS A DUPLICATE
 	var controlDiv = document.createElement("div");

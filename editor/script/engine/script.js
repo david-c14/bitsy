@@ -631,36 +631,38 @@ var Environment = function() {
 			func : moveLeftFunc,
 			meta : {
 				category : FunctionCategory.Movement,
-				description : "move this object one step right", // TODO - how should I use these?
+				description : "move this object one step left", // TODO - how should I use these?
 			},
 		},
 		"moveRight" : {
 			func : moveRightFunc,
 			meta : {
 				category : FunctionCategory.Movement,
-				description : "",
+				description : "move this object one step right",
 			},
 		},
 		"moveUp" : {
 			func : moveUpFunc,
 			meta : {
 				category : FunctionCategory.Movement,
-				description : "",
+				description : "move this object one step up",
 			},
 		},
 		"moveDown" : {
 			func : moveDownFunc,
 			meta : {
 				category : FunctionCategory.Movement,
-				description : "",
+				description : "move this object one step down",
 			},
 		},
 		"createObject" : {
 			func : createObjectFunc,
 			meta : {
 				category : FunctionCategory.Other,
-				description : "",
-				parameterInfo : [], // TODO
+				description : "create new object",
+				parameterInfo : [ // TODO
+					{ name: "object" }
+				],
 			},
 		},
 	};
