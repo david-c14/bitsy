@@ -531,12 +531,24 @@ var Environment = function() {
 	// functionMap.set("changeAvatar", changeAvatarFunc);
 	// functionMap.set("return", returnFunc);
 
+	// TODO ... move the built-in functions elsewhere??? somewhere easier to access??
 	// TODO -- should be public???
 	var FunctionCategory = {
 		DialogInner : "DialogInner",
-		DebugOnly : "Debug Only",
+		DebugOnly : "DebugOnly",
 		Movement : "Movement",
 		Other : "Other",
+	};
+
+	// TODO --- is there a better way to specify this??? (it's only used by the editor..)
+	var ParameterType = {
+		Boolean : 0,
+		Number : 1,
+		String : 2,
+		StringOption : 3, // TODO : just a more general "options" thing?
+		ObjectId : 4,
+		ItemId: 5,
+		// TODO : are there more???
 	};
 
 	var builtInFunctionDefinitions = {
@@ -562,8 +574,10 @@ var Environment = function() {
 			func : itemFunc,
 			meta : {
 				category : FunctionCategory.Other,
-				description : "",
-				parameterInfo : [], // TODO
+				description : "number of _s in player's inventory",
+				parameterInfo : [
+					{ name: "item", type: ParameterType.ItemId },
+				],
 			},
 		},
 		"rbw" : {
@@ -659,9 +673,10 @@ var Environment = function() {
 			func : createObjectFunc,
 			meta : {
 				category : FunctionCategory.Other,
-				description : "create new object",
-				parameterInfo : [ // TODO
-					{ name: "object" }
+				description : "create new _ at _",
+				parameterInfo : [
+					{ name: "object", type: ParameterType.ObjectId },
+					{ name: "location", type: ParameterType.StringOption }, // TODO : make real
 				],
 			},
 		},

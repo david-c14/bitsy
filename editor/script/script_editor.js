@@ -2,8 +2,7 @@
 **** NEW TODO ****
 - refactor nodes to use templates of some kind
 X add a function node
-- move dialog block logic into parser?
-	- need something like this to fix dialog editor creation that is hidden by function editor
+X move dialog block logic into parser
 - auto populate the script builder menus (category, function name, later: function parameters)
 
 - TODO
@@ -351,21 +350,49 @@ function FunctionNodeEditor(functionNode, parentNode) {
 	this.div.classList.add("functionNode");
 
 	var topDiv = document.createElement("div");
+	topDiv.style.height = "30px"; // HACK!!!
 	this.div.appendChild(topDiv);
 
-	var span = document.createElement("span");
-	span.innerText = functionNode.metadata.description;
-	topDiv.appendChild(span);
+	var funcDiv = document.createElement("div");
+	this.div.appendChild(funcDiv);
 
-	// TODO -- work on this
-	if (functionNode.metadata.parameterInfo != undefined) {
-		for (var i = 0; i < functionNode.metadata.parameterInfo.length; i++) {
-			var info = functionNode.metadata.parameterInfo[i];
-			var paramSpan = document.createElement("div");
-			paramSpan.innerText = info.name;
-			topDiv.appendChild(paramSpan);
+	// turn description and parameters into function UI
+	var curDescriptionText = "";
+	var curParameterIndex = 0;
+	for (var i = 0; i < functionNode.metadata.description.length; i++) {
+		var char = functionNode.metadata.description[i];
+
+		if (char === "_") {
+			var span = document.createElement("span");
+			span.innerText = curDescriptionText;
+			funcDiv.appendChild(span);
+
+			// TODO -- fancier input based on parameter type!!
+			var input = document.createElement("input");
+			input.type = "text";
+			input.size = 6;
+			if (functionNode.metadata.parameterInfo &&
+					functionNode.metadata.parameterInfo.length > curParameterIndex) {
+				var info = functionNode.metadata.parameterInfo[curParameterIndex];
+				input.placeholder = info.name;
+			}
+			if (functionNode.arguments.length > curParameterIndex) { // TODO -- what do I do if this is false??
+				console.log(functionNode.arguments[curParameterIndex]);
+				input.value = functionNode.arguments[curParameterIndex].Serialize();
+			}
+			funcDiv.appendChild(input);
+
+			curParameterIndex++;
+			curDescriptionText = "";
+		}
+		else {
+			curDescriptionText += char;
 		}
 	}
+	// leftover text from function description
+	var span = document.createElement("span");
+	span.innerText = curDescriptionText;
+	funcDiv.appendChild(span);
 
 	// TODO : THIS WHOLE THING IS A DUPLICATE
 	var controlDiv = document.createElement("div");
