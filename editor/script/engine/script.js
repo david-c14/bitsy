@@ -503,200 +503,56 @@ var Environment = function() {
 	this.SetDialogBuffer = function(buffer) { dialogBuffer = buffer; };
 	this.GetDialogBuffer = function() { return dialogBuffer; };
 
-	// OLD FUNCTION MAP
-	// var functionMap = new Map();
-	// functionMap.set("print", printFunc);
-	// functionMap.set("say", printFunc);
-	// functionMap.set("br", linebreakFunc);
-	// functionMap.set("item", itemFunc);
-	// functionMap.set("rbw", rainbowFunc);
-	// functionMap.set("clr1", color1Func);
-	// functionMap.set("clr2", color2Func);
-	// functionMap.set("clr3", color3Func);
-	// functionMap.set("wvy", wavyFunc);
-	// functionMap.set("shk", shakyFunc);
-	// functionMap.set("printSprite", printSpriteFunc);
-	// functionMap.set("printTile", printTileFunc);
-	// functionMap.set("printItem", printItemFunc);
-	// functionMap.set("debugOnlyPrintFont", printFontFunc); // DEBUG ONLY
-	// /* EXPERIMENTAL WIP */
-	// functionMap.set("moveLeft", moveLeftFunc);
-	// functionMap.set("moveRight", moveRightFunc);
-	// functionMap.set("moveUp", moveUpFunc);
-	// functionMap.set("moveDown", moveDownFunc);
-	// functionMap.set("createObject", createObjectFunc);
+	var functionMap = new Map();
+	functionMap.set("print", printFunc);
+	functionMap.set("say", printFunc);
+	functionMap.set("br", linebreakFunc);
+	functionMap.set("item", itemFunc);
+	functionMap.set("rbw", rainbowFunc);
+	functionMap.set("clr1", color1Func);
+	functionMap.set("clr2", color2Func);
+	functionMap.set("clr3", color3Func);
+	functionMap.set("wvy", wavyFunc);
+	functionMap.set("shk", shakyFunc);
+	functionMap.set("printSprite", printSpriteFunc);
+	functionMap.set("printTile", printTileFunc);
+	functionMap.set("printItem", printItemFunc);
+	functionMap.set("debugOnlyPrintFont", printFontFunc); // DEBUG ONLY
+	/* EXPERIMENTAL WIP */
+	functionMap.set("moveLeft", moveLeftFunc);
+	functionMap.set("moveRight", moveRightFunc);
+	functionMap.set("moveUp", moveUpFunc);
+	functionMap.set("moveDown", moveDownFunc);
+	functionMap.set("createObject", createObjectFunc);
 
 	// TODO : probably remove this...
 	// TODO : vNext
 	// functionMap.set("changeAvatar", changeAvatarFunc);
 	// functionMap.set("return", returnFunc);
 
-	// TODO ... move the built-in functions elsewhere??? somewhere easier to access??
-	// TODO -- should be public???
-	var FunctionCategory = {
-		DialogInner : "DialogInner",
-		DebugOnly : "DebugOnly",
-		Movement : "Movement",
-		Other : "Other",
-	};
-
-	// TODO --- is there a better way to specify this??? (it's only used by the editor..)
-	var ParameterType = {
-		Boolean : 0,
-		Number : 1,
-		String : 2,
-		StringOption : 3, // TODO : just a more general "options" thing?
-		ObjectId : 4,
-		ItemId: 5,
-		// TODO : are there more???
-	};
-
-	var builtInFunctionDefinitions = {
-		"print" : {
-			func : printFunc,
-			meta : {
-				category : FunctionCategory.DialogInner
-			},
-		},
-		"say" : {
-			func : printFunc,
-			meta : {
-				category : FunctionCategory.DialogInner
-			},
-		},
-		"br" : {
-			func : linebreakFunc,
-			meta : {
-				category : FunctionCategory.DialogInner
-			},
-		},
-		"item" : {
-			func : itemFunc,
-			meta : {
-				category : FunctionCategory.Other,
-				description : "number of _s in player's inventory",
-				parameterInfo : [
-					{ name: "item", type: ParameterType.ItemId },
-				],
-			},
-		},
-		"rbw" : {
-			func : rainbowFunc,
-			meta : {
-				category : FunctionCategory.DialogInner
-			},
-		},
-		"clr1" : {
-			func : color1Func,
-			meta : {
-				category : FunctionCategory.DialogInner
-			},
-		},
-		"clr2" : {
-			func : color2Func,
-			meta : {
-				category : FunctionCategory.DialogInner
-			},
-		},
-		"clr3" : {
-			func : color3Func,
-			meta : {
-				category : FunctionCategory.DialogInner
-			},
-		},
-		"wvy" : {
-			func : wavyFunc,
-			meta : {
-				category : FunctionCategory.DialogInner
-			},
-		},
-		"shk" : {
-			func : shakyFunc,
-			meta : {
-				category : FunctionCategory.DialogInner
-			},
-		},
-		"printSprite" : {
-			func : printSpriteFunc,
-			meta : {
-				category : FunctionCategory.DialogInner
-			},
-		},
-		"printTile" : {
-			func : printTileFunc,
-			meta : {
-				category : FunctionCategory.DialogInner
-			},
-		},
-		"printItem" : {
-			func : printItemFunc,
-			meta : {
-				category : FunctionCategory.DialogInner
-			},
-		},
-		"debugOnlyPrintFont" : {
-			func : printFontFunc,
-			meta : {
-				category : FunctionCategory.DebugOnly
-			},
-		},
-		/* EXPERIMENTAL WIP */
-		"moveLeft" : {
-			func : moveLeftFunc,
-			meta : {
-				category : FunctionCategory.Movement,
-				description : "move this object one step left", // TODO - how should I use these?
-			},
-		},
-		"moveRight" : {
-			func : moveRightFunc,
-			meta : {
-				category : FunctionCategory.Movement,
-				description : "move this object one step right",
-			},
-		},
-		"moveUp" : {
-			func : moveUpFunc,
-			meta : {
-				category : FunctionCategory.Movement,
-				description : "move this object one step up",
-			},
-		},
-		"moveDown" : {
-			func : moveDownFunc,
-			meta : {
-				category : FunctionCategory.Movement,
-				description : "move this object one step down",
-			},
-		},
-		"createObject" : {
-			func : createObjectFunc,
-			meta : {
-				category : FunctionCategory.Other,
-				description : "create new _ at _",
-				parameterInfo : [
-					{ name: "object", type: ParameterType.ObjectId },
-					{ name: "location", type: ParameterType.StringOption }, // TODO : make real
-				],
-			},
-		},
-	};
-
-	this.HasFunction = function(name) { return builtInFunctionDefinitions[name] != undefined && builtInFunctionDefinitions[name] != null; };
+	this.HasFunction = function(name) { return functionMap.has(name); };
 	this.EvalFunction = function(name,parameters,onReturn,env) {
 		if (env == undefined || env == null) {
 			env = this;
 		}
 
-		builtInFunctionDefinitions[name].func(env, parameters, onReturn);
+		functionMap.get( name )( env, parameters, onReturn );
 	}
+
 	this.CreateFunctionNode = function(name, parameters) {
 		if (parameters === undefined || parameters === null) {
 			parameters = [];
 		}
 
-		return new FuncNode(name, parameters, builtInFunctionDefinitions[name].meta);
+		return new FuncNode(name, parameters);
 	}
+
+	// hacky but good enough for now I guess
+	var dialogFormatFunctions = ["print","say","br","rbw","clr1","clr2","clr3","wvy","shk","printSprite","printTile","printItem"];
+	this.IsDialogFormatFunction = function(name) {
+		return dialogFormatFunctions.indexOf(name) > -1;
+	}
+
 
 	var variableMap = new Map();
 
@@ -977,13 +833,12 @@ var UndefinedCodeNode = function(sourceStr) {
 	}
 }
 
-var FuncNode = function(name,arguments,metadata) {
+var FuncNode = function(name,arguments) {
 	Object.assign( this, new TreeRelationship() );
 	// Object.assign( this, new Runnable() );
 	this.type = "function";
 	this.name = name;
 	this.arguments = arguments;
-	this.metadata = metadata;
 
 	this.Eval = function(environment,onReturn) {
 
@@ -1516,8 +1371,8 @@ var ParserNext = function(env) {
 		return index;
 	}
 
-	// TODO : name???
-	function GroupDialogBlockFunctions(blockNode) {
+	// TODO : name??? DialogFormat OR DialogContent???
+	function GroupDialogFormatFunctions(blockNode) {
 		var childrenTemp = blockNode.children.slice();
 		blockNode.children = [];
 
@@ -1531,8 +1386,7 @@ var ParserNext = function(env) {
 
 		for (var i = 0; i < childrenTemp.length; i++) {
 			var child = childrenTemp[i];
-			// TODO... do I need a better way to query the metadata???
-			if (child.type === "function" && child.metadata.category === "DialogInner") {
+			if (child.type === "function" && environment.IsDialogFormatFunction(child.name)) {
 				dialogBlock.AddChild(child);
 			}
 			else {
@@ -1555,7 +1409,7 @@ var ParserNext = function(env) {
 			}
 		}
 
-		GroupDialogBlockFunctions(blockNode);
+		GroupDialogFormatFunctions(blockNode);
 
 		return index;
 	}

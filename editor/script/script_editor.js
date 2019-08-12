@@ -356,43 +356,48 @@ function FunctionNodeEditor(functionNode, parentNode) {
 	var funcDiv = document.createElement("div");
 	this.div.appendChild(funcDiv);
 
-	// turn description and parameters into function UI
-	var curDescriptionText = "";
-	var curParameterIndex = 0;
-	for (var i = 0; i < functionNode.metadata.description.length; i++) {
-		var char = functionNode.metadata.description[i];
-
-		if (char === "_") {
-			var span = document.createElement("span");
-			span.innerText = curDescriptionText;
-			funcDiv.appendChild(span);
-
-			// TODO -- fancier input based on parameter type!!
-			var input = document.createElement("input");
-			input.type = "text";
-			input.size = 6;
-			if (functionNode.metadata.parameterInfo &&
-					functionNode.metadata.parameterInfo.length > curParameterIndex) {
-				var info = functionNode.metadata.parameterInfo[curParameterIndex];
-				input.placeholder = info.name;
-			}
-			if (functionNode.arguments.length > curParameterIndex) { // TODO -- what do I do if this is false??
-				console.log(functionNode.arguments[curParameterIndex]);
-				input.value = functionNode.arguments[curParameterIndex].Serialize();
-			}
-			funcDiv.appendChild(input);
-
-			curParameterIndex++;
-			curDescriptionText = "";
-		}
-		else {
-			curDescriptionText += char;
-		}
-	}
-	// leftover text from function description
 	var span = document.createElement("span");
-	span.innerText = curDescriptionText;
+	span.innerText = functionNode.name;
 	funcDiv.appendChild(span);
+
+	// TODO --- re-write this
+	// turn description and parameters into function UI
+	// var curDescriptionText = "";
+	// var curParameterIndex = 0;
+	// for (var i = 0; i < functionNode.metadata.description.length; i++) {
+	// 	var char = functionNode.metadata.description[i];
+
+	// 	if (char === "_") {
+	// 		var span = document.createElement("span");
+	// 		span.innerText = curDescriptionText;
+	// 		funcDiv.appendChild(span);
+
+	// 		// TODO -- fancier input based on parameter type!!
+	// 		var input = document.createElement("input");
+	// 		input.type = "text";
+	// 		input.size = 6;
+	// 		if (functionNode.metadata.parameterInfo &&
+	// 				functionNode.metadata.parameterInfo.length > curParameterIndex) {
+	// 			var info = functionNode.metadata.parameterInfo[curParameterIndex];
+	// 			input.placeholder = info.name;
+	// 		}
+	// 		if (functionNode.arguments.length > curParameterIndex) { // TODO -- what do I do if this is false??
+	// 			console.log(functionNode.arguments[curParameterIndex]);
+	// 			input.value = functionNode.arguments[curParameterIndex].Serialize();
+	// 		}
+	// 		funcDiv.appendChild(input);
+
+	// 		curParameterIndex++;
+	// 		curDescriptionText = "";
+	// 	}
+	// 	else {
+	// 		curDescriptionText += char;
+	// 	}
+	// }
+	// // leftover text from function description
+	// var span = document.createElement("span");
+	// span.innerText = curDescriptionText;
+	// funcDiv.appendChild(span);
 
 	// TODO : THIS WHOLE THING IS A DUPLICATE
 	var controlDiv = document.createElement("div");
@@ -452,36 +457,39 @@ function NodeEditorBase() {
 }
 
 function ActionBuilder(parentBlock) {
-	var actionBuilderTemplate = document.getElementById("actionBuilderTemplate");
+	var actionBuilderRoot = document.createElement("div");
+	actionBuilderRoot.classList.add("actionBuilder");
+	parentBlock.div.appendChild(actionBuilderRoot);
 
-	parentBlock.div.appendChild(actionBuilderTemplate.content.cloneNode(true));
-
-	// console.log(actionBuilderDiv);
-	var actionBuilderNodes = parentBlock.div.querySelectorAll(".actionBuilder");
-	var actionBuilderDiv = actionBuilderNodes[actionBuilderNodes.length - 1];
-
-	var addButton = actionBuilderDiv.querySelector(".actionBuilderAdd");
+	var addButton = document.createElement("button");
+	addButton.innerText = "add action";
+	addButton.classList.add("actionBuilderAdd");
 	addButton.onclick = function() {
-		actionBuilderDiv.classList.add("actionBuilderActive");
-	}
+		actionBuilderRoot.classList.add("actionBuilderActive");
+	};
+	actionBuilderRoot.appendChild(addButton);
 
-	var cancelButton = actionBuilderDiv.querySelector(".actionBuilderCancel");
-	cancelButton.onclick = function() {
-		actionBuilderDiv.classList.remove("actionBuilderActive");
-	}
+	var actionBuilderOptions = document.createElement("div");
+	actionBuilderOptions.classList.add("actionBuilderOptions");
+	actionBuilderRoot.appendChild(actionBuilderOptions);
 
-	var addDialogButton = actionBuilderDiv.querySelector(".actionBuilderAddDialog");
-	addDialogButton.onclick = function() {
-		var dialogNodeEditor = new DialogNodeEditor([scriptUtils.CreateEmptyPrintFunc()], parentBlock);
-		parentBlock.AppendChild(dialogNodeEditor);
-	}
-
-	var addSequenceButton = actionBuilderDiv.querySelector(".actionBuilderAddSequence");
+	// TODO -- embed inside a category container
+	var addSequenceButton = document.createElement("button");
+	addSequenceButton.innerText = "sequence";
 	addSequenceButton.onclick = function() {
 		var sequenceNode = scriptUtils.CreateSequenceNode();
 		var sequenceNodeEditor = new SequenceNodeEditor(sequenceNode, parentBlock);
 		parentBlock.AppendChild(sequenceNodeEditor);
 	}
+	actionBuilderOptions.appendChild(addSequenceButton);
+
+	var cancelButton = document.createElement("button");
+	cancelButton.innerText = "cancel";
+	cancelButton.classList.add("actionBuilderCancel");
+	cancelButton.onclick = function() {
+		actionBuilderRoot.classList.remove("actionBuilderActive");
+	};
+	actionBuilderOptions.appendChild(cancelButton);
 
 	// console.log(addButton);
 }

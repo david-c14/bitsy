@@ -68,6 +68,7 @@
 	color: white;
 }
 
+/* ACTION BUILDER */
 .actionBuilder {
 	display: flex;
 	flex-direction: column;
@@ -106,4 +107,4 @@
 .actionBuilderOptions .actionBuilderCancel {
 	background: #6767b2;
 	color: white;
-}
+} 
