@@ -139,15 +139,17 @@ function BlockNodeEditor(blockNode, parentNode) {
 		var beforeInsert = childEditors.slice(0,index);
 		var afterInsert = childEditors.slice(index);
 
-		console.log(index);
-		console.log(beforeInsert);
-		console.log(afterInsert);
+		// console.log(index);
+		// console.log(beforeInsert);
+		// console.log(afterInsert);
 
 		childEditors = beforeInsert.concat([childEditor]).concat(afterInsert);
 
 		// console.log(childEditors);
 
 		UpdateNodeChildren();
+
+		console.log(blockNode.children);
 
 		self.div.innerHTML = ""; // inefficient?
 		// InitChildEditors(self.div);
@@ -165,14 +167,10 @@ function BlockNodeEditor(blockNode, parentNode) {
 	}
 
 	function UpdateNodeChildren() {
-		var updatedChildren = [];
+		blockNode.children = [];
 		for (var i = 0; i < childEditors.length; i++) {
-			updatedChildren.push(childEditors[i].GetNode());
+			blockNode.AddChild(childEditors[i].GetNode());
 		}
-
-		blockNode.children = updatedChildren;
-
-		console.log(updatedChildren);
 	}
 
 	function SendUpdateNotification() {
@@ -341,6 +339,17 @@ function SequenceNodeEditor(sequenceNode, parentNode) {
 	}
 }
 
+// TODO : is this the right place to store these descriptions?
+var FunctionDescriptions = {
+	"moveLeft" : {
+		text : "move this object one space left",
+	},
+	"createObject" : {
+		text : "create _ at _",
+		parameters : [ {name:"object"}, {name:"location"} ],
+	},
+};
+
 // TODO : too much copy / paste between these node editors :( -- I need templates!
 function FunctionNodeEditor(functionNode, parentNode) {
 	Object.assign( this, new NodeEditorBase() );
@@ -356,48 +365,52 @@ function FunctionNodeEditor(functionNode, parentNode) {
 	var funcDiv = document.createElement("div");
 	this.div.appendChild(funcDiv);
 
-	var span = document.createElement("span");
-	span.innerText = functionNode.name;
-	funcDiv.appendChild(span);
+	var description = FunctionDescriptions[functionNode.name];
+	if (description != undefined && description != null) {
+		// turn description into function UI
+		var curDescriptionText = "";
+		var curParameterIndex = 0;
+		for (var i = 0; i < description.text.length; i++) {
+			var char = description.text[i];
 
-	// TODO --- re-write this
-	// turn description and parameters into function UI
-	// var curDescriptionText = "";
-	// var curParameterIndex = 0;
-	// for (var i = 0; i < functionNode.metadata.description.length; i++) {
-	// 	var char = functionNode.metadata.description[i];
+			if (char === "_") {
+				var span = document.createElement("span");
+				span.innerText = curDescriptionText;
+				funcDiv.appendChild(span);
 
-	// 	if (char === "_") {
-	// 		var span = document.createElement("span");
-	// 		span.innerText = curDescriptionText;
-	// 		funcDiv.appendChild(span);
+				// TODO -- fancier input based on parameter type!!
+				var input = document.createElement("input");
+				input.type = "text";
+				input.size = 6;
+				if (description.parameters &&
+						description.parameters.length > curParameterIndex) {
+					var param = description.parameters[curParameterIndex];
+					input.placeholder = param.name;
+				}
+				if (functionNode.arguments.length > curParameterIndex) { // TODO -- what do I do if this is false??
+					console.log(functionNode.arguments[curParameterIndex]);
+					input.value = functionNode.arguments[curParameterIndex].Serialize();
+				}
+				funcDiv.appendChild(input);
 
-	// 		// TODO -- fancier input based on parameter type!!
-	// 		var input = document.createElement("input");
-	// 		input.type = "text";
-	// 		input.size = 6;
-	// 		if (functionNode.metadata.parameterInfo &&
-	// 				functionNode.metadata.parameterInfo.length > curParameterIndex) {
-	// 			var info = functionNode.metadata.parameterInfo[curParameterIndex];
-	// 			input.placeholder = info.name;
-	// 		}
-	// 		if (functionNode.arguments.length > curParameterIndex) { // TODO -- what do I do if this is false??
-	// 			console.log(functionNode.arguments[curParameterIndex]);
-	// 			input.value = functionNode.arguments[curParameterIndex].Serialize();
-	// 		}
-	// 		funcDiv.appendChild(input);
-
-	// 		curParameterIndex++;
-	// 		curDescriptionText = "";
-	// 	}
-	// 	else {
-	// 		curDescriptionText += char;
-	// 	}
-	// }
-	// // leftover text from function description
-	// var span = document.createElement("span");
-	// span.innerText = curDescriptionText;
-	// funcDiv.appendChild(span);
+				curParameterIndex++;
+				curDescriptionText = "";
+			}
+			else {
+				curDescriptionText += char;
+			}
+		}
+		// leftover text from function description
+		var span = document.createElement("span");
+		span.innerText = curDescriptionText;
+		funcDiv.appendChild(span);
+	}
+	else {
+		// TODO : fallback UI
+		var span = document.createElement("span");
+		span.innerText = functionNode.name;
+		funcDiv.appendChild(span);
+	}
 
 	// TODO : THIS WHOLE THING IS A DUPLICATE
 	var controlDiv = document.createElement("div");
@@ -473,7 +486,15 @@ function ActionBuilder(parentBlock) {
 	actionBuilderOptions.classList.add("actionBuilderOptions");
 	actionBuilderRoot.appendChild(actionBuilderOptions);
 
-	// TODO -- embed inside a category container
+	var addDialogButton = document.createElement("button");
+	addDialogButton.innerText = "dialog";
+	addDialogButton.onclick = function() {
+		var dialogNode = scriptUtils.CreateEmptyDialogBlock();
+		var dialogNodeEditor = new DialogNodeEditor(dialogNode, parentBlock);
+		parentBlock.AppendChild(dialogNodeEditor);
+	}
+	actionBuilderOptions.appendChild(addDialogButton);
+
 	var addSequenceButton = document.createElement("button");
 	addSequenceButton.innerText = "sequence";
 	addSequenceButton.onclick = function() {
@@ -482,6 +503,20 @@ function ActionBuilder(parentBlock) {
 		parentBlock.AppendChild(sequenceNodeEditor);
 	}
 	actionBuilderOptions.appendChild(addSequenceButton);
+
+	function makeFunctionButton(name, friendlyName) {
+		var addFunctionButton = document.createElement("button");
+		addFunctionButton.innerText = friendlyName;
+		addFunctionButton.onclick = function() {
+			var functionNode = scriptUtils.CreateFunctionNode(name);
+			var functionNodeEditor = new FunctionNodeEditor(functionNode, parentBlock);
+			parentBlock.AppendChild(functionNodeEditor);
+		}
+		actionBuilderOptions.appendChild(addFunctionButton);
+	}
+
+	makeFunctionButton("moveLeft", "move left");
+	makeFunctionButton("createObject", "create object");
 
 	var cancelButton = document.createElement("button");
 	cancelButton.innerText = "cancel";

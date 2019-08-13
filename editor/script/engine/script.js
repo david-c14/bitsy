@@ -130,6 +130,10 @@ var Utils = function() {
 		return block;
 	}
 
+	this.CreateEmptyDialogBlock = function() {
+		return new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
+	}
+
 	this.ChangeSequenceType = function(oldSequence,type) {
 		if(type === "sequence") {
 			return new SequenceNode( oldSequence.options );
@@ -223,8 +227,14 @@ var Utils = function() {
 		return dialogStr;
 	}
 
+	// TODO : remove??
 	this.CreateEmptyPrintFunc = function() {
 		return new FuncNode("print", [new LiteralNode(" ")]);
+	}
+
+	// TODO : remove other version??
+	this.CreateFunctionNode = function(name) {
+		return new FuncNode(name, []);
 	}
 }
 
