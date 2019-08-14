@@ -504,6 +504,24 @@ function ActionBuilder(parentBlock) {
 	}
 	actionBuilderOptions.appendChild(addSequenceButton);
 
+	var addCycleButton = document.createElement("button");
+	addCycleButton.innerText = "cycle";
+	addCycleButton.onclick = function() {
+		var sequenceNode = scriptUtils.CreateCycleNode();
+		var sequenceNodeEditor = new SequenceNodeEditor(sequenceNode, parentBlock);
+		parentBlock.AppendChild(sequenceNodeEditor);
+	}
+	actionBuilderOptions.appendChild(addCycleButton);
+
+	var addShuffleButton = document.createElement("button");
+	addShuffleButton.innerText = "shuffle";
+	addShuffleButton.onclick = function() {
+		var sequenceNode = scriptUtils.CreateShuffleNode();
+		var sequenceNodeEditor = new SequenceNodeEditor(sequenceNode, parentBlock);
+		parentBlock.AppendChild(sequenceNodeEditor);
+	}
+	actionBuilderOptions.appendChild(addShuffleButton);
+
 	function makeFunctionButton(name, friendlyName) {
 		var addFunctionButton = document.createElement("button");
 		addFunctionButton.innerText = friendlyName;

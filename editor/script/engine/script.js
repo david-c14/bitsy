@@ -154,6 +154,20 @@ var Utils = function() {
 		return sequence;
 	}
 
+	this.CreateCycleNode = function() {
+		var option1 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
+		var option2 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
+		var cycle = new CycleNode( [ option1, option2 ] );
+		return cycle;
+	}
+
+	this.CreateShuffleNode = function() {
+		var option1 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
+		var option2 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
+		var shuffle = new ShuffleNode( [ option1, option2 ] );
+		return shuffle;
+	}
+
 	// TODO -- remove soon
 	this.CreateSequenceBlock = function() {
 		var option1 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
