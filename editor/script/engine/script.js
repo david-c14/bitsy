@@ -791,23 +791,31 @@ var BlockNode = function(mode, doIndentFirstLine) {
 		// console.log(doIndentFirstLine);
 
 		var str = "";
-		var lastNode = null;
-		if (this.mode === BlockMode.Code) str += "{"; // todo: increase scope of Sym?
+
+		// var lastNode = null;
+		// if (this.mode === BlockMode.Code) str += "{"; // todo: increase scope of Sym?
+		// for (var i = 0; i < this.children.length; i++) {
+
+		// 	var curNode = this.children[i];
+
+		// 	if(curNode.type === "block" && lastNode && lastNode.type === "block" && !isBlockWithNoNewline(curNode) && !isBlockWithNoNewline(lastNode))
+		// 		str += "\n";
+
+		// 	var shouldIndentFirstLine = (i == 0 && doIndentFirstLine);
+		// 	var shouldIndentAfterLinebreak = (lastNode && lastNode.type === "function" && lastNode.name === "br");
+		// 	if(this.mode === BlockMode.Dialog && (shouldIndentFirstLine || shouldIndentAfterLinebreak))
+		// 		str += leadingWhitespace(depth);
+		// 	str += curNode.Serialize(depth);
+		// 	lastNode = curNode;
+		// }
+		// if (this.mode === BlockMode.Code) str += "}";
+
 		for (var i = 0; i < this.children.length; i++) {
-
 			var curNode = this.children[i];
-
-			if(curNode.type === "block" && lastNode && lastNode.type === "block" && !isBlockWithNoNewline(curNode) && !isBlockWithNoNewline(lastNode))
-				str += "\n";
-
-			var shouldIndentFirstLine = (i == 0 && doIndentFirstLine);
-			var shouldIndentAfterLinebreak = (lastNode && lastNode.type === "function" && lastNode.name === "br");
-			if(this.mode === BlockMode.Dialog && (shouldIndentFirstLine || shouldIndentAfterLinebreak))
-				str += leadingWhitespace(depth);
 			str += curNode.Serialize(depth);
-			lastNode = curNode;
 		}
-		if (this.mode === BlockMode.Code) str += "}";
+		// str += "\n";
+
 		return str;
 	}
 
@@ -1279,17 +1287,21 @@ var ParserNext = function(env) {
 		// TODO --- what IS an expression (especially in a world with roundtripped undefined code???)
 	}
 
-	function ParseDialog(parentNode, sourceStr, index, earlyStopSymbols) {
+	function ParseDialog(parentNode, sourceStr, index, delimeterList, trimWhitespace) {
 		var curDialogText = "";
 
 		function TryAddCurText() {
+			if (trimWhitespace) {
+				curDialogText = curDialogText.trimStart();
+			}
+
 			if (curDialogText.length > 0) {
 				parentNode.AddChild(new FuncNode("print", [new LiteralNode(curDialogText)]));
 				curDialogText = "";
 			}
 		}
 
-		while (index < sourceStr.length && earlyStopSymbols.indexOf(sourceStr[index]) == -1) {
+		while (index < sourceStr.length && delimeterList.indexOf(sourceStr[index]) == -1) {
 			if (sourceStr[index] === Sym.Linebreak) {
 				TryAddCurText();
 				parentNode.AddChild(new FuncNode("br", []));
@@ -1347,15 +1359,7 @@ var ParserNext = function(env) {
 		var innerBlocks = [];
 		while (index < sourceStr.length) {
 			var block = new BlockNode(BlockMode.Dialog, false /*doIndentFirstLine*/);
-			index = ParseBlockContents(block, sourceStr, index, [Sym.List]);
-
-			// remove the last newline from the inner block if there is one
-			if (block.children.length > 0) {
-				var lastChild = block.children[block.children.length-1];
-				if (lastChild.type === "function" && lastChild.name === "br") {
-					block.children.splice(block.children.length-1);
-				}
-			}
+			index = ParseBlockContents(block, sourceStr, index, [Sym.List], true /*trimWhitespace*/);
 
 			innerBlocks.push(block);
 
@@ -1503,6 +1507,13 @@ var ParserNext = function(env) {
 
 		var dialogBlock = new BlockNode(BlockMode.Dialog); // TODO need to refactor the block nodes..
 		function TryAddDialogBlock() {
+			// remove trailing newline from end of dialog block
+			var lastChild = dialogBlock.children.length > 0 ? dialogBlock.children[dialogBlock.children.length - 1] : null;
+			if (lastChild != null && lastChild.type === "function" && lastChild.name === "br") {
+				console.log("REMOVE NEWLINE!!!");
+				dialogBlock.children.splice(dialogBlock.children.length-1);
+			}
+
 			if (dialogBlock.children.length > 0) {
 				blockNode.AddChild(dialogBlock);
 				dialogBlock = new BlockNode(BlockMode.Dialog);
@@ -1524,13 +1535,13 @@ var ParserNext = function(env) {
 	}
 
 	// TODO .. should I be more consistent by inputting entire source string, but with start and end indices??
-	function ParseBlockContents(blockNode, sourceStr, index, earlyStopSymbols) {
-		while (index < sourceStr.length && earlyStopSymbols.indexOf(sourceStr[index]) == -1) {
+	function ParseBlockContents(blockNode, sourceStr, index, delimeterList, trimWhitespace) {
+		while (index < sourceStr.length && delimeterList.indexOf(sourceStr[index]) == -1) {
 			if (sourceStr[index] === Sym.CodeOpen) {
 				index = ParseCode(blockNode, sourceStr, index);
 			}
 			else {
-				index = ParseDialog(blockNode, sourceStr, index, earlyStopSymbols.concat([Sym.CodeOpen]));
+				index = ParseDialog(blockNode, sourceStr, index, delimeterList.concat([Sym.CodeOpen]), trimWhitespace);
 			}
 		}
 
@@ -1542,7 +1553,7 @@ var ParserNext = function(env) {
 	this.Parse = function(sourceStr) {
 		var rootNode = new BlockNode(BlockMode.Dialog);
 
-		ParseBlockContents(rootNode, sourceStr, 0, []);
+		ParseBlockContents(rootNode, sourceStr, 0, [], false /*trimWhitespace*/);
 
 		return rootNode;
 	}
