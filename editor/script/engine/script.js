@@ -250,6 +250,21 @@ var Utils = function() {
 	this.CreateFunctionNode = function(name) {
 		return new FuncNode(name, []);
 	}
+
+	this.CreateLiteralNode = function(valueString) {
+		var value = valueString; // default to string
+		if(value === "true") {
+			value = true;
+		}
+		else if(value === "false") {
+			value = false;
+		}
+		else if(!isNaN(parseFloat(value))) {
+			value = parseFloat(value);
+		}
+
+		return new LiteralNode(value);
+	}
 }
 
 

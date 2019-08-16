@@ -365,6 +365,13 @@ function FunctionNodeEditor(functionNode, parentNode) {
 	var funcDiv = document.createElement("div");
 	this.div.appendChild(funcDiv);
 
+	var createParameterInputChangeHandler = function(input, argumentIndex) {
+		return function() {
+			functionNode.arguments[argumentIndex] = scriptUtils.CreateLiteralNode(input.value);
+			parentNode.UpdateChild(self);
+		}
+	}
+
 	var description = FunctionDescriptions[functionNode.name];
 	if (description != undefined && description != null) {
 		// turn description into function UI
@@ -389,8 +396,11 @@ function FunctionNodeEditor(functionNode, parentNode) {
 				}
 				if (functionNode.arguments.length > curParameterIndex) { // TODO -- what do I do if this is false??
 					console.log(functionNode.arguments[curParameterIndex]);
-					input.value = functionNode.arguments[curParameterIndex].Serialize();
+
+					// TODO currently assumes it's a literal node! (but it might not be!!!)
+					input.value = functionNode.arguments[curParameterIndex].value;
 				}
+				input.onchange = createParameterInputChangeHandler(input, curParameterIndex);
 				funcDiv.appendChild(input);
 
 				curParameterIndex++;
