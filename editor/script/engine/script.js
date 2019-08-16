@@ -563,14 +563,6 @@ var Environment = function() {
 		functionMap.get( name )( env, parameters, onReturn );
 	}
 
-	this.CreateFunctionNode = function(name, parameters) {
-		if (parameters === undefined || parameters === null) {
-			parameters = [];
-		}
-
-		return new FuncNode(name, parameters);
-	}
-
 	// hacky but good enough for now I guess
 	var dialogFormatFunctions = ["print","say","br","rbw","clr1","clr2","clr3","wvy","shk","printSprite","printTile","printItem"];
 	this.IsDialogFormatFunction = function(name) {
@@ -1277,7 +1269,7 @@ var ParserNext = function(env) {
 
 		function TryAddCurText() {
 			if (curDialogText.length > 0) {
-				parentNode.AddChild(environment.CreateFunctionNode("print", [new LiteralNode(curDialogText)]));
+				parentNode.AddChild(new FuncNode("print", [new LiteralNode(curDialogText)]));
 				curDialogText = "";
 			}
 		}
@@ -1285,7 +1277,7 @@ var ParserNext = function(env) {
 		while (index < sourceStr.length && earlyStopSymbols.indexOf(sourceStr[index]) == -1) {
 			if (sourceStr[index] === Sym.Linebreak) {
 				TryAddCurText();
-				parentNode.AddChild(environment.CreateFunctionNode("br"));
+				parentNode.AddChild(new FuncNode("br", []));
 			}
 			else {
 				curDialogText += sourceStr[index];
@@ -1367,6 +1359,103 @@ var ParserNext = function(env) {
 		}
 	}
 
+	// Function parameters that are functions or expressions:
+	// Similar to ParseCode, BUT disallows flow control code (sequences, conditionals) are allowed
+	function ParseDynamicParameter(parameterList, sourceStr, index) {
+		var results = FindBlockContents(sourceStr, index, Sym.CodeOpen, Sym.CodeClose);
+		var codeContents = results.contents;
+		index = results.index;
+
+		var firstSymbol = FindFirstSymbol(codeContents);
+
+		if (environment.HasFunction(firstSymbol)) {
+			parameterList.push(ParseFunction(firstSymbol, codeContents));
+		}
+		// else if (IsExpression()) {} // TODO
+		else {
+			parameterList.push(new UndefinedCodeNode(codeContents));
+		}
+
+		return index;
+	}
+
+	function IsValidVariableName(str) {
+		var reg = /^[a-zA-Z_$][a-zA-Z_$0-9]*$/;
+		var isValid = reg.test(str);
+		return isValid;
+	}
+
+	// Function parameters that are literal values, or variables
+	// TODO : rename to share w/ expressions?
+	function ParseConcreteParameter(parameterList, sourceStr, index) {
+		var valueString = "";
+		var delimeter = " "; // TODO : what about other whitespace??
+
+		if (sourceStr[index] === Sym.String) {
+			// We're parsing a string
+			index++;
+			delimeter = Sym.String;
+		}
+
+		while (index < sourceStr.length && sourceStr[index] != delimeter ) {
+			valueString += sourceStr[index];
+			index++;
+		}
+
+		// For strings, skip final quote
+		if (delimeter === Sym.String && index < sourceStr.length && sourceStr[index] === delimeter) {
+			index++;
+		}
+
+		if (delimeter === Sym.String) {
+			// STRING
+			parameterList.push(new LiteralNode(valueString));
+		}
+		else if (valueString === "true") {
+			// BOOL
+			parameterList.push(new LiteralNode(true));
+		}
+		else if (valueString === "false") {
+			// BOOL
+			parameterList.push(new LiteralNode(false));
+		}
+		else if (!isNaN(parseFloat(valueString))) {
+			// NUMBER
+			parameterList.push(new LiteralNode(parseFloat(valueString)));
+		}
+		else if (IsValidVariableName(valueString)) {
+			// VARIABLE
+			parameterList.push(new VarNode(valueString)); // TODO : check for valid potential variables
+		}
+		else {
+			// uh oh
+			parameterList.push(new LiteralNode(null));
+		}
+
+		return index;
+	}
+
+	function ParseFunction(functionName, sourceStr) {
+		// skip past the name of the function
+		var index = functionName.length;
+
+		var parameters = [];
+		while (index < sourceStr.length) {
+			if (sourceStr[index] === Sym.CodeOpen) {
+				index = ParseDynamicParameter(parameters, sourceStr, index);
+			}
+			else if (!IsWhitespace(sourceStr[index])) {
+				// TODO
+				index = ParseConcreteParameter(parameters, sourceStr, index);
+			}
+			else {
+				index++;
+			}
+		}
+
+		return new FuncNode(functionName, parameters);
+	}
+
 	// the goal of this function is to either add a single code node to the parent node OR the last dialog node (if it's a function)
 	// the tricky part here is this needs to recursively go through inner code nodes as well!
 	// and something needs to work for code that goes inside function parameters instead of as a child of a block
@@ -1379,10 +1468,7 @@ var ParserNext = function(env) {
 
 		// if (IsIf(...)) // TODO
 		if (environment.HasFunction(firstSymbol)) {
-			var funcName = codeContents.split(" ")[0];
-			// TODO ... I should create a smarter way to parse arguments that skips ALL white space (except stuff inside code blocks etc)
-			var funcArgs = codeContents.split(" ").slice(1).map(function(a) { return new LiteralNode(a); }); // TODO need REAL parsing
-			parentNode.AddChild(environment.CreateFunctionNode(funcName, funcArgs)); // also the args need to actually be parsed..
+			parentNode.AddChild(ParseFunction(firstSymbol, codeContents));
 		}
 		else if (IsSequenceName(firstSymbol)) {
 			ParseSequence(parentNode, codeContents, firstSymbol);
