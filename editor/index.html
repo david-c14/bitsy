@@ -738,13 +738,6 @@
 						<textarea title="dialog text will be displayed when player approaches this sprite" id="dialogText" class="dialogTextArea gameTextDir" onkeydown="on_change_dialog();" onkeyup="on_change_dialog();" onchange="on_change_dialog_finished();"></textarea> <!-- rows="2" cols="32" -->
 					</div>
 
-					<!-- TODO action controls prototype!! --->
-					<div id="actionControls" class="controlBox">
-						<span>actions</span>
-						<div id="actionList">
-						</div>
-					</div>
-
 					<div id="animationOuter" class="controlBox">
 						<div id="isAnimated">
 							<input type="checkbox" id="animatedCheckbox" onchange="on_toggle_animated(event);">
@@ -774,6 +767,13 @@
 									</div>
 								</div>
 							</div>
+						</div>
+					</div>
+
+					<!-- TODO action controls prototype!! --->
+					<div id="actionControls" class="controlBox">
+						<span>actions</span>
+						<div id="actionList">
 						</div>
 					</div>
 					
@@ -909,14 +909,15 @@
 					</div>
 
 					<div id="dialogEditorHasContent">
-						<div id="dialogTop">
-							<span style="float:left">
+						<!-- <div id="dialogTop"> -->
+							<!-- <span style="float:left">
 								<input type="checkbox" id="previewDialogCheck" onclick="togglePreviewDialog(event);" />
 								<label title="preview dialog" for="previewDialogCheck">
 									<i class="material-icons" id="previewDialogIcon">play_arrow</i>
-									<span id="previewDialogText" class="localize dialog_start_preview">preview</span> <!-- TODO LOCALIZE : other state? dialog_stop_preview -->
+									<span id="previewDialogText" class="localize dialog_start_preview">preview</span> 
 								</label>
-							</span>
+							</span> -->
+							<!-- TODO LOCALIZE : other state? dialog_stop_preview -->
 
 							<!-- <span style="float:right">
 								<input type="checkbox" id="dialogShowCodeCheck" onclick="toggleDialogCode(event);" />
@@ -926,7 +927,7 @@
 									<span id="dialogToggleCodeHideText" class="localize dialog_hide_code" style="display:none;">hide code</span>
 								</label>
 							</span> -->
-						</div>
+						<!-- </div> -->
 
 						<!-- <div id="dialogTools" class="controlBox">
 							<form style="display:inline;">
