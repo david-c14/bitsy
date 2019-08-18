@@ -85,7 +85,7 @@ function BlockNodeEditor(blockNode, parentNode) {
 
 				childEditors.push(functionNodeEditor);
 			}
-			else if (childNode.type === "block") { // TODO : need a special dialog block type
+			else if (childNode.type === "dialog") {
 				var dialogNodeEditor = new DialogNodeEditor(childNode, self);
 				div.appendChild(dialogNodeEditor.GetElement());
 
@@ -100,6 +100,16 @@ function BlockNodeEditor(blockNode, parentNode) {
 		// TODO: I **need** to get rid of the triple quotes thing it sucks
 		// return '"""\n' + blockNode.Serialize() + '\n"""';
 		return blockNode.Serialize();
+	}
+
+	this.VisualizeTree = function() {
+		var printVisitor = {
+			Visit : function(node,depth) {
+				console.log("-".repeat(depth) + "- " + node.ToString());
+			},
+		};
+
+		blockNode.VisitAll(printVisitor);
 	}
 
 	this.SetNotifyChangeHandler = function(handler) {
@@ -245,8 +255,13 @@ function DialogNodeEditor(dialogNode, parentNode) {
 
 	var self = this;
 	var OnChangeText = function() {
-		console.log(textArea.value);
-		dialogNode = scriptInterpreter.Parse(textArea.value);
+		// also hacky... make sure there is dialog content to parse!!
+		if (textArea.value.length <= 0) {
+			textArea.value = " ";
+		}
+
+		// HACKY AF way to pull the dialog node out of a root node
+		dialogNode = scriptInterpreter.Parse(textArea.value).children[0];
 
 		if (parentNode != null) {
 			parentNode.UpdateChild(self);

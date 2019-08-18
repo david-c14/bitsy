@@ -1313,6 +1313,7 @@ events.Listen("select_action", function(event) {
 		// TODO... respond to changes (needs to handle all cases, such as deletion!)
 		console.log("CHANGE!!!!");
 		console.log(curScriptEditor.Serialize());
+		console.log(curScriptEditor.VisualizeTree());
 		// dialog[getCurDialogId()] = curScriptEditor.Serialize();
 		action[event.id].source = curScriptEditor.Serialize();
 		refreshGameData();

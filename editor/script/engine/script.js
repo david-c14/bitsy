@@ -121,17 +121,8 @@ var Interpreter = function() {
 
 var Utils = function() {
 	// for editor ui
-	this.CreateDialogBlock = function(children,doIndentFirstLine) {
-		if(doIndentFirstLine === undefined) doIndentFirstLine = true;
-		var block = new BlockNode( BlockMode.Dialog, doIndentFirstLine );
-		for(var i = 0; i < children.length; i++) {
-			block.AddChild( children[i] );
-		}
-		return block;
-	}
-
 	this.CreateEmptyDialogBlock = function() {
-		return new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
+		return new DialogBlockNode();
 	}
 
 	this.ChangeSequenceType = function(oldSequence,type) {
@@ -148,52 +139,43 @@ var Utils = function() {
 	}
 
 	this.CreateSequenceNode = function() {
-		var option1 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
-		var option2 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
+		var option1 = new BlockNode();
+		var option2 = new BlockNode();
 		var sequence = new SequenceNode( [ option1, option2 ] );
 		return sequence;
 	}
 
 	this.CreateCycleNode = function() {
-		var option1 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
-		var option2 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
+		var option1 = new BlockNode();
+		var option2 = new BlockNode();
 		var cycle = new CycleNode( [ option1, option2 ] );
 		return cycle;
 	}
 
 	this.CreateShuffleNode = function() {
-		var option1 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
-		var option2 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
+		var option1 = new BlockNode();
+		var option2 = new BlockNode();
 		var shuffle = new ShuffleNode( [ option1, option2 ] );
 		return shuffle;
 	}
 
-	// TODO -- remove soon
-	this.CreateSequenceBlock = function() {
-		var option1 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
-		var option2 = new BlockNode( BlockMode.Dialog, false /*doIndentFirstLine*/ );
-		var sequence = new SequenceNode( [ option1, option2 ] );
-		var block = new BlockNode( BlockMode.Code );
-		block.AddChild( sequence );
-		return block;
-	}
+	// TODO : re-implement
+	// this.CreateIfBlock = function() {
+	// 	var leftNode = new BlockNode( BlockMode.Code );
+	// 	leftNode.AddChild( new FuncNode("item", [new LiteralNode("0")] ) );
+	// 	var rightNode = new LiteralNode( 1 );
+	// 	var condition1 = new ExpNode("==", leftNode, rightNode );
 
-	this.CreateIfBlock = function() {
-		var leftNode = new BlockNode( BlockMode.Code );
-		leftNode.AddChild( new FuncNode("item", [new LiteralNode("0")] ) );
-		var rightNode = new LiteralNode( 1 );
-		var condition1 = new ExpNode("==", leftNode, rightNode );
+	// 	var condition2 = new ElseNode();
 
-		var condition2 = new ElseNode();
+	// 	var result1 = new BlockNode( BlockMode.Dialog );
+	// 	var result2 = new BlockNode( BlockMode.Dialog );
 
-		var result1 = new BlockNode( BlockMode.Dialog );
-		var result2 = new BlockNode( BlockMode.Dialog );
-
-		var ifNode = new IfNode( [ condition1, condition2 ], [ result1, result2 ] );
-		var block = new BlockNode( BlockMode.Code );
-		block.AddChild( ifNode );
-		return block;
-	}
+	// 	var ifNode = new IfNode( [ condition1, condition2 ], [ result1, result2 ] );
+	// 	var block = new BlockNode( BlockMode.Code );
+	// 	block.AddChild( ifNode );
+	// 	return block;
+	// }
 
 	this.ReadDialogScript = function(lines, i) {
 		var scriptStr = "";
@@ -698,7 +680,6 @@ function leadingWhitespace(depth) {
 	for(var i = 0; i < depth; i++) {
 		str += "  "; // two spaces per indent
 	}
-	// console.log("WHITESPACE " + depth + " ::" + str + "::");
 	return str;
 }
 
@@ -729,43 +710,23 @@ function isReturnObject(val) {
 				&& val.isReturn;
 }
 
-var BlockMode = {
-	Code : "code",
-	Dialog : "dialog"
-};
+var BlockNode = function(debugName) {
+	Object.assign(this, new TreeRelationship());
 
-var BlockNode = function(mode, doIndentFirstLine) {
-	Object.assign( this, new TreeRelationship() );
-	// Object.assign( this, new Runnable() );
 	this.type = "block";
-	this.mode = mode;
 
-	this.Eval = function(environment,onReturn) {
-		// console.log("EVAL BLOCK " + this.children.length);
-
-		if( this.onEnter != null ) {
+	this.Eval = function(environment, onReturn) {
+		if( this.onEnter != null ) { // TODO : what's this for?
 			this.onEnter();
 		}
 
-		var lastVal = null;
 		var i = 0;
-
 		function evalChildren(children,done) {
 			if (i < children.length) {
-				// console.log(">> CHILD " + i);
 				children[i].Eval( environment, function(val) {
-					// console.log("<< CHILD " + i);
-
-					if (isReturnObject(val)) { // early return
-						lastVal = val;
-						done();
-					}
-					else {
-						lastVal = val;
-						i++;
-						evalChildren(children,done);
-					}
-				} );
+					i++;
+					evalChildren(children,done);
+				});
 			}
 			else {
 				done();
@@ -773,55 +734,78 @@ var BlockNode = function(mode, doIndentFirstLine) {
 		};
 
 		var self = this;
-		evalChildren( this.children, function() {
-			if( self.onExit != null ) {
+		evalChildren(this.children, function() {
+			if (self.onExit != null) {
 				self.onExit();
 			}
-			onReturn(lastVal);
-		} );
+			onReturn(null);
+		});
 	}
 
-	if(doIndentFirstLine === undefined) doIndentFirstLine = true; // This is just for serialization
+	this.Serialize = function(depth, doIndentFirstLine) {
+		if (depth === undefined) {
+			depth = 0;
+		}
 
-	this.Serialize = function(depth) {
-		if(depth === undefined) depth = 0;
-
-		// console.log("SERIALIZE BLOCK!!!");
-		// console.log(depth);
-		// console.log(doIndentFirstLine);
+		if (doIndentFirstLine === undefined) {
+			doIndentFirstLine = true;
+		}
 
 		var str = "";
 
-		// var lastNode = null;
-		// if (this.mode === BlockMode.Code) str += "{"; // todo: increase scope of Sym?
-		// for (var i = 0; i < this.children.length; i++) {
-
-		// 	var curNode = this.children[i];
-
-		// 	if(curNode.type === "block" && lastNode && lastNode.type === "block" && !isBlockWithNoNewline(curNode) && !isBlockWithNoNewline(lastNode))
-		// 		str += "\n";
-
-		// 	var shouldIndentFirstLine = (i == 0 && doIndentFirstLine);
-		// 	var shouldIndentAfterLinebreak = (lastNode && lastNode.type === "function" && lastNode.name === "br");
-		// 	if(this.mode === BlockMode.Dialog && (shouldIndentFirstLine || shouldIndentAfterLinebreak))
-		// 		str += leadingWhitespace(depth);
-		// 	str += curNode.Serialize(depth);
-		// 	lastNode = curNode;
-		// }
-		// if (this.mode === BlockMode.Code) str += "}";
-
 		for (var i = 0; i < this.children.length; i++) {
-			var curNode = this.children[i];
-			str += curNode.Serialize(depth);
+			str += this.children[i].Serialize(depth, i > 0 || doIndentFirstLine);
+
+			if (i < this.children.length-1) {
+				str += "\n";
+			}
 		}
-		// str += "\n";
 
 		return str;
 	}
 
 	this.ToString = function() {
-		return this.type + " " + this.mode;
-	};
+		return "block " + debugName;
+	}
+}
+
+var DialogBlockNode = function() {
+	Object.assign(this, new BlockNode("innerDialog"));
+
+	this.type = "dialog";
+
+	this.Serialize = function(depth, doIndentFirstLine) {
+		if (depth === undefined) {
+			depth = 0;
+		}
+
+		if (doIndentFirstLine === undefined) {
+			doIndentFirstLine = true;
+		}
+
+		var str = "";
+
+		if (doIndentFirstLine) {
+			str += leadingWhitespace(depth);
+		}
+
+		for (var i = 0; i < this.children.length; i++) {
+			// add whitespace at the beginning of each new line
+			if (str.length > 0 && str[str.length - 1] === "\n") {
+				str += leadingWhitespace(depth);
+			}
+
+			// dialog blocks are serialized "in-line" so don't pass on depth parameter
+			// otherwise we'll have a lot of extraneous whitespace
+			str += this.children[i].Serialize();
+		}
+
+		return str;
+	}
+
+	this.ToString = function() {
+		return "dialog block";
+	}
 }
 
 function isBlockWithNoNewline(node) {
@@ -912,25 +896,35 @@ var FuncNode = function(name,arguments) {
 		} );
 	}
 
-	this.Serialize = function(depth) {
-		var isDialogBlock = this.parent.mode && this.parent.mode === BlockMode.Dialog;
-		if(isDialogBlock && this.name === "print") {
-			// TODO this could cause problems with "real" print functions
-			return this.arguments[0].value; // first argument should be the text of the {print} func
+	this.Serialize = function(depth, doIndentFirstLine) {
+		var str = "";
+
+		if (doIndentFirstLine === undefined) {
+			doIndentFirstLine = true;
 		}
-		else if(isDialogBlock && this.name === "br") {
-			return "\n";
+
+		if (depth != undefined && doIndentFirstLine) {
+			str += leadingWhitespace(depth);
+		}
+
+		// TODO : what about print as a function instead of as a dialog block child?
+		if (this.name === "print") {
+			str += this.arguments[0].value; // first argument should be the text of the {print} func
+		}
+		else if (this.name === "br") {
+			str += "\n";
 		}
 		else {
-			var str = Sym.CodeOpen;
+			str += Sym.CodeOpen;
 			str += this.name;
-			for(var i = 0; i < this.arguments.length; i++) {
+			for (var i = 0; i < this.arguments.length; i++) {
 				str += " ";
-				str += this.arguments[i].Serialize(depth);
+				str += this.arguments[i].Serialize();
 			}
 			str += Sym.CodeClose;
-			return str;
 		}
+
+		return str;
 	}
 
 	this.ToString = function() {
@@ -948,7 +942,7 @@ var LiteralNode = function(value) {
 		onReturn(this.value);
 	}
 
-	this.Serialize = function(depth) {
+	this.Serialize = function() {
 		var str = "";
 
 		if (this.value === null) {
@@ -989,7 +983,7 @@ var VarNode = function(name) {
 		}
 	} // TODO: might want to store nodes in the variableMap instead of values???
 
-	this.Serialize = function(depth) {
+	this.Serialize = function() {
 		var str = "" + this.name;
 		return str;
 	}
@@ -1020,16 +1014,26 @@ var ExpNode = function(operator, left, right) {
 	this.Serialize = function(depth) {
 		var isNegativeNumber = this.operator === "-" && this.left.type === "literal" && this.left.value === null;
 
-		if(!isNegativeNumber) {
-			var str = "";
+		var str = "";
+
+		if (depth != undefined) {
+			str += leadingWhitespace(depth);
+		}
+
+		str += Sym.CodeOpen;
+
+		if (!isNegativeNumber) {
 			str += this.left.Serialize(depth);
 			str += " " + this.operator + " ";
 			str += this.right.Serialize(depth);
-			return str;
 		}
 		else {
-			return this.operator + this.right.Serialize(depth); // hacky but seems to work
+			str += this.operator + this.right.Serialize(depth); // hacky but seems to work
 		}
+
+		str += Sym.CodeClose;
+
+		return str;
 	}
 
 	this.VisitAll = function(visitor, depth) {
@@ -1051,15 +1055,21 @@ var ExpNode = function(operator, left, right) {
 
 var SequenceBase = function() {
 	this.Serialize = function(depth) {
-		var str = Sym.CodeOpen;
-		str += this.type + "\n";
+		if (depth === undefined) {
+			depth = 0;
+		}
+
+		var str = leadingWhitespace(depth) + Sym.CodeOpen + this.type;
+
 		for (var i = 0; i < this.options.length; i++) {
 			// console.log("SERIALIZE SEQUENCE ");
 			// console.log(depth);
-			str += leadingWhitespace(depth + 1) + Sym.List + " " + this.options[i].Serialize(depth + 2) + "\n";
+			str += "\n" + leadingWhitespace(depth + 1) + Sym.List + " ";
+			str += this.options[i].Serialize(depth + 2, false /*doIndentFirstLine*/);
 		}
-		str += leadingWhitespace(depth);
-		str += Sym.CodeClose;
+
+		str += "\n" + leadingWhitespace(depth) + Sym.CodeClose;
+
 		return str;
 	}
 
@@ -1182,19 +1192,24 @@ var IfNode = function(conditions, results, isSingleLine) {
 
 	this.Serialize = function(depth) {
 		var str = "";
-		if(isSingleLine) {
-			str += this.conditions[0].Serialize() + " ? " + this.results[0].Serialize();
-			if(this.conditions.length > 1 && this.conditions[1].type === "else")
-				str += " : " + this.results[1].Serialize();
-		}
-		else {
-			str += "\n";
-			for (var i = 0; i < this.conditions.length; i++) {
-				str += leadingWhitespace(depth + 1) + Sym.List + " " + this.conditions[i].Serialize(depth) + " ?\n";
-				str += this.results[i].Serialize(depth + 2) + "\n";
-			}
-			str += leadingWhitespace(depth);
-		}
+
+		// TODO : OLD VERSION
+		// if(isSingleLine) {
+		// 	str += this.conditions[0].Serialize() + " ? " + this.results[0].Serialize();
+		// 	if(this.conditions.length > 1 && this.conditions[1].type === "else")
+		// 		str += " : " + this.results[1].Serialize();
+		// }
+		// else {
+		// 	str += "\n";
+		// 	for (var i = 0; i < this.conditions.length; i++) {
+		// 		str += leadingWhitespace(depth + 1) + Sym.List + " " + this.conditions[i].Serialize(depth) + " ?\n";
+		// 		str += this.results[i].Serialize(depth + 2) + "\n";
+		// 	}
+		// 	str += leadingWhitespace(depth);
+		// }
+
+		// TODO : after re-implementing IF parsing
+
 		return str;
 	}
 
@@ -1230,7 +1245,7 @@ var ElseNode = function() {
 	}
 
 	this.Serialize = function() {
-		return "else";
+		return "else"; // TODO : re-visit after re-implementing IF parsing
 	}
 
 	this.ToString = function() {
@@ -1358,7 +1373,7 @@ var ParserNext = function(env) {
 		// parse inner code block for each list item
 		var innerBlocks = [];
 		while (index < sourceStr.length) {
-			var block = new BlockNode(BlockMode.Dialog, false /*doIndentFirstLine*/);
+			var block = new BlockNode("sequenceOption");
 			index = ParseBlockContents(block, sourceStr, index, [Sym.List], true /*trimWhitespace*/);
 
 			innerBlocks.push(block);
@@ -1503,20 +1518,23 @@ var ParserNext = function(env) {
 	// TODO : name??? DialogFormat OR DialogContent???
 	function GroupDialogFormatFunctions(blockNode) {
 		var childrenTemp = blockNode.children.slice();
+		console.log(childrenTemp);
+
 		blockNode.children = [];
 
-		var dialogBlock = new BlockNode(BlockMode.Dialog); // TODO need to refactor the block nodes..
+		var dialogBlock = new DialogBlockNode();
+
 		function TryAddDialogBlock() {
-			// remove trailing newline from end of dialog block
+			// remove trailing newline from end of dialog block (TODO ... treatment of newlines is messed up!!)
 			var lastChild = dialogBlock.children.length > 0 ? dialogBlock.children[dialogBlock.children.length - 1] : null;
 			if (lastChild != null && lastChild.type === "function" && lastChild.name === "br") {
-				console.log("REMOVE NEWLINE!!!");
+				// console.log("REMOVE NEWLINE!!!");
 				dialogBlock.children.splice(dialogBlock.children.length-1);
 			}
 
 			if (dialogBlock.children.length > 0) {
 				blockNode.AddChild(dialogBlock);
-				dialogBlock = new BlockNode(BlockMode.Dialog);
+				dialogBlock = new DialogBlockNode();
 			}
 		}
 
@@ -1532,6 +1550,8 @@ var ParserNext = function(env) {
 		}
 
 		TryAddDialogBlock();
+
+		console.log(blockNode);
 	}
 
 	// TODO .. should I be more consistent by inputting entire source string, but with start and end indices??
@@ -1539,6 +1559,11 @@ var ParserNext = function(env) {
 		while (index < sourceStr.length && delimeterList.indexOf(sourceStr[index]) == -1) {
 			if (sourceStr[index] === Sym.CodeOpen) {
 				index = ParseCode(blockNode, sourceStr, index);
+
+				// consume the newline after a non-inline function, expression, sequence, etc.
+				if (index < sourceStr.length && sourceStr[index] === "\n") {
+					index++;
+				}
 			}
 			else {
 				index = ParseDialog(blockNode, sourceStr, index, delimeterList.concat([Sym.CodeOpen]), trimWhitespace);
@@ -1551,7 +1576,7 @@ var ParserNext = function(env) {
 	}
 
 	this.Parse = function(sourceStr) {
-		var rootNode = new BlockNode(BlockMode.Dialog);
+		var rootNode = new BlockNode("root");
 
 		ParseBlockContents(rootNode, sourceStr, 0, [], false /*trimWhitespace*/);
 
