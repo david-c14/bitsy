@@ -727,17 +727,6 @@
 						</label>
 					</div>
 
-					<div id="dialog" class="controlBox" style="display:none;">
-						<span style="float:left;">
-							<span class="localize dialog_tool_name">dialog</span>
-						</span>
-						<button title="open in advanced dialog editor" style="float:right;" onclick="showPanel('dialogPanel');">
-							<i class="material-icons">open_in_new</i>
-						</button>
-						<br>
-						<textarea title="dialog text will be displayed when player approaches this sprite" id="dialogText" class="dialogTextArea gameTextDir" onkeydown="on_change_dialog();" onkeyup="on_change_dialog();" onchange="on_change_dialog_finished();"></textarea> <!-- rows="2" cols="32" -->
-					</div>
-
 					<div id="animationOuter" class="controlBox">
 						<div id="isAnimated">
 							<input type="checkbox" id="animatedCheckbox" onchange="on_toggle_animated(event);">
@@ -773,7 +762,19 @@
 					<!-- TODO action controls prototype!! --->
 					<div id="actionControls" class="controlBox">
 						<span>actions</span>
-						<div id="actionList">
+						<div id="actionPreview">
+							<div>
+								<button>next</button>
+								<button>prev</button>
+								<button>add</button>
+								<button>open</button>
+							</div>
+							<div id="actionPreviewEditor" style="height: 200px; border: solid black 1px; overflow: scroll;">
+							</div>
+						</div>
+						<div style="display: none;">
+							<div id="actionList" style="display: flex; flex-direction: column;">
+							</div>
 						</div>
 					</div>
 					

@@ -366,44 +366,6 @@ function tileTypeToIdPrefix(type) {
 	}
 }
 
-/* DIALOG UI 
-- needs a better home
-	- into paint object?
-	- needs its own controller?
-*/
-function reloadDialogUI() {
-	reloadDialogUICore();
-	reloadAdvDialogUI();
-}
-
-// TODO : default paint and room tools tied to editor state object??? (or is that bad?)
-function reloadDialogUICore() { // TODO: name is terrible
-	var dialogId = getCurDialogId(); // hacky
-
-	if (dialogId in dialog) {
-		var dialogSource = dialog[dialogId];
-		var dialogStr = scriptUtils.RemoveDialogBlockFormat(dialogSource);
-		document.getElementById("dialogText").value = dialogStr;
-	}
-	else {
-		document.getElementById("dialogText").value = "";
-	}
-
-	// TODO... remove this test hack
-	// var x = document.getElementById("test_dialog_canvas");
-	// if (x != undefined && x != null) {
-	// 	x.remove();
-	// }
-
-	// var t = new TextEditor();
-	// t.SetText(document.getElementById("dialogText").value);
-	// var c = t.GetCanvas();
-	// c.setAttribute("id","test_dialog_canvas");
-	// c.style.width = "312px";
-	// c.style.display = "block";
-	// document.getElementById("dialog").appendChild(c);
-}
-
 // hacky - assumes global paintTool object
 function getCurDialogId() {
 	return paintTool.GetCurDialogId();
@@ -2616,7 +2578,7 @@ function on_change_language_inner(language) {
 
 	localization.ChangeLanguage(language);
 	updateInventoryUI();
-	reloadDialogUI();
+	// reloadDialogUI(); // TODO : replace with action refresh?
 	hackyUpdatePlaceholderText();
 
 	// update title in new language IF the user hasn't made any changes to the default title

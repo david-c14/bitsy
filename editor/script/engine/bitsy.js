@@ -1622,7 +1622,6 @@ function parseObject(lines, i, type, versionNumber) {
 	var isWall = null;
 
 	var name = null;
-	var dialogId = null;
 	var startingInventory = {};
 	var actions = []; // TODO : hack
 
@@ -1648,8 +1647,7 @@ function parseObject(lines, i, type, versionNumber) {
 			}
 		}
 		else if(getType(lines[i]) === "DLG" && type != "TIL") {
-			// TODO ... consolidate dialog & action code
-			dialogId = getId(lines[i]);
+			actions.push(getId(lines[i]));
 		}
 		else if (getType(lines[i]) === "ACT" && type != "TIL") {
 			// TODO... do I really want to NOT have actions on tiles?
@@ -1702,7 +1700,6 @@ function parseObject(lines, i, type, versionNumber) {
 			frameCount : renderer.GetFrameCount(drwId),
 		},
 		inventory : startingInventory, // starting inventory (player only)
-		dlg : dialogId, // TODO : do I want to consolidate these with the actions?
 		actions : actions, // scripts (should tiles execute them? I'm tempted to say no to maintain seperation from foreground)
 		isWall : isWall, // wall tile? (tile only)
 		// NOTE : starting coordinates are for the player only! other objects don't use this data //TODO : make this less hacky somehow
@@ -1746,38 +1743,6 @@ function parseDrawingCore(lines, i, drwId) {
 	}
 
 	renderer.SetImageSource(drwId, frameList);
-
-	return i;
-}
-
-// TODO : vNext
-// var ScriptType = {
-// 	Script : 0,
-// 	Dialogue : 1, // TODO : move everything to this spelling?
-// 	Ending : 2,
-// };
-
-// TODO ... this isn't great, and I should remove it
-function parseScript(lines, i, objectStore) {
-	// TODO : vNext
-	// if (scriptType === undefined || scriptType === null) {
-	// 	scriptType = ScriptType.Script;
-	// }
-
-	var id = getId(lines[i]);
-	i++;
-
-	var results = scriptUtils.ReadDialogScript(lines,i);
-
-	// TODO : vNext
-	// script[id] = {
-	// 	source: results.script,
-	// 	type: scriptType,
-	// };
-
-	objectStore[id] = results.script;
-
-	i = results.index;
 
 	return i;
 }
@@ -1833,12 +1798,25 @@ function parseAction(lines, i) {
 	return i;
 }
 
+// This currently reads in the old-style dialog script and converts it into an action
+// TODO : do I want to retain the DLG object in some form?
 function parseDialog(lines, i) {
-	return parseScript(lines, i, dialog);
-}
+	var id = getId(lines[i]);
+	i++;
 
-function parseEnding(lines, i) {
-	return parseScript(lines, i, ending);
+	var results = scriptUtils.ReadDialogScript(lines,i);
+
+	// TODO ... will this cause ID collisions?
+	action[id] = {
+		id: id,
+		name: null,
+		trigger: { type:"dialog", args:[] },
+		source: results.script,
+	};
+
+	i = results.index;
+
+	return i;
 }
 
 function parseVariable(lines, i) {

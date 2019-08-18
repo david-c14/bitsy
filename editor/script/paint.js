@@ -241,22 +241,24 @@ function PaintTool(canvas) {
 		if (self.GetCurDrawing().type === TileType.Tile) {
 			self.updateWallCheckboxOnCurrentTile();
 		}
-		else {
-			// TODO : need to account for player avatar too somewhere
-			// TODO : this will eventually be replaced w/ scripting stuff
-			reloadDialogUI()
-		}
+		// TODO : remove?
+		// else {
+		// 	// TODO : need to account for player avatar too somewhere
+		// 	// TODO : this will eventually be replaced w/ scripting stuff
+		// 	reloadDialogUI()
+		// }
 
 		// ??? what's the boolean for?
 		updateDrawingNameUI( curDrawingId != "A" );
 
+		// TODO : remove?
 		// toggle type-specific UI
-		if (self.GetCurDrawing().type != TileType.Tile) {
-			document.getElementById("dialog").setAttribute("style","display:block;");
-		}
-		else {
-			document.getElementById("dialog").setAttribute("style","display:none;");
-		}
+		// if (self.GetCurDrawing().type != TileType.Tile) {
+		// 	document.getElementById("dialog").setAttribute("style","display:block;");
+		// }
+		// else {
+		// 	document.getElementById("dialog").setAttribute("style","display:none;");
+		// }
 
 		if (self.GetCurDrawing().type === TileType.Tile) {
 			document.getElementById("wall").setAttribute("style","display:block;");
@@ -272,6 +274,15 @@ function PaintTool(canvas) {
 			document.getElementById("showInventoryButton").setAttribute("style","display:none;");
 		}
 
+		InitActionUI();
+
+		// update paint canvas
+		self.updateCanvas();
+	}
+
+	var curActionIndex = 0;
+	function InitActionUI() {
+		curActionIndex = 0;
 
 		// TODO : hacky actions UI
 		function addActionSelectButton(actionListRoot, actionId) {
@@ -292,11 +303,16 @@ function PaintTool(canvas) {
 			for (var i = 0; i < actions.length; i++) {
 				addActionSelectButton(actionListRoot, actions[i]);
 			}
+
+			if (actions.length > 0) {
+				var actionId = actions[curActionIndex];
+				var actionScriptSource = action[actionId].source;
+				var actionPreviewDiv = document.getElementById("actionPreviewEditor");
+				actionPreviewDiv.innerHTML = "";
+				var scriptEditor = scriptEditorModule.CreateEditor(actionScriptSource);
+				actionPreviewDiv.appendChild(scriptEditor.GetElement());
+			}
 		}
-
-
-		// update paint canvas
-		self.updateCanvas();
 	}
 
 	// have to expose for legacy reasons (per-room wall settings)
