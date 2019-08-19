@@ -2801,5 +2801,5 @@ function openObjectAction() {
 }
 
 function toggleObjectActionView() {
-	// TODO
+	paintTool.toggleActionView();
 }

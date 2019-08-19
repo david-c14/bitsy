@@ -639,4 +639,18 @@ function PaintTool(canvas) {
 
 		InitActionPreview();
 	}
+
+	this.toggleActionView = function() {
+		var actionPreviewContainer = document.getElementById("actionPreviewContainer");
+		var actionListContainer = document.getElementById("actionListContainer");
+
+		if (actionPreviewContainer.style.display === "none") {
+			actionPreviewContainer.style.display = "block";
+			actionListContainer.style.display = "none";
+		}
+		else {
+			actionPreviewContainer.style.display = "none";
+			actionListContainer.style.display = "block";
+		}
+	}
 }
