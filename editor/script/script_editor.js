@@ -50,11 +50,42 @@ IDEA: hidden iframe containing templates for all the nodes types, etc.!
 
 // TODO : rename? factory?
 function ScriptEditor() {
-	this.CreateEditor = function(scriptStr) {
-		var scriptRootNode = scriptInterpreter.Parse( scriptStr );
-		return new BlockNodeEditor(scriptRootNode, null);
+	this.CreateEditor = function(actionId) {
+		// var scriptRootNode = scriptInterpreter.Parse( scriptStr );
+		// return new BlockNodeEditor(scriptRootNode, null);
+		return new ActionEditor(actionId); // TODO ... do I even need this creator function anymore???
 	}
 } // ScriptEditor
+
+function ActionEditor(actionId) {
+	var scriptStr = action[actionId].source;
+	var scriptRootNode = scriptInterpreter.Parse( scriptStr );
+	var scriptEditor = new BlockNodeEditor(scriptRootNode, null);
+
+	this.div = document.createElement("div");
+
+	var triggerDiv = document.createElement("div");
+	triggerDiv.innerText = "trigger test";
+	this.div.appendChild(triggerDiv);
+
+	this.div.appendChild(scriptEditor.GetElement());
+
+	this.GetElement = function() {
+		return this.div;
+	}
+
+	scriptEditor.OnChangeHandler = function() {
+		// TODO... respond to changes (needs to handle all cases, such as deletion!)
+		console.log("CHANGE!!!!");
+		console.log(curScriptEditor.Serialize());
+		console.log(curScriptEditor.VisualizeTree());
+		// dialog[getCurDialogId()] = curScriptEditor.Serialize();
+		action[actionId].source = scriptEditor.Serialize();
+		refreshGameData();
+
+		// TODO ... event for other UI elements? (also subscribe this)
+	};
+}
 
 // TODO : name? editor or viewer? or something else?
 function BlockNodeEditor(blockNode, parentNode) {

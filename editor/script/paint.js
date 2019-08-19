@@ -636,10 +636,9 @@ function PaintTool(canvas) {
 		var actions = self.GetCurDrawing().actions;
 		if (actions.length > 0) {
 			var actionId = actions[curActionIndex];
-			var actionScriptSource = action[actionId].source;
 			var actionPreviewDiv = document.getElementById("actionPreviewEditor");
 			actionPreviewDiv.innerHTML = "";
-			var scriptEditor = scriptEditorModule.CreateEditor(actionScriptSource);
+			var scriptEditor = scriptEditorModule.CreateEditor(actionId);
 			actionPreviewDiv.appendChild(scriptEditor.GetElement());
 		}
 	}

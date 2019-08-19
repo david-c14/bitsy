@@ -1268,23 +1268,11 @@ function reloadAdvDialogUI() {
 
 // TODO ... is this the right place for this?
 events.Listen("select_action", function(event) {
-	// TODO : rename things to be non-dialog-y
-	var actionScriptSource = action[event.id].source;
-
 	// clear out the old editor
 	var dialogFormDiv = document.getElementById("advDialogViewport");
 	dialogFormDiv.innerHTML = "";
 
-	curScriptEditor = scriptEditorModule.CreateEditor(actionScriptSource);
-	curScriptEditor.OnChangeHandler = function() {
-		// TODO... respond to changes (needs to handle all cases, such as deletion!)
-		console.log("CHANGE!!!!");
-		console.log(curScriptEditor.Serialize());
-		console.log(curScriptEditor.VisualizeTree());
-		// dialog[getCurDialogId()] = curScriptEditor.Serialize();
-		action[event.id].source = curScriptEditor.Serialize();
-		refreshGameData();
-	};
+	curScriptEditor = scriptEditorModule.CreateEditor(event.id);
 	dialogFormDiv.appendChild(curScriptEditor.GetElement());
 });
 
