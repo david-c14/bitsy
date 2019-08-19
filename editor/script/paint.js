@@ -580,15 +580,27 @@ function PaintTool(canvas) {
 	function InitActionUI() {
 		curActionIndex = 0;
 
-		// TODO : hacky actions UI
-		function addActionSelectButton(actionListRoot, actionId) {
+		function addActionSelectButton(actionListRoot, actionId, index) {
+			var actionSelectDiv = document.createElement("div");
+			actionSelectDiv.style.display = "flex";
+			actionListRoot.appendChild(actionSelectDiv);
+
 			var actionSelectButton = document.createElement("button");
-			actionSelectButton.innerText = "action " + (i + 1);
+			actionSelectButton.innerText = "action " + (index + 1);
+			actionSelectButton.style.flexGrow = "1";
 			actionSelectButton.onclick = function() {
+				curActionIndex = index;
+				InitActionPreview();
+				document.getElementById("actionControls").classList.remove("actionListView");
+			}
+			actionSelectDiv.appendChild(actionSelectButton);
+
+			var actionOpenButton = document.createElement("button");
+			actionOpenButton.innerHTML = '<i class="material-icons">open_in_new</i>';
+			actionOpenButton.onclick = function() {
 				events.Raise("select_action", { id: actionId });
 			}
-
-			actionListRoot.appendChild(actionSelectButton);
+			actionSelectDiv.appendChild(actionOpenButton);
 		}
 
 		if (self.GetCurDrawing().type != TileType.Tile) {
@@ -597,7 +609,7 @@ function PaintTool(canvas) {
 
 			var actions = self.GetCurDrawing().actions;
 			for (var i = 0; i < actions.length; i++) {
-				addActionSelectButton(actionListRoot, actions[i]);
+				addActionSelectButton(actionListRoot, actions[i], i);
 			}
 
 			InitActionPreview();
