@@ -600,18 +600,43 @@ function PaintTool(canvas) {
 				addActionSelectButton(actionListRoot, actions[i]);
 			}
 
-			if (actions.length > 0) {
-				var actionId = actions[curActionIndex];
-				var actionScriptSource = action[actionId].source;
-				var actionPreviewDiv = document.getElementById("actionPreviewEditor");
-				actionPreviewDiv.innerHTML = "";
-				var scriptEditor = scriptEditorModule.CreateEditor(actionScriptSource);
-				actionPreviewDiv.appendChild(scriptEditor.GetElement());
-			}
+			InitActionPreview();
+		}
+	}
+
+	function InitActionPreview() {
+		var actions = self.GetCurDrawing().actions;
+		if (actions.length > 0) {
+			var actionId = actions[curActionIndex];
+			var actionScriptSource = action[actionId].source;
+			var actionPreviewDiv = document.getElementById("actionPreviewEditor");
+			actionPreviewDiv.innerHTML = "";
+			var scriptEditor = scriptEditorModule.CreateEditor(actionScriptSource);
+			actionPreviewDiv.appendChild(scriptEditor.GetElement());
 		}
 	}
 
 	this.openCurrentActionInEditor = function() {
 		events.Raise("select_action", { id: self.GetCurDrawing().actions[curActionIndex] });
+	}
+
+	this.selectPrevAction = function() {
+		curActionIndex--;
+
+		if (curActionIndex < 0) {
+			curActionIndex = self.GetCurDrawing().actions.length - 1;
+		}
+
+		InitActionPreview();
+	}
+
+	this.selectNextAction = function() {
+		curActionIndex++;
+
+		if (curActionIndex >= self.GetCurDrawing().actions.length) {
+			curActionIndex = 0;
+		}
+
+		InitActionPreview();
 	}
 }

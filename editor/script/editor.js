@@ -2789,11 +2789,11 @@ function hideFontMissingCharacterWarning() {
 
 /* OBJECT ACTION CONTROLS */
 function prevObjectAction() {
-	// TODO
+	paintTool.selectPrevAction();
 }
 
 function nextObjectAction() {
-	// TODO
+	paintTool.selectNextAction();
 }
 
 function openObjectAction() {
