@@ -280,41 +280,6 @@ function PaintTool(canvas) {
 		self.updateCanvas();
 	}
 
-	var curActionIndex = 0;
-	function InitActionUI() {
-		curActionIndex = 0;
-
-		// TODO : hacky actions UI
-		function addActionSelectButton(actionListRoot, actionId) {
-			var actionSelectButton = document.createElement("button");
-			actionSelectButton.innerText = "action " + (i + 1);
-			actionSelectButton.onclick = function() {
-				events.Raise("select_action", { id: actionId });
-			}
-
-			actionListRoot.appendChild(actionSelectButton);
-		}
-
-		if (self.GetCurDrawing().type != TileType.Tile) {
-			var actionListRoot = document.getElementById("actionList");
-			actionListRoot.innerHTML = "";
-
-			var actions = self.GetCurDrawing().actions;
-			for (var i = 0; i < actions.length; i++) {
-				addActionSelectButton(actionListRoot, actions[i]);
-			}
-
-			if (actions.length > 0) {
-				var actionId = actions[curActionIndex];
-				var actionScriptSource = action[actionId].source;
-				var actionPreviewDiv = document.getElementById("actionPreviewEditor");
-				actionPreviewDiv.innerHTML = "";
-				var scriptEditor = scriptEditorModule.CreateEditor(actionScriptSource);
-				actionPreviewDiv.appendChild(scriptEditor.GetElement());
-			}
-		}
-	}
-
 	// have to expose for legacy reasons (per-room wall settings)
 	this.updateWallCheckboxOnCurrentTile = function() {
 		var isCurTileWall = false;
@@ -609,4 +574,44 @@ function PaintTool(canvas) {
 			renderAnimationPreview( curDrawingId );
 		}
 	});
+
+	/* OBJECT ACTION CONTROLS */
+	var curActionIndex = 0;
+	function InitActionUI() {
+		curActionIndex = 0;
+
+		// TODO : hacky actions UI
+		function addActionSelectButton(actionListRoot, actionId) {
+			var actionSelectButton = document.createElement("button");
+			actionSelectButton.innerText = "action " + (i + 1);
+			actionSelectButton.onclick = function() {
+				events.Raise("select_action", { id: actionId });
+			}
+
+			actionListRoot.appendChild(actionSelectButton);
+		}
+
+		if (self.GetCurDrawing().type != TileType.Tile) {
+			var actionListRoot = document.getElementById("actionList");
+			actionListRoot.innerHTML = "";
+
+			var actions = self.GetCurDrawing().actions;
+			for (var i = 0; i < actions.length; i++) {
+				addActionSelectButton(actionListRoot, actions[i]);
+			}
+
+			if (actions.length > 0) {
+				var actionId = actions[curActionIndex];
+				var actionScriptSource = action[actionId].source;
+				var actionPreviewDiv = document.getElementById("actionPreviewEditor");
+				actionPreviewDiv.innerHTML = "";
+				var scriptEditor = scriptEditorModule.CreateEditor(actionScriptSource);
+				actionPreviewDiv.appendChild(scriptEditor.GetElement());
+			}
+		}
+	}
+
+	this.openCurrentActionInEditor = function() {
+		events.Raise("select_action", { id: self.GetCurDrawing().actions[curActionIndex] });
+	}
 }

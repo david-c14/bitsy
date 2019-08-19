@@ -2786,3 +2786,20 @@ function showFontMissingCharacterWarning() {
 function hideFontMissingCharacterWarning() {
 	document.getElementById("fontMissingCharacter").style.display = "none";
 }
+
+/* OBJECT ACTION CONTROLS */
+function prevObjectAction() {
+	// TODO
+}
+
+function nextObjectAction() {
+	// TODO
+}
+
+function openObjectAction() {
+	paintTool.openCurrentActionInEditor();
+}
+
+function toggleObjectActionView() {
+	// TODO
+}
