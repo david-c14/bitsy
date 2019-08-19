@@ -133,3 +133,11 @@
 .actionListView #actionPreviewControls {
 	display: none;
 }
+
+#actionListControls {
+	display: none;
+}
+
+.actionListView #actionListControls {
+	display: inline;
+}

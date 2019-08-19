@@ -204,7 +204,12 @@ function nextAvailableDialogId(prefix) {
 // 	return sortedHexIdList( script );
 // }
 
-function nextObjectHexId(idList) {
+function nextHexId(objHolder) {
+	var idList = sortedHexIdList(objHolder);
+	return nextObjectHexId(idList);
+}
+
+function nextObjectHexId(idList) { // TODO : rename
 	if (idList.length <= 0) {
 		return "0";
 	}
@@ -2802,4 +2807,8 @@ function openObjectAction() {
 
 function toggleObjectActionView() {
 	paintTool.toggleActionView();
+}
+
+function newObjectAction() {
+	paintTool.newAction();
 }

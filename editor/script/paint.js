@@ -621,6 +621,8 @@ function PaintTool(canvas) {
 				refreshGameData();
 				// TODO : what about deleting the action permanently?
 				InitActionList();
+
+				// TODO: need an event to alert other UI elements
 			}
 			actionSelectDiv.appendChild(actionDeleteButton);
 		}
@@ -674,6 +676,26 @@ function PaintTool(canvas) {
 		}
 		else {
 			actionControlsRoot.classList.add("actionListView");
+		}
+	}
+
+	this.newAction = function() {
+		if (self.GetCurDrawing().actions.length < 6) {
+			var newActionId = nextHexId(action);
+
+			// TODO ... wrap this creation funcion somewhere?
+			action[newActionId] = {
+				id: newActionId,
+				name: null,
+				trigger: { type:"dialog", args:[] },
+				source: "",
+			};
+
+			self.GetCurDrawing().actions.push(newActionId);
+
+			refreshGameData();
+
+			InitActionList();
 		}
 	}
 }
