@@ -108,3 +108,28 @@
 	background: #6767b2;
 	color: white;
 }
+
+/* PAINT ACTION CONTROLS (should these go somewhere else?) */
+#actionPreviewContainer {
+	display: block;
+}
+
+.actionListView #actionPreviewContainer {
+	display: none;
+}
+
+#actionListContainer {
+	display: none;
+}
+
+.actionListView #actionListContainer {
+	display: block;
+}
+
+#actionPreviewControls {
+	display: inline;
+}
+
+.actionListView #actionPreviewControls {
+	display: none;
+}

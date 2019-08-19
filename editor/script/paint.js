@@ -641,16 +641,13 @@ function PaintTool(canvas) {
 	}
 
 	this.toggleActionView = function() {
-		var actionPreviewContainer = document.getElementById("actionPreviewContainer");
-		var actionListContainer = document.getElementById("actionListContainer");
+		var actionControlsRoot = document.getElementById("actionControls");
 
-		if (actionPreviewContainer.style.display === "none") {
-			actionPreviewContainer.style.display = "block";
-			actionListContainer.style.display = "none";
+		if (actionControlsRoot.classList.contains("actionListView")) {
+			actionControlsRoot.classList.remove("actionListView")
 		}
 		else {
-			actionPreviewContainer.style.display = "none";
-			actionListContainer.style.display = "block";
+			actionControlsRoot.classList.add("actionListView");
 		}
 	}
 }

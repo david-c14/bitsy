@@ -759,32 +759,35 @@
 						</div>
 					</div>
 
-					<!-- TODO action controls prototype!! --->
 					<div id="actionControls" class="controlBox">
-						<span>actions</span>
-						<span>
-							<!-- <span>(1/6)</span> -->
-							<button onclick="prevObjectAction();">
-								<i class="material-icons">navigate_before</i>
-							</button>
-							<button onclick="nextObjectAction();">
-								<i class="material-icons">navigate_next</i>
-							</button>
-							<button onclick="openObjectAction();">
-								<i class="material-icons">open_in_new</i>
-							</button>
-						</span>
-						<span>
-							<button onclick="toggleObjectActionView();">
-								<i class="material-icons">list</i>
-								list
-							</button>
-						</span>
+						<div style="display: flex; flex-flow: row;">
+							<span style="flex-grow: 1;">actions</span>
+							<span style="float: right;">
+								<span id="actionPreviewControls">
+									<!-- <span>(1/6)</span> -->
+									<button onclick="prevObjectAction();">
+										<i class="material-icons">navigate_before</i>
+									</button>
+									<button onclick="nextObjectAction();">
+										<i class="material-icons">navigate_next</i>
+									</button>
+									<button onclick="openObjectAction();">
+										<i class="material-icons">open_in_new</i>
+									</button>
+								</span>
+								<span>
+									<button onclick="toggleObjectActionView();">
+										<i class="material-icons">list</i>
+										list
+									</button>
+								</span>
+							</span>
+						</div>
 						<div id="actionPreviewContainer">
 							<div id="actionPreviewEditor" style="height: 200px; border: solid black 1px; overflow: scroll;">
 							</div>
 						</div>
-						<div id="actionListContainer" style="display: none;">
+						<div id="actionListContainer">
 							<div id="actionList" style="display: flex; flex-direction: column;">
 							</div>
 						</div>
