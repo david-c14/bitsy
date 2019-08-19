@@ -580,6 +580,18 @@ function PaintTool(canvas) {
 	function InitActionUI() {
 		curActionIndex = 0;
 
+		if (self.GetCurDrawing().type != TileType.Tile) {
+			InitActionList();
+			InitActionPreview();
+		}
+	}
+
+	function InitActionList() {
+		var actionListRoot = document.getElementById("actionList");
+		actionListRoot.innerHTML = "";
+
+		var actions = self.GetCurDrawing().actions;
+
 		function addActionSelectButton(actionListRoot, actionId, index) {
 			var actionSelectDiv = document.createElement("div");
 			actionSelectDiv.style.display = "flex";
@@ -601,18 +613,20 @@ function PaintTool(canvas) {
 				events.Raise("select_action", { id: actionId });
 			}
 			actionSelectDiv.appendChild(actionOpenButton);
+
+			var actionDeleteButton = document.createElement("button");
+			actionDeleteButton.innerHTML = '<i class="material-icons">remove</i>';
+			actionDeleteButton.onclick = function() {
+				actions.splice(index,1);
+				refreshGameData();
+				// TODO : what about deleting the action permanently?
+				InitActionList();
+			}
+			actionSelectDiv.appendChild(actionDeleteButton);
 		}
 
-		if (self.GetCurDrawing().type != TileType.Tile) {
-			var actionListRoot = document.getElementById("actionList");
-			actionListRoot.innerHTML = "";
-
-			var actions = self.GetCurDrawing().actions;
-			for (var i = 0; i < actions.length; i++) {
-				addActionSelectButton(actionListRoot, actions[i], i);
-			}
-
-			InitActionPreview();
+		for (var i = 0; i < actions.length; i++) {
+			addActionSelectButton(actionListRoot, actions[i], i);
 		}
 	}
 

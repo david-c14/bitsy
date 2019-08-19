@@ -1091,7 +1091,8 @@ function parseWorld(file) {
 			i = parseDialog(lines, i);
 		}
 		else if (getType(curLine) === "END") {
-			i = parseEnding(lines, i);
+			// i = parseEnding(lines, i);
+			i = parseDialog(lines, i);
 		}
 		// TODO: vNext
 		// else if (getType(curLine) === "PRG") {
