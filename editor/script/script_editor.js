@@ -65,8 +65,30 @@ function ActionEditor(actionId) {
 	this.div = document.createElement("div");
 
 	var triggerDiv = document.createElement("div");
-	triggerDiv.innerText = "trigger test";
+	triggerDiv.classList.add("actionTriggerContainer");
+	// triggerDiv.innerText = "trigger test";
 	this.div.appendChild(triggerDiv);
+
+	var triggerLabelSpan = document.createElement("span");
+	triggerLabelSpan.innerText = "trigger: ";
+	triggerDiv.appendChild(triggerLabelSpan);
+
+	// TODO ... better UI?
+	var triggerSelect = document.createElement("select");
+	triggerDiv.appendChild(triggerSelect);
+	var triggerOptions = ["dialog", "collide", "start", "step"];
+	for (var i = 0; i < triggerOptions.length; i++) {
+		var option = document.createElement("option");
+		option.value = triggerOptions[i];
+		option.text = triggerOptions[i];
+		option.selected = action[actionId].trigger.type === triggerOptions[i];
+		triggerSelect.appendChild(option);
+	}
+	triggerSelect.onchange = function() {
+		// TODO : more complex triggers?
+		action[actionId].trigger.type = triggerSelect.value;
+		refreshGameData();
+	}
 
 	this.div.appendChild(scriptEditor.GetElement());
 

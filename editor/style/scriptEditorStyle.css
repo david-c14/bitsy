@@ -68,6 +68,13 @@
 	color: white;
 }
 
+/* TRIGGER CONTROLS */
+.actionTriggerContainer {
+	background: #ccccff;
+	border-bottom: solid 2px #6767b2;
+	padding: 4px;
+}
+
 /* ACTION BUILDER */
 .actionBuilder {
 	display: flex;
