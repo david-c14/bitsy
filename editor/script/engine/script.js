@@ -432,6 +432,15 @@ function createObjectFunc(environment,parameters,onReturn) {
 	onReturn(null);
 }
 
+// TODO : should it be enable / disable instead?? or both?
+function destroyObjectFunc(environment,parameters,onReturn) {
+	if (environment.HasObject()) {
+		var object = environment.GetObject();
+		var index = room[curRoom].objectInstances.indexOf(object);
+		room[curRoom].objectInstances.splice(index,1);
+	}
+}
+
 /* BUILT-IN OPERATORS */
 function setExp(environment,left,right,onReturn) {
 	// console.log("SET " + left.name);
@@ -545,6 +554,7 @@ var Environment = function() {
 	functionMap.set("moveUp", moveUpFunc);
 	functionMap.set("moveDown", moveDownFunc);
 	functionMap.set("createObject", createObjectFunc);
+	functionMap.set("destroyObject", destroyObjectFunc);
 
 	// TODO : probably remove this...
 	// TODO : vNext

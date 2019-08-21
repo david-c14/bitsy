@@ -7,7 +7,6 @@ var title = "";
 var room = {};
 var object = {};
 var action = {};
-var dialog = {};
 var palette = { //start off with a default palette
 		"default" : {
 			name : "default",
@@ -88,10 +87,8 @@ var editorDevFlags = {
 function clearGameData() {
 	title = "";
 	room = {};
-	tile = {};
-	sprite = {};
-	item = {};
-	dialog = {};
+	object = {};
+	action = {};
 	palette = { //start off with a default palette
 		"default" : {
 			name : "default",
@@ -839,10 +836,11 @@ function movePlayer(direction) {
 			onInventoryChanged( itemInstance.id );
 		}
 
-		// TODO : replace dialog with action triggers
+
 		tryTriggerAction("collide", itemInstance);
 
-		startItemDialog( itemInstance.id /*itemId*/ );
+		// TODO : replace dialog with action triggers
+		// startItemDialog( itemInstance.id /*itemId*/ );
 
 		// console.log( player().inventory );
 	}
@@ -854,10 +852,10 @@ function movePlayer(direction) {
 		movePlayerThroughExit(ext);
 	}
 	else if (spriteInstance) {
-		// TODO : replace dialog with action triggers
 		tryTriggerAction("collide", spriteInstance); // TODO : refactor sprite & item collisions to share more
 
-		startSpriteDialog( spriteInstance.id /*spriteId*/ );
+		// TODO : replace dialog with action triggers
+		// startSpriteDialog( spriteInstance.id /*spriteId*/ );
 	}
 }
 
@@ -1323,13 +1321,15 @@ function serializeWorld(skipFonts) {
 		worldStr += "END_SRC\n";
 		worldStr += "\n";
 	}
-	/* DIALOG */
-	for (id in dialog) {
-		worldStr += "DLG " + id + "\n";
-		worldStr += dialog[id] + "\n";
-		worldStr += "\n";
-	}
-	/* ENDINGS */
+	// TODO : REMOVE
+	// /* DIALOG */
+	// for (id in dialog) {
+	// 	worldStr += "DLG " + id + "\n";
+	// 	worldStr += dialog[id] + "\n";
+	// 	worldStr += "\n";
+	// }
+	// TODO : REMOVE
+	// /* ENDINGS */
 	for (id in ending) {
 		worldStr += "END " + id + "\n";
 		worldStr += ending[id] + "\n";
@@ -2030,6 +2030,7 @@ function startItemDialog(itemId) {
 	}
 }
 
+// TODO : Refactor and remove!!!
 function startSpriteDialog(spriteId) {
 	var spr = object[spriteId];
 	// TODO ... need to remove the old automatic dialog id stuff

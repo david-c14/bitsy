@@ -98,13 +98,11 @@ function ActionEditor(actionId) {
 
 	scriptEditor.OnChangeHandler = function() {
 		// TODO... respond to changes (needs to handle all cases, such as deletion!)
-		console.log("CHANGE!!!!");
-		console.log(curScriptEditor.Serialize());
-		console.log(curScriptEditor.VisualizeTree());
-		// dialog[getCurDialogId()] = curScriptEditor.Serialize();
+		// console.log("CHANGE!!!!");
+		// console.log(scriptEditor.Serialize());
+		// console.log(scriptEditor.VisualizeTree());
 		action[actionId].source = scriptEditor.Serialize();
 		refreshGameData();
-
 		// TODO ... event for other UI elements? (also subscribe this)
 	};
 }
@@ -412,9 +410,15 @@ var FunctionDescriptions = {
 	"moveLeft" : {
 		text : "move this object one space left",
 	},
+	"moveRight" : {
+		text : "move this object one space right",
+	},
 	"createObject" : {
-		text : "create _ at _",
-		parameters : [ {name:"object"}, {name:"location"} ],
+		text : "create _",
+		parameters : [ {name:"object"} ],
+	},
+	"destroyObject" : {
+		text : "destroy this object",
 	},
 };
 
@@ -612,7 +616,9 @@ function ActionBuilder(parentBlock) {
 	}
 
 	makeFunctionButton("moveLeft", "move left");
+	makeFunctionButton("moveRight", "move right");
 	makeFunctionButton("createObject", "create object");
+	makeFunctionButton("destroyObject", "destroy object");
 
 	var cancelButton = document.createElement("button");
 	cancelButton.innerText = "cancel";

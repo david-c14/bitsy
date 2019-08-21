@@ -2580,19 +2580,20 @@ function on_change_language_inner(language) {
 		updateTitleTextBox(title);
 	}
 
-	// update default sprite
-	var defaultSpriteDlgExists = dialog["SPR_0"] != null && localization.LocalizationContains("default_sprite_dlg", dialog["SPR_0"]);
-	if (defaultSpriteDlgExists) {
-		dialog["SPR_0"] = localization.GetStringOrFallback("default_sprite_dlg", "I'm a cat");
-		paintTool.reloadDrawing();
-	}
+	// TODO : update to use actions!!
+	// // update default sprite
+	// var defaultSpriteDlgExists = dialog["SPR_0"] != null && localization.LocalizationContains("default_sprite_dlg", dialog["SPR_0"]);
+	// if (defaultSpriteDlgExists) {
+	// 	dialog["SPR_0"] = localization.GetStringOrFallback("default_sprite_dlg", "I'm a cat");
+	// 	paintTool.reloadDrawing();
+	// }
 
-	// update default item
-	var defaultItemDlgExists = dialog["ITM_0"] != null && localization.LocalizationContains("default_item_dlg", dialog["ITM_0"]);
-	if (defaultItemDlgExists) {
-		dialog["ITM_0"] = localization.GetStringOrFallback("default_item_dlg", "You found a nice warm cup of tea");
-		paintTool.reloadDrawing(); // hacky to do this twice
-	}
+	// // update default item
+	// var defaultItemDlgExists = dialog["ITM_0"] != null && localization.LocalizationContains("default_item_dlg", dialog["ITM_0"]);
+	// if (defaultItemDlgExists) {
+	// 	dialog["ITM_0"] = localization.GetStringOrFallback("default_item_dlg", "You found a nice warm cup of tea");
+	// 	paintTool.reloadDrawing(); // hacky to do this twice
+	// }
 
 	refreshGameData();
 }
