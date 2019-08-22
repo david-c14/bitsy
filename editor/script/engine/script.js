@@ -389,7 +389,6 @@ function shakyFunc(environment,parameters,onReturn) {
 function moveLeftFunc(environment,parameters,onReturn) {
 	if (environment.HasObject()) {
 		var object = environment.GetObject();
-		console.log(object);
 		// TODO : what about obstacles like walls and other sprites???
 		object.x -= 1;
 	}
@@ -400,7 +399,6 @@ function moveRightFunc(environment,parameters,onReturn) {
 	if (environment.HasObject()) {
 		var object = environment.GetObject();
 		object.x += 1;
-		console.log(object);
 	}
 	onReturn(null);
 }
@@ -408,9 +406,7 @@ function moveRightFunc(environment,parameters,onReturn) {
 function moveUpFunc(environment,parameters,onReturn) {
 	if (environment.HasObject()) {
 		var object = environment.GetObject();
-		console.log(object);
 		object.y -= 1;
-		console.log(object);
 	}
 	onReturn(null);
 }
@@ -419,6 +415,35 @@ function moveDownFunc(environment,parameters,onReturn) {
 	if (environment.HasObject()) {
 		var object = environment.GetObject();
 		object.y += 1;
+	}
+	onReturn(null);
+}
+
+// move away from player TODO : fold in with other move functions
+function moveAwayFunc(environment,parameters,onReturn) {
+	if (environment.HasObject()) {
+		var object = environment.GetObject();
+		var towardsPlayer = { x: player().x - object.x, y: player().y - object.y };
+
+		var xDistIsShortest = towardsPlayer.y == 0 || 
+			(towardsPlayer.x != 0 && Math.abs(towardsPlayer.x) < Math.abs(towardsPlayer.y));
+
+		if (xDistIsShortest) {
+			if (towardsPlayer.x > 0) {
+				object.x -= 1;
+			}
+			else if (towardsPlayer.x < 0) {
+				object.x += 1;
+			}
+		}
+		else {
+			if (towardsPlayer.y > 0) {
+				object.y -= 1;
+			}
+			else if (towardsPlayer.y < 0) {
+				object.y += 1;
+			}
+		}
 	}
 	onReturn(null);
 }
@@ -553,6 +578,7 @@ var Environment = function() {
 	functionMap.set("moveRight", moveRightFunc);
 	functionMap.set("moveUp", moveUpFunc);
 	functionMap.set("moveDown", moveDownFunc);
+	functionMap.set("moveAway", moveAwayFunc);
 	functionMap.set("createObject", createObjectFunc);
 	functionMap.set("destroyObject", destroyObjectFunc);
 

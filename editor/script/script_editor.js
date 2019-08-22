@@ -413,6 +413,9 @@ var FunctionDescriptions = {
 	"moveRight" : {
 		text : "move this object one space right",
 	},
+	"moveAway" : {
+		text : "move this object one step away from the player",
+	},
 	"createObject" : {
 		text : "create _",
 		parameters : [ {name:"object"} ],
@@ -617,6 +620,7 @@ function ActionBuilder(parentBlock) {
 
 	makeFunctionButton("moveLeft", "move left");
 	makeFunctionButton("moveRight", "move right");
+	makeFunctionButton("moveAway", "move away");
 	makeFunctionButton("createObject", "create object");
 	makeFunctionButton("destroyObject", "destroy object");
 
