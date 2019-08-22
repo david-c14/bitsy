@@ -951,23 +951,28 @@ function getSpriteDown() {
 }
 
 function isWallLeft() {
-	return (player().x - 1 < 0) || isWall( player().x - 1, player().y );
+	return isWall(player().x - 1, player().y);
 }
 
 function isWallRight() {
-	return (player().x + 1 >= 16) || isWall( player().x + 1, player().y );
+	return isWall(player().x + 1, player().y);
 }
 
 function isWallUp() {
-	return (player().y - 1 < 0) || isWall( player().x, player().y - 1 );
+	return isWall(player().x, player().y - 1);
 }
 
 function isWallDown() {
-	return (player().y + 1 >= 16) || isWall( player().x, player().y + 1 );
+	return isWall(player().x, player().y + 1);
 }
 
 function isWall(x,y,roomId) {
-	if(roomId == undefined || roomId == null) {
+	// first, detect the edges of the room
+	if (x < 0 || x >= 16 || y < 0 || y >= 16) {
+		return true;
+	}
+
+	if (roomId == undefined || roomId == null) {
 		roomId = curRoom;
 	}
 
@@ -985,6 +990,14 @@ function isWall(x,y,roomId) {
 
 	// Otherwise, use the tile's own wall-state
 	return object[tileId].isWall;
+}
+
+// TODO : 
+// - is the player check redundant?
+// - check items too (once they can be made collide-able)
+// - what about OTHER rooms? do I need that?
+function isCollisionAt(x,y) {
+	return isWall(x,y) || (getSpriteAt(x,y) != null) || (player().x == x && player().y == y);
 }
 
 function getObject(roomId,x,y) {
