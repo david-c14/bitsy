@@ -389,8 +389,7 @@ function shakyFunc(environment,parameters,onReturn) {
 function moveLeftFunc(environment,parameters,onReturn) {
 	if (environment.HasObject()) {
 		var object = environment.GetObject();
-		// TODO : what about obstacles like walls and other sprites???
-		object.x -= 1;
+		tryMoveObject(object, -1, 0);
 	}
 	onReturn(null);
 }
@@ -398,7 +397,7 @@ function moveLeftFunc(environment,parameters,onReturn) {
 function moveRightFunc(environment,parameters,onReturn) {
 	if (environment.HasObject()) {
 		var object = environment.GetObject();
-		object.x += 1;
+		tryMoveObject(object, 1, 0);
 	}
 	onReturn(null);
 }
@@ -406,7 +405,7 @@ function moveRightFunc(environment,parameters,onReturn) {
 function moveUpFunc(environment,parameters,onReturn) {
 	if (environment.HasObject()) {
 		var object = environment.GetObject();
-		object.y -= 1;
+		tryMoveObject(object, 0, -1);
 	}
 	onReturn(null);
 }
@@ -414,7 +413,7 @@ function moveUpFunc(environment,parameters,onReturn) {
 function moveDownFunc(environment,parameters,onReturn) {
 	if (environment.HasObject()) {
 		var object = environment.GetObject();
-		object.y += 1;
+		tryMoveObject(object, 0, 1);
 	}
 	onReturn(null);
 }
@@ -430,22 +429,29 @@ function moveAwayFunc(environment,parameters,onReturn) {
 
 		if (xDistIsShortest) {
 			if (towardsPlayer.x > 0) {
-				object.x -= 1;
+				tryMoveObject(object, -1, 0);
 			}
 			else if (towardsPlayer.x < 0) {
-				object.x += 1;
+				tryMoveObject(object, 1, 0);
 			}
 		}
 		else {
 			if (towardsPlayer.y > 0) {
-				object.y -= 1;
+				tryMoveObject(object, 0, -1);
 			}
 			else if (towardsPlayer.y < 0) {
-				object.y += 1;
+				tryMoveObject(object, 0, 1);
 			}
 		}
 	}
 	onReturn(null);
+}
+
+function tryMoveObject(object, deltaX, deltaY) {
+	if (!isCollisionAt(object.x + deltaX, object.y + deltaY)) {
+		object.x += deltaX;
+		object.y += deltaY;
+	}
 }
 
 function createObjectFunc(environment,parameters,onReturn) {
