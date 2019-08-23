@@ -1335,6 +1335,8 @@ var Sym = {
 	List : "-",
 	String : '"',
 	Space : " ",
+	Conditional : "?",
+	Else : "else",
 };
 
 var ParserNext = function(env) {
@@ -1465,21 +1467,31 @@ var ParserNext = function(env) {
 		}
 	}
 
+	function ParseConditional(parentNode, sourceStr) {
+		// find start of list
+		while (index < sourceStr.length && sourceStr[index] != Sym.List) {
+			index++;
+		}
+		index++;
+
+		//TODO
+	}
+
 	// Function parameters that are functions or expressions:
 	// Similar to ParseCode, BUT disallows flow control code (sequences, conditionals) are allowed
 	function ParseDynamicParameter(parameterList, sourceStr, index) {
 		var results = FindBlockContents(sourceStr, index, Sym.CodeOpen, Sym.CodeClose);
-		var codeContents = results.contents;
+		var innerSourceStr = results.contents;
 		index = results.index;
 
-		var firstSymbol = FindFirstSymbol(codeContents);
+		var firstSymbol = FindFirstSymbol(innerSourceStr);
 
 		if (environment.HasFunction(firstSymbol)) {
-			parameterList.push(ParseFunction(firstSymbol, codeContents));
+			parameterList.push(ParseFunction(firstSymbol, innerSourceStr));
 		}
 		// else if (IsExpression()) {} // TODO
 		else {
-			parameterList.push(new UndefinedCodeNode(codeContents));
+			parameterList.push(new UndefinedCodeNode(innerSourceStr));
 		}
 
 		return index;
@@ -1562,26 +1574,50 @@ var ParserNext = function(env) {
 		return new FuncNode(functionName, parameters);
 	}
 
+	function IsConditional(sourceStr) {
+		var isConditional = false;
+
+		var lines = 
+			sourceStr.split("\n")
+				.map(function(l) { return l.trim(); })
+				.filter(function(l) { return l.length > 0; });
+
+		if (lines.length > 0) {
+			var firstLine = lines[0];
+			var firstChar = firstLine[0];
+			var lastChar = firstLine[firstLine.length - 1];
+
+			if (firstChar === Sym.List && lastChar === Sym.Conditional) {
+				isConditional = true;
+			}
+		}
+
+		return isConditional;
+	}
+
 	// the goal of this function is to either add a single code node to the parent node OR the last dialog node (if it's a function)
 	// the tricky part here is this needs to recursively go through inner code nodes as well!
 	// and something needs to work for code that goes inside function parameters instead of as a child of a block
 	function ParseCode(parentNode, sourceStr, index) {
 		var results = FindBlockContents(sourceStr, index, Sym.CodeOpen, Sym.CodeClose);
-		var codeContents = results.contents;
+		var innerSourceStr = results.contents; // TODO rename this...
 		index = results.index;
 
-		var firstSymbol = FindFirstSymbol(codeContents);
+		var firstSymbol = FindFirstSymbol(innerSourceStr);
 
 		// if (IsIf(...)) // TODO
 		if (environment.HasFunction(firstSymbol)) {
-			parentNode.AddChild(ParseFunction(firstSymbol, codeContents));
+			parentNode.AddChild(ParseFunction(firstSymbol, innerSourceStr));
 		}
 		else if (IsSequenceName(firstSymbol)) {
-			ParseSequence(parentNode, codeContents, firstSymbol);
+			ParseSequence(parentNode, innerSourceStr, firstSymbol);
+		}
+		else if (IsConditional(innerSourceStr)) {
+			ParseConditional(parentNode, innerSourceStr);
 		}
 		// else if (IsExpression()) {} // TODO
 		else {
-			parentNode.AddChild(new UndefinedCodeNode(codeContents));
+			parentNode.AddChild(new UndefinedCodeNode(innerSourceStr));
 		}
 
 		return index;
