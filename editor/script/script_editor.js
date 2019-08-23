@@ -423,6 +423,14 @@ var FunctionDescriptions = {
 	"destroyObject" : {
 		text : "destroy this object",
 	},
+	"giveItem" : {
+		text : "give the player one _",
+		parameters : [ {name:"item"} ],
+	},
+	"takeItem" : {
+		text : "take one _ from the player",
+		parameters : [ {name:"item"} ],
+	},
 };
 
 // TODO : too much copy / paste between these node editors :( -- I need templates!
@@ -623,6 +631,8 @@ function ActionBuilder(parentBlock) {
 	makeFunctionButton("moveAway", "move away");
 	makeFunctionButton("createObject", "create object");
 	makeFunctionButton("destroyObject", "destroy object");
+	makeFunctionButton("giveItem", "give item");
+	makeFunctionButton("takeItem", "take item");
 
 	var cancelButton = document.createElement("button");
 	cancelButton.innerText = "cancel";

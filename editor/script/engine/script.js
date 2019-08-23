@@ -347,6 +347,34 @@ function itemFunc(environment,parameters,onReturn) {
 	onReturn(itemCount);
 }
 
+// TODO : pass in an increment variable?
+function giveItemFunc(environment,parameters,onReturn) {
+	var itemId = parameters[0];
+	if(names.item.has(itemId)) itemId = names.item.get(itemId); // id is actually a name
+
+	if (player().inventory[itemId] != undefined && player().inventory[itemId] != null) {
+		player().inventory[itemId] += 1;
+	}
+	else {
+		player().inventory[itemId] = 1;
+	}
+
+	onReturn(null);
+}
+
+function takeItemFunc(environment,parameters,onReturn) {
+	var itemId = parameters[0];
+	if(names.item.has(itemId)) itemId = names.item.get(itemId); // id is actually a name
+
+	if (player().inventory[itemId] != undefined && player().inventory[itemId] != null) {
+		if (player().inventory[itemId] > 0) {
+			player().inventory[itemId] -= 1;
+		}
+	}
+
+	onReturn(null);
+}
+
 function addOrRemoveTextEffect(environment,name) {
 	if( environment.GetDialogBuffer().HasTextEffect(name) )
 		environment.GetDialogBuffer().RemoveTextEffect(name);
@@ -587,6 +615,8 @@ var Environment = function() {
 	functionMap.set("moveAway", moveAwayFunc);
 	functionMap.set("createObject", createObjectFunc);
 	functionMap.set("destroyObject", destroyObjectFunc);
+	functionMap.set("giveItem", giveItemFunc);
+	functionMap.set("takeItem", takeItemFunc);
 
 	// TODO : probably remove this...
 	// TODO : vNext
