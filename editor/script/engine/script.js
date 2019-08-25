@@ -1467,6 +1467,70 @@ var ParserNext = function(env) {
 		}
 	}
 
+	function IsConditional(sourceStr) {
+		var isConditional = false;
+
+		var lines = 
+			sourceStr.split("\n")
+				.map(function(l) { return l.trim(); })
+				.filter(function(l) { return l.length > 0; });
+
+		if (lines.length > 0) {
+			var firstLine = lines[0];
+			var firstChar = firstLine[0];
+			var lastChar = firstLine[firstLine.length - 1];
+
+			if (firstChar === Sym.List && lastChar === Sym.Conditional) {
+				isConditional = true;
+			}
+		}
+
+		return isConditional;
+	}
+
+	function FindNextCondition(sourceStr, index) {
+		var listDelimeterIndex = null;
+		var isStartOfLine = true;
+
+		var conditionDelimeterIndex = null;
+
+		var FoundCondition = function() {
+			return listDelimeterIndex != null && conditionDelimeterIndex != null;
+		};
+
+		while (index < sourceStr.length && !FoundCondition()) {
+			if (listDelimeterIndex == null) {
+				// look for a line that starts with a list delimeter "-"
+				if (sourceStr[index] === Sym.Linebreak) {
+					isStartOfLine = true;
+				}
+				else if (!IsWhitespace(sourceStr[index])) {
+					if (isStartOfLine) {
+						if (sourceStr[index] === Sym.List) {
+							listDelimeterIndex = index;
+						}
+						isStartOfLine = false;
+					}
+				}
+			}
+			else {
+				// if we've found a line that starts with a list delimeter
+				// look for a conditional delimeter "?" before the end of the line
+				if (sourceStr[index] === Sym.Linebreak) {
+					listDelimeterIndex = null;
+					isStartOfLine = true;
+				}
+				else if (sourceStr[index] === Sym.Conditional) {
+					conditionDelimeterIndex = index;
+				}
+			}
+
+			index++;
+		}
+
+		// STARTED BUT... OK... WHAT ABOUT INNER BLOCKS????????
+	}
+
 	function ParseConditional(parentNode, sourceStr) {
 		// find start of list
 		while (index < sourceStr.length && sourceStr[index] != Sym.List) {
@@ -1574,33 +1638,12 @@ var ParserNext = function(env) {
 		return new FuncNode(functionName, parameters);
 	}
 
-	function IsConditional(sourceStr) {
-		var isConditional = false;
-
-		var lines = 
-			sourceStr.split("\n")
-				.map(function(l) { return l.trim(); })
-				.filter(function(l) { return l.length > 0; });
-
-		if (lines.length > 0) {
-			var firstLine = lines[0];
-			var firstChar = firstLine[0];
-			var lastChar = firstLine[firstLine.length - 1];
-
-			if (firstChar === Sym.List && lastChar === Sym.Conditional) {
-				isConditional = true;
-			}
-		}
-
-		return isConditional;
-	}
-
 	// the goal of this function is to either add a single code node to the parent node OR the last dialog node (if it's a function)
 	// the tricky part here is this needs to recursively go through inner code nodes as well!
 	// and something needs to work for code that goes inside function parameters instead of as a child of a block
 	function ParseCode(parentNode, sourceStr, index) {
 		var results = FindBlockContents(sourceStr, index, Sym.CodeOpen, Sym.CodeClose);
-		var innerSourceStr = results.contents; // TODO rename this...
+		var innerSourceStr = results.contents;
 		index = results.index;
 
 		var firstSymbol = FindFirstSymbol(innerSourceStr);
