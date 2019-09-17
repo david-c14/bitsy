@@ -159,6 +159,10 @@ var Utils = function() {
 		return shuffle;
 	}
 
+	this.CreateBlockNode = function() {
+		return new BlockNode();
+	}
+
 	// TODO : re-implement
 	// this.CreateIfBlock = function() {
 	// 	var leftNode = new BlockNode( BlockMode.Code );

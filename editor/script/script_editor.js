@@ -383,10 +383,29 @@ function SequenceNodeEditor(sequenceNode, parentNode) {
 	}
 	controlDiv.appendChild(deleteButton);
 
+	var optionRootDiv = document.createElement("div");
 	for (var i = 0; i < sequenceNode.options.length; i++) {
 		var optionBlockNode = sequenceNode.options[i];
 		var optionBlockNodeEditor = new BlockNodeEditor(optionBlockNode, this);
-		this.div.appendChild(optionBlockNodeEditor.GetElement());
+		optionRootDiv.appendChild(optionBlockNodeEditor.GetElement());
+	}
+	this.div.appendChild(optionRootDiv);
+
+	var addOptionButton = document.createElement("button");
+	addOptionButton.innerText = "add option"; // TODO : what should the text here be? option? item? something else?
+	addOptionButton.onclick = function() {
+		var newOption = scriptUtils.CreateBlockNode();
+		sequenceNode.options.push(newOption);
+
+		var newOptionEditor = new BlockNodeEditor(newOption, self);
+		optionRootDiv.appendChild(newOptionEditor.GetElement());
+
+		parentNode.UpdateChild(self);
+	}
+	this.div.appendChild(addOptionButton);
+
+	function Refresh() {
+		this.div.innerHTML = "";
 	}
 
 	this.GetNode = function() {
