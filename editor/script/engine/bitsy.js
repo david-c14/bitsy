@@ -27,14 +27,14 @@ var TextDirection = {
 };
 var textDirection = TextDirection.LeftToRight;
 
-// var names = {
-// 	room : new Map(),
-// 	tile : new Map(), // Note: Not currently enabled in the UI
-// 	sprite : new Map(),
-// 	item : new Map(),
-// 	/*dialog : new Map()*/ // TODO
-// 	/*ending : new Map()*/ // TODO
-// };
+var names = {
+	room : new Map(),
+	tile : new Map(), // Note: Not currently enabled in the UI
+	sprite : new Map(),
+	item : new Map(),
+	/*dialog : new Map()*/ // TODO
+	/*ending : new Map()*/ // TODO
+};
 function updateNamesFromCurData() {
 	names.room = new Map();
 	for(id in room) {
@@ -161,7 +161,7 @@ var onGameReset = null;
 
 var isPlayerEmbeddedInEditor = false;
 
-// var renderer = new Renderer(tilesize, scale);
+var renderer = new Renderer(tilesize, scale);
 
 function getGameNameFromURL() {
 	var game = window.location.hash.substring(1);
@@ -182,23 +182,35 @@ var curGameData = null;
 function load_game(game_data, startWithTitle) {
 	curGameData = game_data; //remember the current game (used to reset the game)
 
+	console.log("1");
+
 	dialogBuffer.Reset();
 	scriptInterpreter.ResetEnvironment(); // ensures variables are reset -- is this the best way?
 
+	console.log("2");
+
 	parseWorld(game_data);
+
+	console.log("3");
 
 	if (!isPlayerEmbeddedInEditor) {
 		// hack to ensure default font is available
 		fontManager.AddResource(defaultFontName + fontManager.GetExtension(), document.getElementById(defaultFontName).text.slice(1));
 	}
 
+	console.log("4");
+
 	var font = fontManager.Get( fontName );
 	dialogBuffer.SetFont(font);
 	dialogRenderer.SetFont(font);
 
+	console.log("5");
+
 	setInitialVariables();
 
 	// setInterval(updateLoadingScreen, 300); // hack test
+
+	console.log("6");
 
 	onready(startWithTitle);
 }
@@ -1030,7 +1042,7 @@ function movePlayer(direction) {
 	}
 }
 
-// var transition = new TransitionManager();
+var transition = new TransitionManager();
 
 function movePlayerThroughExit(ext) {
 	var GoToDest = function() {
@@ -1201,6 +1213,8 @@ function parseWorld(file) {
 
 	var versionNumber = 0;
 
+	console.log("PARSE 1");
+
 	var lines = file.split("\n");
 	var i = 0;
 	while (i < lines.length) {
@@ -1268,10 +1282,18 @@ function parseWorld(file) {
 		}
 	}
 
+	console.log("PARSE 2");
+
 	placeSprites();
 
 	var roomIds = Object.keys(room);
-	if (player() != undefined && player().room != null && roomIds.includes(player().room)) {
+
+	for (var i = 0; i < roomIds.length; i++) {
+		console.log('room id ' + roomIds[i]);
+	}
+
+	// I think "includes()" is the problem
+	if (player() != undefined && player().room != null && roomIds.indexOf(player().room) != -1) {
 		// player has valid room
 		curRoom = player().room;
 	}
@@ -1283,6 +1305,8 @@ function parseWorld(file) {
 		// uh oh there are no rooms I guess???
 		curRoom = null;
 	}
+
+	console.log("PARSE 3");
 
 	console.log("START ROOM " + curRoom);
 
@@ -2226,10 +2250,10 @@ function getRoomPal(roomId) {
 var isDialogMode = false;
 var isNarrating = false;
 var isEnding = false;
-// var dialogModule = new Dialog();
-// var dialogRenderer = dialogModule.CreateRenderer();
-// var dialogBuffer = dialogModule.CreateBuffer();
-// var fontManager = new FontManager();
+var dialogModule = new Dialog();
+var dialogRenderer = dialogModule.CreateRenderer();
+var dialogBuffer = dialogModule.CreateBuffer();
+var fontManager = new FontManager();
 
 function onExitDialog(scriptResult, dialogCallback) {
 	isDialogMode = false;
@@ -2334,7 +2358,7 @@ function startPreviewDialog(script, onScriptEnd) {
 }
 
 /* NEW SCRIPT STUFF */
-// var scriptModule = new Script();
-// var scriptInterpreter = scriptModule.CreateInterpreter();
-// var scriptUtils = scriptModule.CreateUtils(); // TODO: move to editor.js?
+var scriptModule = new Script();
+var scriptInterpreter = scriptModule.CreateInterpreter();
+var scriptUtils = scriptModule.CreateUtils(); // TODO: move to editor.js?
 // scriptInterpreter.SetDialogBuffer( dialogBuffer );

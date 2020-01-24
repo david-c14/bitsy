@@ -1158,7 +1158,7 @@ var Parser = function(env) {
 			// NOTE: nested dialog blocks disabled for now
 			// else if( state.MatchAhead(Sym.DialogOpen) ) {
 			// 	addTextNode();
-			// 	state = ParseDialogBlock( state ); // These can be nested (should they though???)
+			// 	state = ParseDialogBlock( state ); // These can be nested (should they though?)
 
 			// 	hasBlock = true;
 			// }
