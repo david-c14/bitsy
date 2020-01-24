@@ -27,14 +27,14 @@ var TextDirection = {
 };
 var textDirection = TextDirection.LeftToRight;
 
-var names = {
-	room : new Map(),
-	tile : new Map(), // Note: Not currently enabled in the UI
-	sprite : new Map(),
-	item : new Map(),
-	/*dialog : new Map()*/ // TODO
-	/*ending : new Map()*/ // TODO
-};
+// var names = {
+// 	room : new Map(),
+// 	tile : new Map(), // Note: Not currently enabled in the UI
+// 	sprite : new Map(),
+// 	item : new Map(),
+// 	/*dialog : new Map()*/ // TODO
+// 	/*ending : new Map()*/ // TODO
+// };
 function updateNamesFromCurData() {
 	names.room = new Map();
 	for(id in room) {
@@ -161,7 +161,7 @@ var onGameReset = null;
 
 var isPlayerEmbeddedInEditor = false;
 
-var renderer = new Renderer(tilesize, scale);
+// var renderer = new Renderer(tilesize, scale);
 
 function getGameNameFromURL() {
 	var game = window.location.hash.substring(1);
@@ -1030,7 +1030,7 @@ function movePlayer(direction) {
 	}
 }
 
-var transition = new TransitionManager();
+// var transition = new TransitionManager();
 
 function movePlayerThroughExit(ext) {
 	var GoToDest = function() {
@@ -2226,10 +2226,10 @@ function getRoomPal(roomId) {
 var isDialogMode = false;
 var isNarrating = false;
 var isEnding = false;
-var dialogModule = new Dialog();
-var dialogRenderer = dialogModule.CreateRenderer();
-var dialogBuffer = dialogModule.CreateBuffer();
-var fontManager = new FontManager();
+// var dialogModule = new Dialog();
+// var dialogRenderer = dialogModule.CreateRenderer();
+// var dialogBuffer = dialogModule.CreateBuffer();
+// var fontManager = new FontManager();
 
 function onExitDialog(scriptResult, dialogCallback) {
 	isDialogMode = false;
@@ -2334,7 +2334,7 @@ function startPreviewDialog(script, onScriptEnd) {
 }
 
 /* NEW SCRIPT STUFF */
-var scriptModule = new Script();
-var scriptInterpreter = scriptModule.CreateInterpreter();
-var scriptUtils = scriptModule.CreateUtils(); // TODO: move to editor.js?
+// var scriptModule = new Script();
+// var scriptInterpreter = scriptModule.CreateInterpreter();
+// var scriptUtils = scriptModule.CreateUtils(); // TODO: move to editor.js?
 // scriptInterpreter.SetDialogBuffer( dialogBuffer );
