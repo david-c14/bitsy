@@ -1288,12 +1288,7 @@ function parseWorld(file) {
 
 	var roomIds = Object.keys(room);
 
-	for (var i = 0; i < roomIds.length; i++) {
-		console.log('room id ' + roomIds[i]);
-	}
-
-	// I think "includes()" is the problem
-	if (player() != undefined && player().room != null && roomIds.indexOf(player().room) != -1) {
+	if (player() != undefined && player().room != null && roomIds.includes(player().room)) {
 		// player has valid room
 		curRoom = player().room;
 	}
