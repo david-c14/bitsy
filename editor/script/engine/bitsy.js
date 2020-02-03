@@ -1,3 +1,18 @@
+/*
+PROTO TODOs:
+- multiple dialogs per sprite
+- different events to trigger dialogs
+- new functions!
+- combine sprite / tile / etc
+
+NOTES:
+event tag: EVT or ACT or DO or RUN or PRG or ON or WHEN
+also, order?
+EVT event DLG id
+vs
+DLG id EVT event
+*/
+
 var xhr; // TODO : remove
 var canvas;
 var context; // TODO : remove if safe?
@@ -1249,8 +1264,9 @@ function serializeWorld(skipFonts) {
 			/* NAME */
 			worldStr += "NAME " + sprite[id].name + "\n";
 		}
-		if (sprite[id].dlg != null) {
-			worldStr += "DLG " + sprite[id].dlg + "\n";
+		// PROTO
+		for (eventId in sprite[id].events) {
+			worldStr += (eventId != "dialog" ? "EVT " + eventId + " " : "") + "DLG " + sprite[id].events[eventId] + "\n";
 		}
 		if (sprite[id].room != null) {
 			/* SPRITE POSITION */
@@ -1633,7 +1649,7 @@ function parseSprite(lines, i) {
 
 	//other properties
 	var colorIndex = 2; //default palette color index is 2
-	var dialogId = null;
+	var dialogEvents = {};
 	var startingInventory = {};
 	while (i < lines.length && lines[i].length > 0) { //look for empty line
 		if (getType(lines[i]) === "COL") {
@@ -1651,8 +1667,17 @@ function parseSprite(lines, i) {
 				y : parseInt(coordArgs[1])
 			};
 		}
-		else if(getType(lines[i]) === "DLG") {
-			dialogId = getId(lines[i]);
+		else if (getType(lines[i]) === "DLG") {
+			var eventId = "dialog"; // PROTO
+			var dialogId = getId(lines[i]);
+			dialogEvents[eventId] = dialogId;
+		}
+		else if (getType(lines[i]) === "EVT") { // PROTO
+			var eventId = getId(lines[i]);
+			if (getArg(lines[i], 2) === "DLG") {
+				var dialogId = getArg(lines[i], 3);
+				dialogEvents[eventId] = dialogId;
+			}
 		}
 		else if (getType(lines[i]) === "NAME") {
 			/* NAME */
@@ -1673,7 +1698,8 @@ function parseSprite(lines, i) {
 		id : id,
 		drw : drwId, //drawing id
 		col : colorIndex,
-		dlg : dialogId,
+		events : dialogEvents,
+		dlg: dialogEvents["dialog"] === undefined ? null : dialogEvents["dialog"], // PROTO : keep for now to avoid lots of breaks
 		room : null, //default location is "offstage"
 		x : -1,
 		y : -1,
@@ -1685,6 +1711,9 @@ function parseSprite(lines, i) {
 		inventory : startingInventory,
 		name : name
 	};
+
+	console.log("DIALOG EVENT " + dialogEvents["dialog"]);
+
 	return i;
 }
 
