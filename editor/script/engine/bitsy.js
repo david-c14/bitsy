@@ -481,12 +481,12 @@ function update() {
 }
 
 function updateInput() {
-	if( dialogBuffer.IsActive() ) {
+	if (dialogBuffer.IsActive()) {
 		if (input.anyKeyPressed() || input.isTapReleased()) {
 			/* CONTINUE DIALOG */
 			if (dialogBuffer.CanContinue()) {
 				var hasMoreDialog = dialogBuffer.Continue();
-				if(!hasMoreDialog) {
+				if (!hasMoreDialog) {
 					// ignore currently held keys UNTIL they are released (stops player from insta-moving)
 					input.ignoreHeldKeys();
 				}
@@ -496,7 +496,7 @@ function updateInput() {
 			}
 		}
 	}
-	else if ( isEnding ) {
+	else if (isEnding) {
 		if (input.anyKeyPressed() || input.isTapReleased()) {
 			/* RESTART GAME */
 			reset_cur_game();
@@ -506,25 +506,46 @@ function updateInput() {
 		/* WALK */
 		var prevPlayerDirection = curPlayerDirection;
 
-		if ( input.isKeyDown( key.left ) || input.isKeyDown( key.a ) || input.swipeLeft() ) {
+		if (input.isKeyDown(key.left) || input.isKeyDown(key.a) || input.swipeLeft()) {
 			curPlayerDirection = Direction.Left;
+			tryDialogEventOnSprites("left"); // PROTO : what should the style of event codes be?
 		}
-		else if ( input.isKeyDown( key.right ) || input.isKeyDown( key.d ) || input.swipeRight() ) {
+		else if (input.isKeyDown(key.right) || input.isKeyDown(key.d) || input.swipeRight()) {
 			curPlayerDirection = Direction.Right;
+			tryDialogEventOnSprites("right");
 		}
-		else if ( input.isKeyDown( key.up ) || input.isKeyDown( key.w ) || input.swipeUp() ) {
+		else if (input.isKeyDown(key.up) || input.isKeyDown(key.w) || input.swipeUp()) {
 			curPlayerDirection = Direction.Up;
+			tryDialogEventOnSprites("up");
 		}
-		else if ( input.isKeyDown( key.down ) || input.isKeyDown( key.s ) || input.swipeDown() ) {
+		else if (input.isKeyDown(key.down) || input.isKeyDown(key.s) || input.swipeDown()) {
 			curPlayerDirection = Direction.Down;
+			tryDialogEventOnSprites("down");
 		}
 		else {
 			curPlayerDirection = Direction.None;
 		}
 
 		if (curPlayerDirection != Direction.None && curPlayerDirection != prevPlayerDirection) {
-			movePlayer( curPlayerDirection );
+			movePlayer(curPlayerDirection);
 			playerHoldToMoveTimer = 500;
+		}
+	}
+}
+
+// PROTO : eventually this needs to apply to ALL objects!
+function tryDialogEventOnSprites(eventName)
+{
+	for (id in sprite) {
+		var spr = sprite[id];
+		if (spr.room === curRoom) { // PROTO : eventually refactor so sprites "belong" to a room
+			if (spr.events[eventName]) {
+				// is this the best way?
+				var dialogId = spr.events[eventName];
+				console.log("TRY DIALOG " + dialogId);
+				startDialog(dialog[dialogId].src, dialogId); // PROTO : add reference to object!
+				// PROTO : what do I need to do about callbacks? do I need an event queue?
+			}
 		}
 	}
 }
