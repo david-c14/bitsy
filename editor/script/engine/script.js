@@ -484,10 +484,30 @@ function takeItemFunc(environment,parameters,onReturn) {
 function createObjectFunc(environment, parameters, onReturn) {
 	var objectId = parameters[0];
 
+	var direction = null;
+	if (parameters.length > 1) {
+		direction = parameters[1];
+	}
+
 	// hacky!!!
 	sprite[objectId].room = player().room; // TODO : should be whichever object spawns it
 	sprite[objectId].x = player().x;
 	sprite[objectId].y = player().y;
+
+	if (direction != null) {
+		if (direction === "up") {
+			sprite[objectId].y--;
+		}
+		else if (direction === "down") {
+			sprite[objectId].y++;
+		}
+		else if (direction === "left") {
+			sprite[objectId].x--;
+		}
+		else if (direction === "right") {
+			sprite[objectId].x++;
+		}
+	}
 
 	var spr = sprite[objectId];
 	var eventName = "create"; // PROTO : name? "start"?
@@ -496,6 +516,8 @@ function createObjectFunc(environment, parameters, onReturn) {
 		var dialogId = spr.events[eventName];
 		startDialog(dialog[dialogId].src, dialogId, function() {}, spr);
 	}
+
+	// TODO : check for collisions?
 
 	onReturn(null);
 }
@@ -547,6 +569,16 @@ function stepRightFunc(environment, parameters, onReturn) {
 	}
 
 	onReturn(null);
+}
+
+// PROTO : should this always be the player? or the calling object? should there be a seperate override for the player?
+function directionFunc(environment, parameters, onReturn) {
+	if (player().lastDirection) {
+		onReturn(player().lastDirection);
+	}
+	else {
+		onReturn(null);
+	}
 }
 
 // PROTO
@@ -693,6 +725,7 @@ var Environment = function() {
 	functionMap.set("stepDown", stepDownFunc);
 	functionMap.set("stepLeft", stepLeftFunc);
 	functionMap.set("stepRight", stepRightFunc);
+	functionMap.set("direction", directionFunc);
 
 	this.HasFunction = function(name) { return functionMap.has(name); };
 	this.EvalFunction = function(name,parameters,onReturn,env) {

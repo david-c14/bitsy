@@ -239,6 +239,8 @@ var update_interval = null;
 function onready(startWithTitle) {
 	if(startWithTitle === undefined || startWithTitle === null) startWithTitle = true;
 
+	player().lastDirection = "down"; // PROTO : kind of hacky to initialize here
+
 	clearInterval(loading_interval);
 
 	input = new InputManager();
@@ -508,18 +510,22 @@ function updateInput() {
 
 		if (input.isKeyDown(key.left) || input.isKeyDown(key.a) || input.swipeLeft()) {
 			curPlayerDirection = Direction.Left;
+			player().lastDirection = "left"; // PROTO : should this really be a string?
 			tryDialogEventOnSprites("left"); // PROTO : what should the style of event codes be?
 		}
 		else if (input.isKeyDown(key.right) || input.isKeyDown(key.d) || input.swipeRight()) {
 			curPlayerDirection = Direction.Right;
+			player().lastDirection = "right"; // PROTO
 			tryDialogEventOnSprites("right"); // PROTO
 		}
 		else if (input.isKeyDown(key.up) || input.isKeyDown(key.w) || input.swipeUp()) {
 			curPlayerDirection = Direction.Up;
+			player().lastDirection = "up"; // PROTO
 			tryDialogEventOnSprites("up"); // PROTO
 		}
 		else if (input.isKeyDown(key.down) || input.isKeyDown(key.s) || input.swipeDown()) {
 			curPlayerDirection = Direction.Down;
+			player().lastDirection = "down"; // PROTO
 			tryDialogEventOnSprites("down"); // PROTO
 		}
 		else {
