@@ -20,16 +20,19 @@ var Interpreter = function() {
 		var script = parser.Parse(scriptStr, scriptName);
 		env.SetScript(scriptName, script);
 	}
-	this.Run = function(scriptName, exitHandler) { // Runs pre-compiled script
+	this.Run = function(scriptName, exitHandler, object) { // Runs pre-compiled script
 		var localEnv = new LocalEnvironment(env);
+		localEnv.SetObject(object); // PROTO : should this be folded into the constructor
 
 		var script = env.GetScript(scriptName);
 
 		script.Eval( localEnv, function(result) { OnScriptReturn(localEnv, exitHandler); } );
 	}
-	this.Interpret = function(scriptStr, exitHandler) { // Compiles and runs code immediately
+	this.Interpret = function(scriptStr, exitHandler, object) { // Compiles and runs code immediately
 		// console.log("INTERPRET");
 		var localEnv = new LocalEnvironment(env);
+		localEnv.SetObject(object); // PROTO
+
 		var script = parser.Parse(scriptStr, "anonymous");
 		script.Eval( localEnv, function(result) { OnScriptReturn(localEnv, exitHandler); } );
 	}
@@ -725,6 +728,13 @@ var LocalEnvironment = function(parentEnvironment) {
 	var isLocked = false;
 	this.LockDefaultAction = function() { isLocked = true; };
 	this.IsDefaultActionLocked = function() { return isLocked; };
+
+	// PROTO
+	// The local environment knows what object called it
+	var curObject = null;
+	this.HasObject = function() { return curObject != undefined && curObject != null; }
+	this.SetObject = function(object) { curObject = object; }
+	this.GetObject = function() { return curObject; }
 }
 
 function leadingWhitespace(depth) {

@@ -548,7 +548,7 @@ function tryDialogEventOnSprites(eventName)
 				// is this the best way?
 				var dialogId = spr.events[eventName];
 				console.log("TRY DIALOG " + dialogId);
-				startDialog(dialog[dialogId].src, dialogId); // PROTO : add reference to object!
+				startDialog(dialog[dialogId].src, dialogId, spr); // PROTO : add reference to object!
 				// PROTO : what do I need to do about callbacks? do I need an event queue?
 			}
 		}
@@ -2144,7 +2144,8 @@ function startSpriteDialog(spriteId) {
 	}
 }
 
-function startDialog(dialogStr,scriptId,dialogCallback) {
+// PROTO : add object reference
+function startDialog(dialogStr, scriptId, dialogCallback, object) {
 	// console.log("START DIALOG ");
 	if(dialogStr.length <= 0) {
 		// console.log("ON EXIT DIALOG -- startDialog 1");
@@ -2173,7 +2174,7 @@ function startDialog(dialogStr,scriptId,dialogCallback) {
 			scriptInterpreter.Compile( scriptId, dialogStr );
 		}
 		// scriptInterpreter.DebugVisualizeScript(scriptId);
-		scriptInterpreter.Run( scriptId, onScriptEnd );
+		scriptInterpreter.Run(scriptId, onScriptEnd, object);
 	}
 
 }
