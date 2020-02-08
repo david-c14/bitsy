@@ -489,6 +489,14 @@ function createObjectFunc(environment, parameters, onReturn) {
 	sprite[objectId].x = player().x;
 	sprite[objectId].y = player().y;
 
+	var spr = sprite[objectId];
+	var eventName = "create"; // PROTO : name? "start"?
+	if (spr.events[eventName]) {
+		console.log("TRIGGER CREATE!");
+		var dialogId = spr.events[eventName];
+		startDialog(dialog[dialogId].src, dialogId, function() {}, spr);
+	}
+
 	onReturn(null);
 }
 
@@ -500,6 +508,42 @@ function destroyObjectFunc(environment, parameters, onReturn) {
 	sprite[objectId].room = null;
 	sprite[objectId].x = null;
 	sprite[objectId].y = null;
+
+	onReturn(null);
+}
+
+// PROTO
+function stepUpFunc(environment, parameters, onReturn) {
+	if (environment.HasObject()) {
+		environment.GetObject().y--;
+	}
+
+	onReturn(null);
+}
+
+// PROTO
+function stepDownFunc(environment, parameters, onReturn) {
+	if (environment.HasObject()) {
+		environment.GetObject().y++;
+	}
+
+	onReturn(null);
+}
+
+// PROTO
+function stepLeftFunc(environment, parameters, onReturn) {
+	if (environment.HasObject()) {
+		environment.GetObject().x--;
+	}
+
+	onReturn(null);
+}
+
+// PROTO
+function stepRightFunc(environment, parameters, onReturn) {
+	if (environment.HasObject()) {
+		environment.GetObject().x++;
+	}
 
 	onReturn(null);
 }
@@ -620,6 +664,10 @@ var Environment = function() {
 	// PROTO
 	functionMap.set("createObject", createObjectFunc);
 	functionMap.set("destroyObject", destroyObjectFunc);
+	functionMap.set("stepUp", stepUpFunc); // PROTO : provide direction parameter?
+	functionMap.set("stepDown", stepDownFunc);
+	functionMap.set("stepLeft", stepLeftFunc);
+	functionMap.set("stepRight", stepRightFunc);
 
 	this.HasFunction = function(name) { return functionMap.has(name); };
 	this.EvalFunction = function(name,parameters,onReturn,env) {

@@ -548,7 +548,7 @@ function tryDialogEventOnSprites(eventName)
 				// is this the best way?
 				var dialogId = spr.events[eventName];
 				console.log("TRY DIALOG " + dialogId);
-				startDialog(dialog[dialogId].src, dialogId, spr); // PROTO : add reference to object!
+				startDialog(dialog[dialogId].src, dialogId, function() {}, spr); // PROTO : add reference to object!
 				// PROTO : what do I need to do about callbacks? do I need an event queue?
 			}
 		}
