@@ -494,6 +494,7 @@ function createObjectFunc(environment, parameters, onReturn) {
 	sprite[objectId].x = player().x;
 	sprite[objectId].y = player().y;
 
+	// PROTO : should these be strings? or special variables? special functions?
 	if (direction != null) {
 		if (direction === "up") {
 			sprite[objectId].y--;
@@ -507,6 +508,11 @@ function createObjectFunc(environment, parameters, onReturn) {
 		else if (direction === "right") {
 			sprite[objectId].x++;
 		}
+
+		sprite[objectId].lastDirection = direction;
+	}
+	else {
+		sprite[objectId].lastDirection = "down"; // hacky
 	}
 
 	var spr = sprite[objectId];
@@ -571,10 +577,32 @@ function stepRightFunc(environment, parameters, onReturn) {
 	onReturn(null);
 }
 
+// PROTO
+function stepFunc(environment, parameters, onReturn) {
+	var direction = parameters[0];
+
+	if (environment.HasObject()) {
+		if (direction === "up") {
+			tryMoveObject(environment.GetObject(), 0, -1);
+		}
+		else if (direction === "down") {
+			tryMoveObject(environment.GetObject(), 0, 1);
+		}
+		else if (direction === "left") {
+			tryMoveObject(environment.GetObject(), -1, 0);
+		}
+		else if (direction === "right") {
+			tryMoveObject(environment.GetObject(), 1, 0);
+		}
+	}
+
+	onReturn(null);
+}
+
 // PROTO : should this always be the player? or the calling object? should there be a seperate override for the player?
 function directionFunc(environment, parameters, onReturn) {
-	if (player().lastDirection) {
-		onReturn(player().lastDirection);
+	if (environment.HasObject()) {
+		onReturn(environment.GetObject().lastDirection);
 	}
 	else {
 		onReturn(null);
@@ -599,7 +627,7 @@ function tryMoveObject(object, deltaX, deltaY) {
 			var otherObj = sprite[otherObjId]; // PROTO : hacky
 			if (otherObj.events[eventName]) {
 				var dialogId = otherObj.events[eventName];
-				startDialog(dialog[dialogId].src, dialogId, function() {}, otherObj);				
+				startDialog(dialog[dialogId].src, dialogId, function() {}, otherObj);
 			}
 		}
 	}
@@ -726,6 +754,7 @@ var Environment = function() {
 	functionMap.set("stepLeft", stepLeftFunc);
 	functionMap.set("stepRight", stepRightFunc);
 	functionMap.set("direction", directionFunc);
+	functionMap.set("step", stepFunc);
 
 	this.HasFunction = function(name) { return functionMap.has(name); };
 	this.EvalFunction = function(name,parameters,onReturn,env) {
