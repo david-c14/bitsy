@@ -589,6 +589,8 @@ function updateAnimation() {
 		// reset counter
 		animationCounter = 0;
 
+		tryDialogEventOnSprites("frame"); // PROTO : what timing functions do I want for real?
+
 	}
 }
 
