@@ -512,18 +512,23 @@ function updateInput() {
 		}
 		else if (input.isKeyDown(key.right) || input.isKeyDown(key.d) || input.swipeRight()) {
 			curPlayerDirection = Direction.Right;
-			tryDialogEventOnSprites("right");
+			tryDialogEventOnSprites("right"); // PROTO
 		}
 		else if (input.isKeyDown(key.up) || input.isKeyDown(key.w) || input.swipeUp()) {
 			curPlayerDirection = Direction.Up;
-			tryDialogEventOnSprites("up");
+			tryDialogEventOnSprites("up"); // PROTO
 		}
 		else if (input.isKeyDown(key.down) || input.isKeyDown(key.s) || input.swipeDown()) {
 			curPlayerDirection = Direction.Down;
-			tryDialogEventOnSprites("down");
+			tryDialogEventOnSprites("down"); // PROTO
 		}
 		else {
 			curPlayerDirection = Direction.None;
+		}
+
+		// PROTO : is this the right place to put this? do we only want to use space?
+		if (input.isKeyDown(key.space) || input.isTapReleased()) {
+			tryDialogEventOnSprites("action_button"); // PROTO : is this a good name?
 		}
 
 		if (curPlayerDirection != Direction.None && curPlayerDirection != prevPlayerDirection) {

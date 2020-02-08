@@ -477,6 +477,30 @@ function takeItemFunc(environment,parameters,onReturn) {
 	onReturn(null);
 }
 
+// PROTO : this is hacky for now, until I take the step of unifying objects
+function createObjectFunc(environment, parameters, onReturn) {
+	var objectId = parameters[0];
+
+	// hacky!!!
+	sprite[objectId].room = player().room; // TODO : should be whichever object spawns it
+	sprite[objectId].x = player().x;
+	sprite[objectId].y = player().y;
+
+	onReturn(null);
+}
+
+// PROTO : this is hacky for now, until I take the step of unifying objects
+function destroyObjectFunc(environment, parameters, onReturn) {
+	var objectId = parameters[0];
+
+	// hacky!!!
+	sprite[objectId].room = null;
+	sprite[objectId].x = null;
+	sprite[objectId].y = null;
+
+	onReturn(null);
+}
+
 /* BUILT-IN OPERATORS */
 function setExp(environment,left,right,onReturn) {
 	// console.log("SET " + left.name);
@@ -589,6 +613,10 @@ var Environment = function() {
 	functionMap.set("exit", exitFunc);
 	functionMap.set("giveItem", giveItemFunc);
 	functionMap.set("takeItem", takeItemFunc);
+
+	// PROTO
+	functionMap.set("createObject", createObjectFunc);
+	functionMap.set("destroyObject", destroyObjectFunc);
 
 	this.HasFunction = function(name) { return functionMap.has(name); };
 	this.EvalFunction = function(name,parameters,onReturn,env) {
