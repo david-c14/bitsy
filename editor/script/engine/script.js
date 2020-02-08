@@ -502,12 +502,13 @@ function createObjectFunc(environment, parameters, onReturn) {
 
 // PROTO : this is hacky for now, until I take the step of unifying objects
 function destroyObjectFunc(environment, parameters, onReturn) {
-	var objectId = parameters[0];
+	// var objectId = parameters[0]; // PROTO bring this back as optional?
 
-	// hacky!!!
-	sprite[objectId].room = null;
-	sprite[objectId].x = null;
-	sprite[objectId].y = null;
+	if (environment.HasObject()) {
+		environment.GetObject().room = null;
+		environment.GetObject().x = null;
+		environment.GetObject().y = null;
+	}
 
 	onReturn(null);
 }
@@ -515,7 +516,7 @@ function destroyObjectFunc(environment, parameters, onReturn) {
 // PROTO
 function stepUpFunc(environment, parameters, onReturn) {
 	if (environment.HasObject()) {
-		environment.GetObject().y--;
+		tryMoveObject(environment.GetObject(), 0, -1);
 	}
 
 	onReturn(null);
@@ -524,7 +525,7 @@ function stepUpFunc(environment, parameters, onReturn) {
 // PROTO
 function stepDownFunc(environment, parameters, onReturn) {
 	if (environment.HasObject()) {
-		environment.GetObject().y++;
+		tryMoveObject(environment.GetObject(), 0, 1);
 	}
 
 	onReturn(null);
@@ -533,7 +534,7 @@ function stepDownFunc(environment, parameters, onReturn) {
 // PROTO
 function stepLeftFunc(environment, parameters, onReturn) {
 	if (environment.HasObject()) {
-		environment.GetObject().x--;
+		tryMoveObject(environment.GetObject(), -1, 0);
 	}
 
 	onReturn(null);
@@ -542,10 +543,34 @@ function stepLeftFunc(environment, parameters, onReturn) {
 // PROTO
 function stepRightFunc(environment, parameters, onReturn) {
 	if (environment.HasObject()) {
-		environment.GetObject().x++;
+		tryMoveObject(environment.GetObject(), 1, 0);
 	}
 
 	onReturn(null);
+}
+
+// PROTO
+function tryMoveObject(object, deltaX, deltaY) {
+	if (!isCollisionAt(object.x + deltaX, object.y + deltaY)) {
+		object.x += deltaX;
+		object.y += deltaY;
+	}
+	else {
+		// PROTO : trigger collision scripts on both objects (assuming they are both sprites)
+		var eventName = "collision";
+		if (object.events[eventName]) {
+			var dialogId = object.events[eventName];
+			startDialog(dialog[dialogId].src, dialogId, function() {}, object);
+		}
+		var otherObjId = getSpriteAt(object.x + deltaX, object.y + deltaY)
+		if (otherObjId != null) {
+			var otherObj = sprite[otherObjId]; // PROTO : hacky
+			if (otherObj.events[eventName]) {
+				var dialogId = otherObj.events[eventName];
+				startDialog(dialog[dialogId].src, dialogId, function() {}, otherObj);				
+			}
+		}
+	}
 }
 
 /* BUILT-IN OPERATORS */

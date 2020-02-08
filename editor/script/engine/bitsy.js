@@ -970,15 +970,17 @@ function isWallDown() {
 }
 
 function isWall(x,y,roomId) {
-	if(roomId == undefined || roomId == null)
+	if (roomId == undefined || roomId == null) {
 		roomId = curRoom;
+	}
 
-	var tileId = getTile( x, y );
+	var tileId = getTile(x, y);
 
-	if( tileId === '0' )
+	if (tileId === '0') {
 		return false; // Blank spaces aren't walls, ya doofus
+	}
 
-	if( tile[tileId].isWall === undefined || tile[tileId].isWall === null ) {
+	if (tile[tileId].isWall === undefined || tile[tileId].isWall === null) {
 		// No wall-state defined: check room-specific walls
 		var i = room[roomId].walls.indexOf( getTile(x,y) );
 		return i > -1;
@@ -986,6 +988,15 @@ function isWall(x,y,roomId) {
 
 	// Otherwise, use the tile's own wall-state
 	return tile[tileId].isWall;
+}
+
+// PROTO :
+// copied from old code... need to actually test this soon 
+// - is the player check redundant?
+// - check items too (once they can be made collide-able)
+// - what about OTHER rooms? do I need that?
+function isCollisionAt(x,y) {
+	return isWall(x,y) || (getSpriteAt(x,y) != null) || (player().x == x && player().y == y);
 }
 
 function getItem(roomId,x,y) {
