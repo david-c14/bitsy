@@ -185,7 +185,9 @@ var DialogRenderer = function() {
 			this.DrawNextArrow();
 		}
 
-		this.DrawTextbox();
+		if (!buffer.IsCurPageInvisible()) {
+			this.DrawTextbox();
+		}
 
 		if (buffer.DidPageFinishThisFrame() && onPageFinish != null) {
 			onPageFinish();
@@ -232,6 +234,19 @@ var DialogBuffer = function() {
 	this.CurPageCount = function() { return buffer.length; };
 	this.CurRowCount = function() { return this.CurPage().length; };
 	this.CurCharCount = function() { return this.CurRow().length; };
+
+	// a way to find out if there is no renderable content on the current page
+	// (ooof mixing script and dialog is giving me a headache!!)
+	this.IsCurPageInvisible = function() {
+		var renderableCharCount = 0;
+		this.ForEachActiveChar(function(char) {
+			if (!char.isControlChar) {
+				renderableCharCount++;
+			}
+		});
+
+		return renderableCharCount <= 0 && this.CurRowCount() < 2;
+	}
 
 	this.ForEachActiveChar = function(handler) { // Iterates over visible characters on the active page
 		var rowCount = rowIndex + 1;
@@ -301,11 +316,10 @@ var DialogBuffer = function() {
 
 		if (this.CurChar() != null) {
 			if (this.CurChar().isPageBreak) {
-				// special case for page break marker character!
 				isDialogReadyToContinue = true;
 				didPageFinishThisFrame = true;
 			}
-			
+
 			this.CurChar().OnPrint(); // make sure we hit the callback before we run out of text
 		}
 	};
@@ -323,24 +337,35 @@ var DialogBuffer = function() {
 		if (nextCharTimer > nextCharMaxTime) {
 			this.DoNextChar();
 		}
+
+		// continue immediately if the page has no visible content!
+		if (isDialogReadyToContinue && this.IsCurPageInvisible()) {
+			this.Continue();
+		}
 	};
 
 	this.Skip = function() {
-		console.log("SKIPPP");
 		didPageFinishThisFrame = false;
 		didFlipPageThisFrame = false;
+
 		// add new characters until you get to the end of the current line of dialog
 		while (rowIndex < this.CurRowCount()) {
 			this.DoNextChar();
 
-			if(isDialogReadyToContinue) {
+			if (isDialogReadyToContinue) {
 				//make sure to push the rowIndex past the end to break out of the loop
 				rowIndex++;
 				charIndex = 0;
 			}
 		}
-		rowIndex = this.CurRowCount()-1;
-		charIndex = this.CurCharCount()-1;
+
+		rowIndex = this.CurRowCount() - 1;
+		charIndex = this.CurCharCount() - 1;
+
+		// continue immediately if the page has no visible content!
+		if (isDialogReadyToContinue && this.IsCurPageInvisible()) {
+			this.Continue();
+		}
 	};
 
 	this.FlipPage = function() {
@@ -447,6 +472,8 @@ var DialogBuffer = function() {
 			y: 0
 		};
 		this.spacing = 0;
+
+		this.isControlChar = false;
 	}
 
 	function DialogFontChar(font, char, effectList) {
@@ -483,6 +510,8 @@ var DialogBuffer = function() {
 		this.width = 0;
 		this.height = 0;
 		this.spacing = 0;
+
+		this.isControlChar = true;
 	}
 
 	// is a control character really the best way to handle page breaks?
@@ -700,26 +729,20 @@ var DialogBuffer = function() {
 		isActive = true;
 	}
 
-	this.AddPagebreak = function(onReturnHandler) {
-		var curPageIndex = buffer.length - 1;
-		var curRowIndex = buffer[curPageIndex].length - 1;
-		var curRowArr = buffer[curPageIndex][curRowIndex];
-
-		// need to actually create a whole new page if following another pagebreak character
-		if (this.CurChar() && this.CurChar().isPageBreak) {
-			buffer.push([]);
-			curPageIndex++;
-			buffer[curPageIndex].push([]);
-			curRowIndex = 0;
-			curRowArr = buffer[curPageIndex][curRowIndex];
+	this.AddPagebreak = function() {
+		var lastPage = buffer[buffer.length-1];
+		if (lastPage.length <= 0) {
+			lastPage.push([]);
+			lastPage.push([]);
+		}
+		else if (lastPage.length <= 1) {
+			lastPage.push([]);
 		}
 
-		var pagebreakChar = new DialogPageBreakChar();
-		pagebreakChar.SetContinueHandler(onReturnHandler);
+		// add new page
+		buffer.push([[]]);
 
-		curRowArr.push(pagebreakChar);
-
-		isActive = true;		
+		isActive = true;
 	}
 
 	/* new text effects */
