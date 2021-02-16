@@ -10,6 +10,12 @@ TODO / NOTES
 - how should duty options be represented?
 - what do I do about the global state in here?
 - allow changes to duty (aka "pulse width") of square wave
+- misc ideas:
+	- arpeggiator
+	- randomizer for notes
+	- somehow play SFX as notes?
+		- or allow an SFX track.. (this may be easier)
+	- wild idea: (script callback track -- could be used for the sfx thing)
 */
 
 var audioContext;
