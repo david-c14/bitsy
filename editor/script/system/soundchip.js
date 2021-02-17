@@ -18,31 +18,36 @@ TODO / NOTES
 	- wild idea: (script callback track -- could be used for the sfx thing)
 */
 
-var audioContext;
-var oscillator;
+// public
+var sound = {};
 
+// private
+var _audioContext;
+var _oscillator;
+
+// methods
 // todo : name? boot, init, start
-function initSound() {
-	audioContext = new AudioContext();
-	oscillator = audioContext.createOscillator();
-	oscillator.type = "square";
-	oscillator.start();
+sound.init = function() {
+	_audioContext = new AudioContext();
+	_oscillator = _audioContext.createOscillator();
+	_oscillator.type = "square";
+	_oscillator.start();
 }
 
-function setSoundChannel(freq) {
-	oscillator.frequency.setValueAtTime(freq, audioContext.currentTime); // frequency in hertz
+sound.setChannel = function(freq) {
+	_oscillator.frequency.setValueAtTime(freq, _audioContext.currentTime); // frequency in hertz
+}
+
+sound.stopChannel = function() {
+	_oscillator.disconnect();
 }
 
 // todo : how many channels? how should they be named?
 // todo : what should length units be? seconds? ms?
-function playSoundChannel(len) {
-	oscillator.connect(audioContext.destination);
+sound.playChannel = function(len) {
+	_oscillator.connect(_audioContext.destination);
 
 	if (len) {
-		setTimeout(stopSoundChannel, len);
+		setTimeout(sound.stopChannel, len);
 	}
-}
-
-function stopSoundChannel() {
-	oscillator.disconnect();
 }
