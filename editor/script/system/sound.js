@@ -16,6 +16,18 @@ TODO / NOTES
 	- somehow play SFX as notes?
 		- or allow an SFX track.. (this may be easier)
 	- wild idea: (script callback track -- could be used for the sfx thing)
+
+idea for icon:
+SPR b
+00000000
+11111111
+11111111
+10100101
+11111111
+11000011
+10111101
+00000000
+NAME cassette
 */
 
 // public
