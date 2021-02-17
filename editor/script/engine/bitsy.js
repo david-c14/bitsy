@@ -170,6 +170,11 @@ function attachCanvas(c) {
 	renderer.AttachContext(ctx);
 }
 
+// test music stuff
+var track;
+var noteTimer = 0;
+var noteDuration = 500; // NOTE : added padding because stuff sounds weird without ANY spacing (worth noting)
+
 var curGameData = null;
 function load_game(game_data, startWithTitle) {
 	curGameData = game_data; //remember the current game (used to reset the game)
@@ -187,6 +192,8 @@ function load_game(game_data, startWithTitle) {
 	var font = fontManager.Get( fontName );
 	dialogBuffer.SetFont(font);
 	dialogRenderer.SetFont(font);
+
+	track = card.load("track");
 
 	setInitialVariables();
 
@@ -214,6 +221,8 @@ function onready(startWithTitle) {
 	if(startWithTitle === undefined || startWithTitle === null) startWithTitle = true;
 
 	clearInterval(loading_interval);
+
+	sound.init();
 
 	input = new InputManager();
 
@@ -459,6 +468,20 @@ function update() {
 		}
 	}
 
+
+	// hack to test music
+	noteTimer += deltaTime;
+
+	if (noteTimer > noteDuration) {
+		if (track) {
+			track.roll();
+		}
+
+		noteTimer = 0;
+	}
+	//
+
+
 	prevTime = curTime;
 
 	input.resetKeyPressed();
@@ -547,7 +570,6 @@ function updateAnimation() {
 
 		// reset counter
 		animationCounter = 0;
-
 	}
 }
 
