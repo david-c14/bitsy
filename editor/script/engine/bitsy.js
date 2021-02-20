@@ -8,6 +8,7 @@ var tile = {};
 var sprite = {};
 var item = {};
 var dialog = {};
+var track = {};
 var palette = { //start off with a default palette
 		"default" : {
 			name : "default",
@@ -1105,6 +1106,9 @@ function parseWorld(file) {
 			// parse endings for back compat
 			i = parseEnding(lines, i, compatibilityFlags);
 		}
+		else if (getType(curLine) === "TRK") {
+			i = parseTrack(lines, i);
+		}
 		else if (getType(curLine) === "VAR") {
 			i = parseVariable(lines, i);
 		}
@@ -1380,6 +1384,28 @@ function serializeWorld(skipFonts) {
 			worldStr += "\n";
 		}
 	}
+	/* TRACKS */
+	for (id in track) {
+		// following the pattern here but there's a lot of hardcoding :(
+		worldStr += "TRK " + id + "\n";
+		for (var i = 0; i < 16; i++) {
+			var instruction = track[id].instructions[i];
+			if (instruction === null) {
+				worldStr += "0\n";
+			}
+			else {
+				worldStr += instruction.op;
+				for (var j = 0; j < instruction.operands.length; j++) {
+					worldStr += " " + instruction.operands[j];
+				}
+				worldStr += "\n";
+			}
+		}
+		if (track[id].data === TrackData.Tune) {
+			worldStr += "DAT TUN\n"; // only data type currently
+		}
+		worldStr += "\n";
+	}
 	/* VARIABLES */
 	for (id in variable) {
 		worldStr += "VAR " + id + "\n";
@@ -1441,6 +1467,10 @@ function getId(line) {
 
 function getArg(line,arg) {
 	return line.split(" ")[arg];
+}
+
+function getArgLen() {
+	return line.split(" ").length;
 }
 
 function getCoord(line,arg) {
@@ -1926,6 +1956,53 @@ function parseDialog(lines, i, compatibilityFlags) {
 // keeping this around to parse old files where endings were separate from dialogs
 function parseEnding(lines, i, compatibilityFlags) {
 	return parseScript(lines, i, "end_", compatibilityFlags);
+}
+
+var TrackData = {
+	Tune : 0,
+};
+
+// todo : add track creation function? would be useful for tool
+function parseTrack(lines, i) {
+	var t = { id: null, data: null, instructions: [], };
+
+	// parse id
+	var id = getId(lines[i]);
+	t.id = id;
+	i++;
+
+	// parse instructions
+	// TODO : lots of hardcoded values here -- track length, rest value, etc
+	for (var j = 0; j < 16; j++) {
+		if (lines[i] === "0") {
+			// no-op / rest
+			t.instructions.push(null); // todo : give it an opcode?? NOP, NO, RES, RST
+		}
+		else {
+			t.instructions.push({
+				op: getType(lines[i]),
+				operands: lines[i].split(" ").slice(1), // todo : what are valid operands?
+			});
+		}
+
+		i++;
+	}
+
+	// parse additional properties
+	while (lines[i].length > 0 && i < lines.length) {
+		if (getType(lines[i]) === "DAT") { // TODO : hardcoding all the codes :(
+			// data type
+			if (getId(lines[i]) === "TUN") { // TUNE? TNE? TONE?
+				t.data = TrackData.Tune;
+			}
+		}
+
+		i++;
+	}
+
+	track[id] = t;
+
+	return i;
 }
 
 function parseVariable(lines, i) {
