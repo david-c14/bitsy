@@ -28,17 +28,41 @@ registerCard(function(card) {
 		493.88, // B
 	];
 
+	var noteCode = {
+		"C" : 0,
+		"C#" : 1,
+		"D" : 2,
+		"D#" : 3,
+		"E" : 4,
+		"F" : 5,
+		"F#" : 6,
+		"G" : 7,
+		"G#" : 8,
+		"A" : 9,
+		"A#" : 10,
+		"B" : 11,
+	};
+
+	var curTrack = "1"; // hack : hardcoded
+
 	var trackIndex = 0;
 	var trackLen = 16;
 	var noteLen = 400; // default is 120 bpm right now -- where should this be stored?
 
 	// todo : name? beat, play, step, onbeat, run, next, roll
 	card.roll = function() {
-		var note = testTuneIndexed[trackIndex];
-		var freq = noteFrequencies[note];
+		var instruction = track[curTrack].instructions[trackIndex];
 
-		sound.setChannel(freq);
-		sound.playChannel(noteLen);
+		if (instruction === null) {
+			// rest
+			sound.stopChannel();
+		}
+		else {
+			var note = noteCode[instruction.op];
+			var freq = noteFrequencies[note];
+			sound.setChannel(freq);
+			sound.playChannel(noteLen);
+		}
 
 		trackIndex = (trackIndex + 1) % trackLen;
 	};
