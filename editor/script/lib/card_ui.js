@@ -85,6 +85,12 @@ function CardUI() {
 		this.AddStyle = function(className) {
 			cardRoot.classList.add(className);
 		};
+
+		// main loop
+		setInterval(function() {
+			gfxAttachCanvas(canvas);
+			gfx.clear(0);
+		}, -1);
 	}
 
 }
