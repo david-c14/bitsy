@@ -1070,6 +1070,26 @@ function start() {
 	alwaysShowDrawingDialog = document.getElementById("dialogAlwaysShowDrawingCheck").checked;
 
 	initLanguageOptions();
+
+	// EXPERIMENT: try creating a card
+	testCreateCard();
+}
+
+function testCreateCard() {
+	var editorContent = document.getElementById("editorContent");
+
+	var view = cardUI.CreateCardView({
+		id: "trackTool",
+		title: "track",
+		iconId: "settings",
+	});
+
+	// hacky? hook ups with existing panel system
+	view.AddStyle("panel"); // todo : decouple style from grab-ability
+	view.OnGrab(grabCard);
+	view.OnClose(function() { hidePanel("trackTool") }); // this is slightly broken (animation fails)
+
+	editorContent.appendChild(view.GetElement());
 }
 
 function newDrawing() {
@@ -3589,3 +3609,6 @@ function hideFontMissingCharacterWarning() {
 
 /* ICONS */
 var iconUtils = new IconUtils(); // TODO : move?
+
+/* EXPERIMENTAL CARD UI */
+var cardUI = new CardUI();
