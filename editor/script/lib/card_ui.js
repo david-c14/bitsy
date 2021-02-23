@@ -11,6 +11,9 @@ function CardUI() {
 
 	// todo : confusing naming with the system cards??? CardView? CardDisplay? CardWindow?
 	function CardView(config) {
+		/* CARD MODULE */
+		var card = config.card;
+
 		/* EVENT HANDLERS */
 		var onGrabHandler = null;
 		var onCloseHandler = null;
@@ -86,11 +89,14 @@ function CardUI() {
 			cardRoot.classList.add(className);
 		};
 
-		// main loop
+		// draw loop
 		setInterval(function() {
 			gfxAttachCanvas(canvas);
-			gfx.clear(0);
-		}, -1);
+
+			if (card.draw) {
+				card.draw();
+			}
+		}, -1); // todo : what should the interval be really? not constant..
 	}
 
 }

@@ -1072,6 +1072,7 @@ function start() {
 	initLanguageOptions();
 
 	// EXPERIMENT: try creating a card
+	trackerTool = card.load("tracker");
 	testCreateCard();
 }
 
@@ -1079,7 +1080,8 @@ function testCreateCard() {
 	var editorContent = document.getElementById("editorContent");
 
 	var view = cardUI.CreateCardView({
-		id: "trackTool",
+		card: trackerTool,
+		id: "trackTool", // todo : inconsistent names..
 		title: "track",
 		iconId: "settings",
 	});
@@ -3612,3 +3614,4 @@ var iconUtils = new IconUtils(); // TODO : move?
 
 /* EXPERIMENTAL CARD UI */
 var cardUI = new CardUI();
+var trackerTool;
