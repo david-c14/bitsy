@@ -14,5 +14,10 @@ registerCard(function(card) {
 
 		// clear screen
 		gfx.clear(0);
+
+		gfx.drawPixel(1, 0, 0);
+		gfx.drawPixel(1, 8, 8);
+		gfx.drawPixel(2, 16, 16);
+		gfx.drawPixel(2, 127, 127);
 	};
 });

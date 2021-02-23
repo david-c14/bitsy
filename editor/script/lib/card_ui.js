@@ -62,6 +62,7 @@ function CardUI() {
 		nav.classList.add("cardui-nav");
 		toolRoot.appendChild(nav);
 
+		// todo : should the canvas stuff in here go into its own object? "standard-bitsy-card-ui" or something?
 		var canvas = document.createElement("canvas");
 		canvas.classList.add("cardui-canvas");
 		toolRoot.appendChild(canvas);
