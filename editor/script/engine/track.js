@@ -71,4 +71,9 @@ registerCard(function(card) {
 	card.getNoteCode = function(noteId) {
 		return noteCode[noteId];
 	};
+
+	// SUPER HACKY
+	card.getCurNote = function() {
+		return trackIndex;
+	}
 });

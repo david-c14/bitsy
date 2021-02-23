@@ -30,6 +30,11 @@ registerCard(function(card) {
 					var offset = trackCard.getNoteCode(instruction.op);
 					gfx.drawPixel(2, 15 + (col * 32) + offset, 15 + (row * 32));
 				}
+
+				var curNote = trackCard.getCurNote();
+				if (curNote === trackIndex) {
+					gfx.drawPixel(2, 15 + (col * 32), 15 + (row * 32) + 1);
+				}
 			}
 		}
 	};
