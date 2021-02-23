@@ -172,7 +172,7 @@ function attachCanvas(c) {
 }
 
 // test music stuff
-var trackCard; // todo : name?
+var trackCard = card.load("track"); // todo : name?
 var noteTimer = 0;
 var noteDuration = 500; // NOTE : added padding because stuff sounds weird without ANY spacing (worth noting)
 
@@ -194,7 +194,7 @@ function load_game(game_data, startWithTitle) {
 	dialogBuffer.SetFont(font);
 	dialogRenderer.SetFont(font);
 
-	trackCard = card.load("track");
+	// trackCard = card.load("track");
 
 	setInitialVariables();
 

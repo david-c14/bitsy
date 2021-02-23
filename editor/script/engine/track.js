@@ -66,4 +66,9 @@ registerCard(function(card) {
 
 		trackIndex = (trackIndex + 1) % trackLen;
 	};
+
+	// hacky to expose?
+	card.getNoteCode = function(noteId) {
+		return noteCode[noteId];
+	};
 });

@@ -22,8 +22,14 @@ registerCard(function(card) {
 			for (var col = 0; col < 4; col ++) {
 				var trackIndex = (row * 4) + col;
 				var instruction = track[curTrack].instructions[trackIndex];
-				var c = (instruction != null) ? 2 : 1;
-				gfx.drawPixel(c, 15 + (col * 32), 15 + (row * 32));
+
+				gfx.drawPixel(1, 15 + (col * 32), 15 + (row * 32));
+
+				if (instruction != null) {
+					// hacky! (many reasons including global access of trackCard)
+					var offset = trackCard.getNoteCode(instruction.op);
+					gfx.drawPixel(2, 15 + (col * 32) + offset, 15 + (row * 32));
+				}
 			}
 		}
 	};
