@@ -72,6 +72,16 @@ function CardUI() {
 		menu.classList.add("cardui-menu");
 		toolRoot.appendChild(menu);
 
+		function UpdateMenu() {
+			setCurMenuElement(menu);
+
+			menu.innerHTML = "";
+
+			if (card.menu) {
+				card.menu();
+			}
+		}
+
 		this.GetElement = function() {
 			return cardRoot;
 		};
@@ -90,6 +100,37 @@ function CardUI() {
 			cardRoot.classList.add(className);
 		};
 
+		// input
+		canvas.onmousedown = function(e) {
+			// HACKY COPY FROM PAINT TOOL
+			e.preventDefault();
+
+			if (isPlayMode) {
+				return; //can't paint during play mode
+			}
+
+			console.log("PAINT TOOL!!!");
+			console.log(e);
+
+			var off = getOffset(e);
+
+			off = mobileOffsetCorrection(off,e,(128)); // todo : hardcoded size..
+
+			var x = Math.floor(off.x);
+			var y = Math.floor(off.y);
+			// END
+
+
+			console.log("CLICK " + x + " " + y);
+
+			// todo : what are the actual callbacks I want to support?
+			if (card.click) {
+				card.click(x, y);
+			}
+
+			UpdateMenu();
+		};
+
 		// draw loop
 		setInterval(function() {
 			gfxAttachCanvas(canvas);
@@ -98,6 +139,9 @@ function CardUI() {
 				card.draw();
 			}
 		}, -1); // todo : what should the interval be really? not constant..
+
+		// init menu
+		UpdateMenu();
 	}
 
 }

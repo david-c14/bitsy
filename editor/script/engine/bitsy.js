@@ -1390,8 +1390,8 @@ function serializeWorld(skipFonts) {
 		worldStr += "TRK " + id + "\n";
 		for (var i = 0; i < 16; i++) {
 			var instruction = track[id].instructions[i];
-			if (instruction === null) {
-				worldStr += "0\n";
+			if (instruction.op === "0") {
+				worldStr += "0\n"; // chop of any extraneous operands (necessary?)
 			}
 			else {
 				worldStr += instruction.op;
@@ -1974,16 +1974,12 @@ function parseTrack(lines, i) {
 	// parse instructions
 	// TODO : lots of hardcoded values here -- track length, rest value, etc
 	for (var j = 0; j < 16; j++) {
-		if (lines[i] === "0") {
-			// no-op / rest
-			t.instructions.push(null); // todo : give it an opcode?? NOP, NO, RES, RST
-		}
-		else {
-			t.instructions.push({
-				op: getType(lines[i]),
-				operands: lines[i].split(" ").slice(1), // todo : what are valid operands?
-			});
-		}
+		// todo : sould no-op / rest have a special opcode?? NOP, NO, RES, RST
+
+		t.instructions.push({
+			op: getType(lines[i]),
+			operands: lines[i].split(" ").slice(1), // todo : what are valid operands?
+		});
 
 		i++;
 	}

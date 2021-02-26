@@ -25,7 +25,7 @@ registerCard(function(card) {
 
 				gfx.drawPixel(1, 15 + (col * 32), 15 + (row * 32));
 
-				if (instruction != null) {
+				if (instruction.op != "0") {
 					// hacky! (many reasons including global access of trackCard)
 					var offset = trackCard.getNoteCode(instruction.op);
 					gfx.drawPixel(2, 15 + (col * 32) + offset, 15 + (row * 32));
@@ -37,5 +37,59 @@ registerCard(function(card) {
 				}
 			}
 		}
+	};
+
+	var lastClickedNote = 0;
+
+	card.click = function(x, y) {
+		// console.log("CARD CLICK!");
+
+		// recreate note index from (x,y) coords
+		var trackIndex = (Math.floor(y / 32) * 4) + Math.floor(x / 32);
+
+		console.log("note? " + trackIndex);
+
+		var instruction = track[curTrack].instructions[trackIndex];
+
+		var note = "C"; // default
+
+		if (instruction.op != "0") {
+			var noteCode = trackCard.getNoteCode(instruction.op);
+			noteCode = (noteCode + 1);
+
+			if (noteCode < 12) { // todo : hardcoded max!!!
+				note = trackCard.getNoteFromCode(noteCode);
+			}
+			else {
+				note = "0"; // rest
+			}
+		}
+
+		instruction.op = note;
+
+		// my hackiest of hacky global function :(
+		refreshGameData();
+
+		lastClickedNote = trackIndex;
+	};
+
+	card.menu = function() {
+		var trackIndex = lastClickedNote;
+		var instruction = track[curTrack].instructions[trackIndex];
+
+		menu.add({
+			control: "button",
+			value: "PLAY",
+		});
+
+		menu.add({
+			control: "label", // todo : naming?
+			value: "NOTE: " + (instruction.op === "0" ? "REST" : instruction.op),
+		});
+
+		menu.add({
+			control: "label", // todo : naming?
+			value: "INDEX: " + lastClickedNote,
+		});
 	};
 });

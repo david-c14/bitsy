@@ -53,7 +53,7 @@ registerCard(function(card) {
 	card.roll = function() {
 		var instruction = track[curTrack].instructions[trackIndex];
 
-		if (instruction === null) {
+		if (instruction.op === "0") { // todo : give this a note code?
 			// rest
 			sound.stopChannel();
 		}
@@ -70,6 +70,10 @@ registerCard(function(card) {
 	// hacky to expose?
 	card.getNoteCode = function(noteId) {
 		return noteCode[noteId];
+	};
+
+	card.getNoteFromCode = function(code) {
+		return Object.keys(noteCode)[code];
 	};
 
 	// SUPER HACKY
