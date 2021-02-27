@@ -51,6 +51,10 @@ registerCard(function(card) {
 
 	// todo : name? beat, play, step, onbeat, run, next, roll
 	card.roll = function() {
+		if (!(curTrack in track)) {
+			return;
+		}
+
 		var instruction = track[curTrack].instructions[trackIndex];
 
 		if (instruction.op === "0") { // todo : give this a note code?

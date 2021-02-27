@@ -7,6 +7,10 @@ registerCard(function(card) {
 
 	// draw loop
 	card.draw = function() {
+		if (!(curTrack in track)) {
+			return;
+		}
+
 		// console.log("draw!!");
 
 		// use default bitsy palette
@@ -42,6 +46,10 @@ registerCard(function(card) {
 	var lastClickedNote = 0;
 
 	card.click = function(x, y) {
+		if (!(curTrack in track)) {
+			return;
+		}
+
 		// console.log("CARD CLICK!");
 
 		// recreate note index from (x,y) coords
@@ -74,6 +82,10 @@ registerCard(function(card) {
 	};
 
 	card.menu = function() {
+		if (!(curTrack in track)) {
+			return;
+		}
+
 		var trackIndex = lastClickedNote;
 		var instruction = track[curTrack].instructions[trackIndex];
 
