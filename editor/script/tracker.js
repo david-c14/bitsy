@@ -92,6 +92,7 @@ registerCard(function(card) {
 		menu.add({
 			control: "button",
 			value: "PLAY",
+			onclick: "play", // todo : function name? or function reference???
 		});
 
 		menu.add({
@@ -104,4 +105,26 @@ registerCard(function(card) {
 			value: "INDEX: " + lastClickedNote,
 		});
 	};
+
+	var isPreviewPlaying = false;
+
+	card.play = function() {
+		console.log("PLAY!!");
+		isPreviewPlaying = !isPreviewPlaying;
+
+		if (isPreviewPlaying) {
+			// hacky to do this every time
+			sound.init();
+		}
+		else {
+			sound.stopChannel();
+		}
+	};
+
+	// really hacky (I don't want to use setInterval in cards)
+	setInterval(function() {
+		if (isPreviewPlaying) {
+			trackCard.roll();
+		}
+	}, 500);
 });

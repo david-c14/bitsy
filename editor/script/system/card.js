@@ -33,22 +33,25 @@ card.load = function(name) { // todo : name? card.create()??
 // HACKY sticking my prototype menu stuff in here...
 var menu = {}; // todo : should this be just part of the card module?
 
-function setCurMenuElement(el) {
-	_curMenuEl = el;
+function setCurCardView(cardUI) {
+	_curCardUI = cardUI;
 }
 
-_curMenuEl = null;
+_curCardUI = null;
 
 menu.add = function(options) {
-	if (_curMenuEl === null) {
+	if (_curCardUI === null) {
 		return;
 	}
+
+	var curCard = _curCardUI.GetCard(); // todo : this seems like maybe the wrong way to do this?
+	var curMenuEl = _curCardUI.GetElement();
 
 	// todo : how much of this should be here? how much in card_ui.js?
 	if (options.control === "label") {
 		var label = document.createElement("span");
 		label.innerText = options.value;
-		_curMenuEl.appendChild(label);
+		curMenuEl.appendChild(label);
 	}
 	else if (options.control === "button") {
 		var button = document.createElement("button");
@@ -56,8 +59,9 @@ menu.add = function(options) {
 
 		button.onclick = function() {
 			console.log("CLICK " + options.value);
+			curCard[options.onclick]();
 		}
 
-		_curMenuEl.appendChild(button);
+		curMenuEl.appendChild(button);
 	}
 }

@@ -1,5 +1,4 @@
 function CardUI() {
-
 	function createIconElement(id) {
 		// todo : supply this externally?
 		return iconUtils.CreateIcon(id);
@@ -11,8 +10,10 @@ function CardUI() {
 
 	// todo : confusing naming with the system cards??? CardView? CardDisplay? CardWindow?
 	function CardView(config) {
+		var self = this; // todo : I don't love this pattern..
+
 		/* CARD MODULE */
-		var card = config.card;
+		card = config.card;
 
 		/* EVENT HANDLERS */
 		var onGrabHandler = null;
@@ -73,7 +74,7 @@ function CardUI() {
 		toolRoot.appendChild(menu);
 
 		function UpdateMenu() {
-			setCurMenuElement(menu);
+			setCurCardView(self);
 
 			menu.innerHTML = "";
 
@@ -81,6 +82,10 @@ function CardUI() {
 				card.menu();
 			}
 		}
+
+		this.GetCard = function() {
+			return card;
+		};
 
 		this.GetElement = function() {
 			return cardRoot;
