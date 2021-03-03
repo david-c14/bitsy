@@ -919,6 +919,11 @@ function initRoom(roomId) {
 	for (var i = 0; i < room[roomId].endings.length; i++) {
 		room[roomId].endings[i].property = { locked:false };
 	}
+
+	// start track
+	if (room[roomId].track != null) {
+		trackCard.setTrack(room[roomId].track);
+	}
 }
 
 function getItemIndex( roomId, x, y ) {
@@ -1310,6 +1315,10 @@ function serializeWorld(skipFonts) {
 			/* PALETTE */
 			worldStr += "PAL " + room[id].pal + "\n";
 		}
+		if (room[id].track != null) {
+			/* TRACK */
+			worldStr += "TRK " + room[id].track + "\n";
+		}
 		worldStr += "\n";
 	}
 	/* TILES */
@@ -1497,7 +1506,8 @@ function parseRoom(lines, i, compatibilityFlags) {
 		endings : [],
 		items : [],
 		pal : null,
-		name : null
+		track : null, // todo : new experiment
+		name : null,
 	};
 	i++;
 
@@ -1634,6 +1644,10 @@ function parseRoom(lines, i, compatibilityFlags) {
 		else if (getType(lines[i]) === "PAL") {
 			/* CHOOSE PALETTE (that's not default) */
 			room[id].pal = getId(lines[i]);
+		}
+		else if (getType(lines[i]) === "TRK") {
+			// todo : experimental!
+			room[id].track = getId(lines[i]);
 		}
 		else if (getType(lines[i]) === "NAME") {
 			var name = lines[i].split(/\s(.+)/)[1];

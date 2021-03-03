@@ -44,24 +44,22 @@ menu.add = function(options) {
 		return;
 	}
 
-	var curCard = _curCardUI.GetCard(); // todo : this seems like maybe the wrong way to do this?
-	var curMenuEl = _curCardUI.GetElement();
+	// todo : now are we putting too much in the ui layer??
+	_curCardUI.AddControl(options);
+}
 
-	// todo : how much of this should be here? how much in card_ui.js?
-	if (options.control === "label") {
-		var label = document.createElement("span");
-		label.innerText = options.value;
-		curMenuEl.appendChild(label);
+menu.startGroup = function() {
+	if (_curCardUI === null) {
+		return;
 	}
-	else if (options.control === "button") {
-		var button = document.createElement("button");
-		button.innerText = options.value;
 
-		button.onclick = function() {
-			console.log("CLICK " + options.value);
-			curCard[options.onclick]();
-		}
+	_curCardUI.StartGroup();
+}
 
-		curMenuEl.appendChild(button);
+menu.endGroup = function() {
+	if (_curCardUI === null) {
+		return;
 	}
+
+	_curCardUI.EndGroup();
 }

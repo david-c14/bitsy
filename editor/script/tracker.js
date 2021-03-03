@@ -3,7 +3,20 @@
 registerCard(function(card) {
 	card.name = "tracker"; // name? tracker-tool?
 
+	/* todo : what's the right format for this?
+		- single var vs list
+		- name? type, content, registry???
+		- full type name vs short codes?
+		- can you define new types?
+	*/
+	card.type = "TRK";
+
 	var curTrack = "1"; // hack : hardcoded
+
+	card.select = function(id) {
+		curTrack = id;
+		card.stop();
+	};
 
 	// draw loop
 	card.draw = function() {
@@ -89,34 +102,51 @@ registerCard(function(card) {
 		var trackIndex = lastClickedNote;
 		var instruction = track[curTrack].instructions[trackIndex];
 
+		if (isPreviewPlaying) {
+			menu.add({
+				control: "button",
+				text: "stop",
+				icon: "stop",
+				onclick: "stop",
+			});
+		}
+		else {
+			menu.add({
+				control: "button",
+				text: "play",
+				icon: "play",
+				onclick: "play", // todo : function name? or function reference???
+			});
+		}
+
+		menu.startGroup();
+
 		menu.add({
-			control: "button",
-			value: "PLAY",
-			onclick: "play", // todo : function name? or function reference???
+			control: "label", // todo : naming?
+			text: "NOTE: " + (instruction.op === "0" ? "REST" : instruction.op),
 		});
 
 		menu.add({
 			control: "label", // todo : naming?
-			value: "NOTE: " + (instruction.op === "0" ? "REST" : instruction.op),
+			text: "INDEX: " + lastClickedNote,
 		});
 
-		menu.add({
-			control: "label", // todo : naming?
-			value: "INDEX: " + lastClickedNote,
-		});
+		menu.endGroup();
 	};
 
 	var isPreviewPlaying = false;
 
 	card.play = function() {
 		console.log("PLAY!!");
-		isPreviewPlaying = !isPreviewPlaying;
+		isPreviewPlaying = true;
+		// hacky to do this every time
+		sound.init();
+		trackCard.setTrack(curTrack);
+	};
 
+	card.stop = function() {
 		if (isPreviewPlaying) {
-			// hacky to do this every time
-			sound.init();
-		}
-		else {
+			isPreviewPlaying = false;
 			sound.stopChannel();
 		}
 	};

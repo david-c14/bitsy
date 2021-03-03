@@ -25,16 +25,25 @@
 }
 
 .cardui-nav {
+	display: flex;
+}
+
+.cardui-nav-name {
+	flex-grow: 1;
 }
 
 .cardui-canvas {
-	height: 512px;
+	height: 512px; /* HARDCODED ?? */
 	width: 512px;
 }
 
 .cardui-menu {
 	display: flex;
 	flex-direction: column;
+}
+
+.cardui-menu-group {
+
 }
 
 /* TEST STYLE */
@@ -85,4 +94,12 @@
 
 .cardui-menu {
 	border: dotted 1px black;
+}
+
+.cardui-menu-group {
+	padding: 5px;
+}
+
+.cardui-menu-group span {
+	margin-right: 5px;
 }

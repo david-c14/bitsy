@@ -59,9 +59,42 @@ function CardUI() {
 		toolRoot.classList.add("cardui-main");
 		cardRoot.appendChild(toolRoot);
 
-		var nav = document.createElement("div");
-		nav.classList.add("cardui-nav");
-		toolRoot.appendChild(nav);
+		/* NAV BAR */
+		var nameControl;
+
+		if (card.type != undefined && card.type != null) {
+			// create nav bar
+			var nav = document.createElement("div");
+			nav.classList.add("cardui-nav");
+			toolRoot.appendChild(nav);
+
+			nameControl = document.createElement("span");
+			nameControl.classList.add("cardui-nav-name");
+			nameControl.innerText = "NAME";
+			nav.appendChild(nameControl);
+
+			var prevControl = document.createElement("button");
+			prevControl.appendChild(createIconElement("previous"));
+			prevControl.onclick = OnPrev;
+			nav.appendChild(prevControl);
+
+			var nextControl = document.createElement("button");
+			nextControl.appendChild(createIconElement("next"));
+			nextControl.onclick = OnNext;
+			nav.appendChild(nextControl);
+
+			var addControl = document.createElement("button");
+			addControl.appendChild(createIconElement("add"));
+			nav.appendChild(addControl);
+
+			var copyControl = document.createElement("button");
+			copyControl.appendChild(createIconElement("copy"));
+			nav.appendChild(copyControl);
+
+			var delControl = document.createElement("button");
+			delControl.appendChild(createIconElement("delete"));
+			nav.appendChild(delControl);
+		}
 
 		// todo : should the canvas stuff in here go into its own object? "standard-bitsy-card-ui" or something?
 		var canvas = document.createElement("canvas");
@@ -83,9 +116,57 @@ function CardUI() {
 			}
 		}
 
-		this.GetCard = function() {
-			return card;
-		};
+		// TODO : hardcoded to track!! need to be able to register other types!
+		// TODO : how much of the nav bar logic should be built-in vs handled by the tool card???
+		_objectIndex = 0; // hardcoded!!!
+		_objectRegister = track;
+
+		function OnChangeSelect() {
+			var keys = Object.keys(_objectRegister);
+			nameControl.innerText = card.type + " " + keys[_objectIndex];
+
+			if (card.select) {
+				card.select(keys[_objectIndex]);
+			}
+
+			UpdateMenu();
+		}
+
+		function OnPrev() {
+			var keys = Object.keys(_objectRegister);
+
+			_objectIndex--;
+
+			if (_objectIndex < 0) {
+				_objectIndex = keys.length - 1;
+			}
+
+			OnChangeSelect();
+		}
+
+		function OnNext() {
+			var keys = Object.keys(_objectRegister);
+
+			_objectIndex++;
+
+			if (_objectIndex >= keys.length) {
+				_objectIndex = 0;
+			}
+
+			OnChangeSelect();
+		}
+
+		function OnAdd() {
+			// TODO
+		}
+
+		function OnCopy() {
+			// TODO
+		}
+
+		function OnDelete() {
+			// TODO
+		}
 
 		this.GetElement = function() {
 			return cardRoot;
@@ -103,6 +184,60 @@ function CardUI() {
 		// hacky but useful for now to integrate with existin card system
 		this.AddStyle = function(className) {
 			cardRoot.classList.add(className);
+		};
+
+		var _curGroup;
+
+		function StartGroup() {
+			_curGroup = document.createElement("div");
+			_curGroup.classList.add("cardui-menu-group");
+		}
+		this.StartGroup = StartGroup;
+
+		function EndGroup() {
+			menu.appendChild(_curGroup);
+			_curGroup = null;
+		}
+		this.EndGroup = EndGroup;
+
+		this.AddControl = function(options) {
+			var isGroupActive = (_curGroup != null);
+
+			if (!isGroupActive) {
+				StartGroup();
+			}
+
+			// todo : how much of this should be here? how much in card_ui.js?
+			if (options.control === "label") {
+				var label = document.createElement("span");
+				label.innerText = options.text;
+				_curGroup.appendChild(label);
+			}
+			else if (options.control === "button") {
+				var button = document.createElement("button");
+
+				if (options.icon) {
+					button.appendChild(iconUtils.CreateIcon(options.icon));
+				}
+
+				if (options.text) {
+					var textSpan = document.createElement("span");
+					textSpan.innerText = options.text;
+					button.appendChild(textSpan);
+				}
+
+				button.onclick = function() {
+					console.log("CLICK " + options.text);
+					card[options.onclick]();
+					UpdateMenu();
+				}
+
+				_curGroup.appendChild(button);
+			}
+
+			if (!isGroupActive) {
+				EndGroup();
+			}
 		};
 
 		// input
@@ -145,8 +280,8 @@ function CardUI() {
 			}
 		}, -1); // todo : what should the interval be really? not constant..
 
-		// init menu
-		UpdateMenu();
+		// init
+		OnChangeSelect();
 	}
 
 }

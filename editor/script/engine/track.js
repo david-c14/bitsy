@@ -1,3 +1,8 @@
+/*
+TODO
+- experiment with registering new types of content??
+*/
+
 registerCard(function(card) {
 	card.name = "track";
 
@@ -43,7 +48,7 @@ registerCard(function(card) {
 		"B" : 11,
 	};
 
-	var curTrack = "1"; // hack : hardcoded
+	var curTrack = null;
 
 	var trackIndex = 0;
 	var trackLen = 16;
@@ -51,7 +56,7 @@ registerCard(function(card) {
 
 	// todo : name? beat, play, step, onbeat, run, next, roll
 	card.roll = function() {
-		if (!(curTrack in track)) {
+		if (!curTrack || !(curTrack in track)) {
 			return;
 		}
 
@@ -83,5 +88,11 @@ registerCard(function(card) {
 	// SUPER HACKY
 	card.getCurNote = function() {
 		return trackIndex;
+	}
+
+	// todo : name? play, change? what about if we want silence?
+	card.setTrack = function(id) {
+		curTrack = id;
+		trackIndex = 0;
 	}
 });
