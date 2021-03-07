@@ -1070,6 +1070,28 @@ function start() {
 	alwaysShowDrawingDialog = document.getElementById("dialogAlwaysShowDrawingCheck").checked;
 
 	initLanguageOptions();
+
+	testCreateCard();
+}
+
+var cardUI = new CardUI();
+
+function testCreateCard() {
+	var editorContent = document.getElementById("editorContent");
+
+	var view = cardUI.CreateCardView({
+		card: {},
+		id: "trackTool", // todo : inconsistent names..
+		title: "track",
+		iconId: "settings",
+	});
+
+	// hacky? hook ups with existing panel system
+	view.AddStyle("panel"); // todo : decouple style from grab-ability
+	view.OnGrab(grabCard);
+	view.OnClose(function() { hidePanel("trackTool") }); // this is slightly broken (animation fails)
+
+	editorContent.appendChild(view.GetElement());
 }
 
 function newDrawing() {

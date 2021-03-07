@@ -116,10 +116,9 @@ function CardUI() {
 			}
 		}
 
-		// TODO : hardcoded to track!! need to be able to register other types!
 		// TODO : how much of the nav bar logic should be built-in vs handled by the tool card???
-		_objectIndex = 0; // hardcoded!!!
-		_objectRegister = track;
+		_objectIndex = 0;
+		_objectRegister = sprite; // hardcoded!!!
 
 		function OnChangeSelect() {
 			var keys = Object.keys(_objectRegister);
