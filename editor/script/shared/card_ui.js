@@ -96,10 +96,12 @@ function CardUI() {
 			nav.appendChild(delControl);
 		}
 
-		// todo : should the canvas stuff in here go into its own object? "standard-bitsy-card-ui" or something?
-		var canvas = document.createElement("canvas");
-		canvas.classList.add("cardui-canvas");
-		toolRoot.appendChild(canvas);
+		if (card.useCanvas) {
+			// todo : should the canvas stuff in here go into its own object? "standard-bitsy-card-ui" or something?
+			var canvas = document.createElement("canvas");
+			canvas.classList.add("cardui-canvas");
+			toolRoot.appendChild(canvas);
+		}
 
 		// name? settings? options? controls?
 		var menu = document.createElement("div");
@@ -239,48 +241,58 @@ function CardUI() {
 			}
 		};
 
-		// input
-		canvas.onmousedown = function(e) {
-			// HACKY COPY FROM PAINT TOOL
-			e.preventDefault();
+		function InitCanvas() {
+			// input
+			canvas.onmousedown = function(e) {
+				// HACKY COPY FROM PAINT TOOL
+				e.preventDefault();
 
-			if (isPlayMode) {
-				return; //can't paint during play mode
-			}
+				if (isPlayMode) {
+					return; //can't paint during play mode
+				}
 
-			console.log("PAINT TOOL!!!");
-			console.log(e);
+				console.log("PAINT TOOL!!!");
+				console.log(e);
 
-			var off = getOffset(e);
+				var off = getOffset(e);
 
-			off = mobileOffsetCorrection(off,e,(128)); // todo : hardcoded size..
+				off = mobileOffsetCorrection(off,e,(128)); // todo : hardcoded size..
 
-			var x = Math.floor(off.x);
-			var y = Math.floor(off.y);
-			// END
+				var x = Math.floor(off.x);
+				var y = Math.floor(off.y);
+				// END
 
 
-			console.log("CLICK " + x + " " + y);
+				console.log("CLICK " + x + " " + y);
 
-			// todo : what are the actual callbacks I want to support?
-			if (card.click) {
-				card.click(x, y);
-			}
+				// todo : what are the actual callbacks I want to support?
+				if (card.click) {
+					card.click(x, y);
+				}
 
-			UpdateMenu();
-		};
+				UpdateMenu();
+			};
 
-		// draw loop
-		setInterval(function() {
-			gfxAttachCanvas(canvas);
+			// draw loop
+			setInterval(function() {
+				gfxAttachCanvas(canvas);
 
-			if (card.draw) {
-				card.draw();
-			}
-		}, -1); // todo : what should the interval be really? not constant..
+				if (card.draw) {
+					card.draw();
+				}
+			}, -1); // todo : what should the interval be really? not constant..
+		}
 
 		// init
-		OnChangeSelect();
+		if (card.useCanvas) {
+			InitCanvas();
+		}
+
+		if (card.type) {
+			OnChangeSelect();
+		}
+
+		UpdateMenu();
 	}
 
 }

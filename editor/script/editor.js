@@ -1080,10 +1080,10 @@ function testCreateCard() {
 	var editorContent = document.getElementById("editorContent");
 
 	var view = cardUI.CreateCardView({
-		card: {},
-		id: "trackTool", // todo : inconsistent names..
-		title: "track",
-		iconId: "settings",
+		card: card.load("paint"),
+		id: "paintTool", // todo : inconsistent names..
+		title: "new paint",
+		iconId: "paint",
 	});
 
 	// hacky? hook ups with existing panel system
