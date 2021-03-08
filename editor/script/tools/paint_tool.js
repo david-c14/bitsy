@@ -14,6 +14,16 @@ registerCard(function(card) {
 	var imageSource = null;
 	var frameIndex = 0;
 
+	var bigPixelSize = 16;
+
+	function drawBigPixel(index, x, y) { // todo : add square drawing func?
+		for (var pY = 0; pY < bigPixelSize; pY++) {
+			for (var pX = 0; pX < bigPixelSize; pX++) {
+				gfx.drawPixel(index, (x * bigPixelSize) + pX, (y * bigPixelSize) + pY);
+			}
+		}
+	}
+
 	card.draw = function() {
 		gfx.clear(0);
 
@@ -21,8 +31,11 @@ registerCard(function(card) {
 			for (var y = 0; y < tilesize; y++) {
 				for (var x = 0; x < tilesize; x++) {
 					if (imageSource[frameIndex][y][x] > 0) {
-						gfx.drawPixel(1, x, y);
+						drawBigPixel(1, x, y);
 					}
+
+					// grid
+					gfx.drawPixel(1, x * bigPixelSize, y * bigPixelSize);
 				}
 			}
 		}
