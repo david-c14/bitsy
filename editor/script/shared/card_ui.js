@@ -59,10 +59,31 @@ function CardUI() {
 		toolRoot.classList.add("cardui-main");
 		cardRoot.appendChild(toolRoot);
 
-		/* NAV BAR */
-		var nameControl;
+		if (card.categories) {
+			if (card.categories.length > 1) {
+				/* CATEGORY SELECT */
+				var categorySelect = document.createElement("form");
+				categorySelect.classList.add("cardui-category");
+				toolRoot.appendChild(categorySelect);
 
-		if (card.useNav) {
+				for (var i = 0; i < card.categories.length; i++) {
+					var categoryOption = document.createElement("input");
+					categoryOption.type = "radio";
+					categoryOption.name = card.name + "-category";
+					categoryOption.id = card.name + "-category-" + card.categories[i];
+					categoryOption.value = card.categories[i];
+					categorySelect.appendChild(categoryOption);
+
+					var categoryLabel = document.createElement("label");
+					categoryLabel.setAttribute("for", categoryOption.id);
+					categoryLabel.innerText = card.categories[i];
+					categorySelect.appendChild(categoryLabel);
+				}
+			}
+
+			/* NAV BAR */
+			var nameControl;
+
 			// create nav bar
 			var nav = document.createElement("div");
 			nav.classList.add("cardui-nav");
@@ -96,7 +117,7 @@ function CardUI() {
 			nav.appendChild(delControl);
 		}
 
-		if (card.useCanvas) {
+		if (card.draw) {
 			// todo : should the canvas stuff in here go into its own object? "standard-bitsy-card-ui" or something?
 			var canvas = document.createElement("canvas");
 			canvas.classList.add("cardui-canvas");
@@ -118,56 +139,56 @@ function CardUI() {
 			}
 		}
 
-		// TODO : how much of the nav bar logic should be built-in vs handled by the tool card???
-		_objectIndex = 0;
-		_objectRegister = sprite; // hardcoded!!!
+		// // TODO : how much of the nav bar logic should be built-in vs handled by the tool card???
+		// _objectIndex = 0;
+		// _objectRegister = sprite; // hardcoded!!!
 
-		function OnChangeSelect() {
-			var keys = Object.keys(_objectRegister);
-			nameControl.innerText = card.type + " " + keys[_objectIndex];
+		// function OnChangeSelect() {
+		// 	var keys = Object.keys(_objectRegister);
+		// 	nameControl.innerText = card.type + " " + keys[_objectIndex];
 
-			if (card.select) {
-				card.select(keys[_objectIndex]);
-			}
+		// 	if (card.select) {
+		// 		card.select(keys[_objectIndex]);
+		// 	}
 
-			UpdateMenu();
-		}
+		// 	UpdateMenu();
+		// }
 
-		function OnPrev() {
-			var keys = Object.keys(_objectRegister);
+		// function OnPrev() {
+		// 	var keys = Object.keys(_objectRegister);
 
-			_objectIndex--;
+		// 	_objectIndex--;
 
-			if (_objectIndex < 0) {
-				_objectIndex = keys.length - 1;
-			}
+		// 	if (_objectIndex < 0) {
+		// 		_objectIndex = keys.length - 1;
+		// 	}
 
-			OnChangeSelect();
-		}
+		// 	OnChangeSelect();
+		// }
 
-		function OnNext() {
-			var keys = Object.keys(_objectRegister);
+		// function OnNext() {
+		// 	var keys = Object.keys(_objectRegister);
 
-			_objectIndex++;
+		// 	_objectIndex++;
 
-			if (_objectIndex >= keys.length) {
-				_objectIndex = 0;
-			}
+		// 	if (_objectIndex >= keys.length) {
+		// 		_objectIndex = 0;
+		// 	}
 
-			OnChangeSelect();
-		}
+		// 	OnChangeSelect();
+		// }
 
-		function OnAdd() {
-			// TODO
-		}
+		// function OnAdd() {
+		// 	// TODO
+		// }
 
-		function OnCopy() {
-			// TODO
-		}
+		// function OnCopy() {
+		// 	// TODO
+		// }
 
-		function OnDelete() {
-			// TODO
-		}
+		// function OnDelete() {
+		// 	// TODO
+		// }
 
 		this.GetElement = function() {
 			return cardRoot;
@@ -241,7 +262,8 @@ function CardUI() {
 			}
 		};
 
-		function InitCanvas() {
+		// init
+		if (card.draw) {
 			// input
 			canvas.onmousedown = function(e) {
 				// HACKY COPY FROM PAINT TOOL
@@ -281,15 +303,6 @@ function CardUI() {
 					card.draw();
 				}
 			}, -1); // todo : what should the interval be really? not constant..
-		}
-
-		// init
-		if (card.useCanvas) {
-			InitCanvas();
-		}
-
-		if (card.type) {
-			OnChangeSelect();
 		}
 
 		UpdateMenu();

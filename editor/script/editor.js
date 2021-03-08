@@ -1071,28 +1071,35 @@ function start() {
 
 	initLanguageOptions();
 
-	testCreateCard();
-}
 
-var cardUI = new CardUI();
 
-function testCreateCard() {
+
+
+	// HACKY CARD CREATION TEST
 	var editorContent = document.getElementById("editorContent");
 
-	var view = cardUI.CreateCardView({
-		card: card.load("paint"),
+	paintCard = card.load("paint");
+	var paintCardView = cardUI.CreateCardView({
+		card: paintCard,
 		id: "paintTool", // todo : inconsistent names..
 		title: "new paint",
 		iconId: "paint",
 	});
 
 	// hacky? hook ups with existing panel system
-	view.AddStyle("panel"); // todo : decouple style from grab-ability
-	view.OnGrab(grabCard);
-	view.OnClose(function() { hidePanel("trackTool") }); // this is slightly broken (animation fails)
+	paintCardView.AddStyle("panel"); // todo : decouple style from grab-ability
+	paintCardView.OnGrab(grabCard);
+	paintCardView.OnClose(function() { hidePanel("trackTool") }); // this is slightly broken (animation fails)
 
-	editorContent.appendChild(view.GetElement());
+	editorContent.appendChild(paintCardView.GetElement());
+
+
+	paintCard.select("a");
 }
+
+// HACKY GLOBALS!!!
+var cardUI = new CardUI();
+var paintCard;
 
 function newDrawing() {
 	paintTool.newDrawing();
