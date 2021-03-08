@@ -61,6 +61,9 @@ function updateNamesFromCurData() {
 
 var spriteStartLocations = {};
 
+/* CONSTANTS */
+var shortAnimationMax = 2;
+
 /* VERSION */
 var version = {
 	major: 7, // major changes
@@ -75,9 +78,13 @@ function getEngineVersion() {
 var flags;
 function resetFlags() {
 	flags = {
-		ROOM_FORMAT : 0 // 0 = non-comma separated, 1 = comma separated
+		ROOM_FORMAT : 0, // 0 = non-comma separated, 1 = comma separated
+
+		// NOTE : currently this flag is informational only, but it will be required in future versions
+		SUPER_ANM : 0, // 0 = short animations, 1 = long animations
 	};
 }
+
 resetFlags(); //init flags on load script
 
 // SUPER hacky location... :/
@@ -1855,6 +1862,11 @@ function parseDrawingCore(lines, i, drwId) {
 				y = 0;
 			}
 		}
+	}
+
+	// TODO : detect long animations for future compatibility
+	if (frameList.length > shortAnimationMax) {
+		flags.SUPER_ANM = 1;
 	}
 
 	renderer.SetImageSource(drwId, frameList);
