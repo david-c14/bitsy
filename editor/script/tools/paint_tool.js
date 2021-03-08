@@ -25,6 +25,14 @@ registerCard(function(card) {
 	}
 
 	card.draw = function() {
+		// use current palette
+		var r = room[curRoom];
+		var colors = palette[r.pal].colors;
+		// console.log(colors);
+		gfx.setPaletteColor(0, colors[0][0], colors[0][1], colors[0][2]);
+		gfx.setPaletteColor(1, colors[1][0], colors[1][1], colors[1][2]);
+		gfx.setPaletteColor(2, colors[2][0], colors[2][1], colors[2][2]);
+
 		gfx.clear(0);
 
 		if (imageSource) {
