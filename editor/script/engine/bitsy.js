@@ -1864,7 +1864,7 @@ function parseDrawingCore(lines, i, drwId) {
 		}
 	}
 
-	// TODO : detect long animations for future compatibility
+	// NOTE : detect long animations for future compatibility
 	if (frameList.length > shortAnimationMax) {
 		flags.SUPER_ANM = 1;
 	}

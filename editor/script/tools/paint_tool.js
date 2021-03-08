@@ -9,6 +9,7 @@ registerCard(function(card) {
 
 	// todo : I don't like the name of this...
 	card.useCanvas = true;
+	card.useNav = true;
 
 	card.menu = function() {
 		menu.add({

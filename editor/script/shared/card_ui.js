@@ -62,7 +62,7 @@ function CardUI() {
 		/* NAV BAR */
 		var nameControl;
 
-		if (card.type != undefined && card.type != null) {
+		if (card.useNav) {
 			// create nav bar
 			var nav = document.createElement("div");
 			nav.classList.add("cardui-nav");
@@ -75,12 +75,12 @@ function CardUI() {
 
 			var prevControl = document.createElement("button");
 			prevControl.appendChild(createIconElement("previous"));
-			prevControl.onclick = OnPrev;
+			// prevControl.onclick = OnPrev;
 			nav.appendChild(prevControl);
 
 			var nextControl = document.createElement("button");
 			nextControl.appendChild(createIconElement("next"));
-			nextControl.onclick = OnNext;
+			// nextControl.onclick = OnNext;
 			nav.appendChild(nextControl);
 
 			var addControl = document.createElement("button");
