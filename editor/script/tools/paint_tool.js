@@ -43,7 +43,7 @@ registerCard(function(card) {
 					}
 
 					// grid
-					gfx.drawPixel(1, x * bigPixelSize, y * bigPixelSize);
+					gfx.drawPixel(2, x * bigPixelSize, y * bigPixelSize);
 				}
 			}
 		}

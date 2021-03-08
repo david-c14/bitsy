@@ -33,8 +33,8 @@
 }
 
 .cardui-canvas {
-	height: 512px; /* HARDCODED ?? */
-	width: 512px;
+	height: 256px; /* HARDCODED ?? */
+	width: 256px;
 }
 
 .cardui-menu {
