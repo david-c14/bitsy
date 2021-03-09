@@ -222,6 +222,8 @@ function CardUI() {
 		}
 		this.EndGroup = EndGroup;
 
+		var menuToggleCount = 0;
+
 		this.AddControl = function(options) {
 			var isGroupActive = (_curGroup != null);
 
@@ -255,6 +257,36 @@ function CardUI() {
 				}
 
 				_curGroup.appendChild(button);
+			}
+			else if (options.control === "toggle") {
+				var checkbox = document.createElement("input");
+				checkbox.type = "checkbox";
+				checkbox.id = "menu_toggle_" + menuToggleCount;
+				checkbox.checked = options.value;
+
+				checkbox.onclick = function() {
+					card[options.onclick](checkbox.checked);
+					UpdateMenu();
+				};
+
+				menuToggleCount++;
+
+				_curGroup.appendChild(checkbox);
+
+				var label = document.createElement("label");
+				label.setAttribute("for", checkbox.id);
+
+				if (options.icon) {
+					label.appendChild(iconUtils.CreateIcon(options.icon));
+				}
+
+				if (options.text) {
+					var textSpan = document.createElement("span");
+					textSpan.innerText = options.text;
+					label.appendChild(textSpan);
+				}
+
+				_curGroup.appendChild(label);
 			}
 
 			if (!isGroupActive) {

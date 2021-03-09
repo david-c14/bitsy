@@ -16,6 +16,8 @@ registerCard(function(card) {
 
 	var bigPixelSize = 16;
 
+	var showGrid = true;
+
 	function drawBigPixel(index, x, y) { // todo : add square drawing func?
 		for (var pY = 0; pY < bigPixelSize; pY++) {
 			for (var pX = 0; pX < bigPixelSize; pX++) {
@@ -42,8 +44,9 @@ registerCard(function(card) {
 						drawBigPixel(1, x, y);
 					}
 
-					// grid
-					gfx.drawPixel(2, x * bigPixelSize, y * bigPixelSize);
+					if (showGrid) {
+						gfx.drawPixel(2, x * bigPixelSize, y * bigPixelSize);
+					}
 				}
 			}
 		}
@@ -68,6 +71,18 @@ registerCard(function(card) {
 			control: "label",
 			text: "test label",
 		});
+
+		menu.add({
+			control: "toggle",
+			text: "grid",
+			icon: showGrid ? "visibility" : "visibility_off",
+			value: showGrid,
+			onclick: "toggleGrid",
+		});
+	};
+
+	card.toggleGrid = function(value) {
+		showGrid = value;
 	};
 
 	card.select = function(id) {
