@@ -49,6 +49,20 @@ registerCard(function(card) {
 		}
 	}
 
+	card.click = function(x, y) {
+		// convert screen coords to drawing coords
+		var pX = Math.floor(x / bigPixelSize);
+		var pY = Math.floor(y / bigPixelSize);
+
+		imageSource[frameIndex][pY][pX] = (imageSource[frameIndex][pY][pX] > 0) ? 0 : 1;
+
+		// somewhat hacky
+		renderer.SetImageSource(drawingId, imageSource);
+
+		// super hacky..
+		refreshGameData();
+	};
+
 	card.menu = function() {
 		menu.add({
 			control: "label",
