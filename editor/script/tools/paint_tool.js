@@ -198,6 +198,10 @@ registerCard(function(card) {
 	}
 
 	card.prev = function() {
+		if (curDataType === "AVA") {
+			return;
+		}
+
 		var idList = Object.keys(dataStorage[curDataType].store);
 
 		if (dataStorage[curDataType].filter) {
@@ -215,6 +219,10 @@ registerCard(function(card) {
 	};
 
 	card.next = function() {
+		if (curDataType === "AVA") {
+			return;
+		}
+
 		var idList = Object.keys(dataStorage[curDataType].store);
 
 		if (dataStorage[curDataType].filter) {
@@ -231,17 +239,79 @@ registerCard(function(card) {
 		onSelect(idList[i]);
 	};
 
+	function addDrawing(imageData) {
+		// todo : make sure this works with other tools (like the find tool)
+
+		if (curDataType === "AVA") {
+			return;
+		}
+
+		var nextId;
+
+		if (curDataType === "SPR") {
+			nextId = nextSpriteId();
+			makeSprite(nextId, imageData);
+		}
+		else if (curDataType === "TIL") {
+			nextId = nextTileId();
+			makeTile(nextId, imageData);
+		}
+		else if (curDataType === "ITM") {
+			nextId = nextItemId();
+			makeItem(nextId, imageData);
+		}
+
+		refreshGameData();
+		onSelect(nextId);
+	}
+
 	card.add = function() {
-		console.log("add!");
+		addDrawing();
 	};
 
 	card.copy = function() {
+		if (curDataType === "AVA") {
+			return;
+		}
+
 		console.log("copy!");
+
+		var sourceImageData = renderer.GetImageSource(drawingId);
+		var copiedImageData = copyDrawingData(sourceImageData);
+
+		// tiles have extra data to copy
+		var tileIsWall = false;
+		if (curDataType === "TIL") {
+			// hacky to reference tile store directly?
+			tileIsWall = tile[dataId].isWall;
+		}
+
+		addDrawing(copiedImageData);
+
+		// tiles have extra data to copy
+		if (curDataType === "TIL") {
+			tile[dataId].isWall = tileIsWall;
+		}
 	};
 
 	// todo : name too short??
 	card.del = function() {
+		if (curDataType === "AVA") {
+			return;
+		}
+
 		console.log("delete!");
+
+		var tempId = dataId;
+
+		card.prev();
+
+		var store = dataStorage[curDataType].store;
+		delete store[tempId];
+
+		refreshGameData();
+
+		// todo : bring this up to parity with old delete function
 	};
 
 	card.changeDataType = function(type) {

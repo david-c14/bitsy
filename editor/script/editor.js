@@ -1515,6 +1515,7 @@ function prev() {
 	paintExplorer.ChangeSelection( drawing.id );
 }
 
+// todo : move out of the global scope?
 function copyDrawingData(sourceDrawingData) {
     var copiedDrawingData = [];
 
