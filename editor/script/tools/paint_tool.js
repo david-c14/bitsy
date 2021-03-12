@@ -91,6 +91,9 @@ registerCard(function(card) {
 	};
 
 	card.menu = function() {
+		var store = dataStorage[curDataType].store;
+		var data = store[dataId];
+
 		menu.add({
 			control: "toggle",
 			text: "grid",
@@ -98,6 +101,16 @@ registerCard(function(card) {
 			value: showGrid,
 			onclick: "toggleGrid",
 		});
+
+		if (curDataType === "TIL") {
+			menu.add({
+				control: "toggle",
+				text: "wall",
+				icon: data.isWall ? "wall_on" : "wall_off",
+				value: data.isWall,
+				onclick: "toggleWall",
+			});
+		}
 
 		menu.startGroup();
 
@@ -174,6 +187,13 @@ registerCard(function(card) {
 			frameIndex = (data.animation.frameCount - 1);
 		}
 	};
+
+	card.toggleWall = function(value) {
+		var store = dataStorage[curDataType].store;
+		var data = store[dataId];
+		data.isWall = value ? value : null;
+		refreshGameData();
+	}
 
 	card.prev = function() {
 		var idList = Object.keys(dataStorage[curDataType].store);
