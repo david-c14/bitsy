@@ -3032,19 +3032,29 @@ function removeItemAnimation() {
 	resetAllAnimations();
 }
 
+// NOTE : is it ok for this to remain global??
 function addNewFrameToDrawing(drwId) {
-	// copy first frame data into new frame
+	// copy last frame data into new frame
 	var imageSource = renderer.GetImageSource(drwId);
-	var firstFrame = imageSource[0];
+
+	var lastFrame = imageSource[(imageSource.length - 1)];
 	var newFrame = [];
+
 	for (var y = 0; y < tilesize; y++) {
 		newFrame.push([]);
+
 		for (var x = 0; x < tilesize; x++) {
-			newFrame[y].push( firstFrame[y][x] );
+			newFrame[y].push(lastFrame[y][x]);
 		}
 	}
-	imageSource.push( newFrame );
+
+	imageSource.push(newFrame);
+
 	renderer.SetImageSource(drwId, imageSource);
+
+	// todo : use event or something instead?
+	refreshGameData();
+	resetAllAnimations();
 }
 
 function removeDrawingAnimation(drwId) {

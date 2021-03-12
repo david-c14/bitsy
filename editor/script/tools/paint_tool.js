@@ -106,16 +106,28 @@ registerCard(function(card) {
 			text: "animation: ",
 		});
 
-		if (imageSource) {
-			for (var i = 0; i < imageSource.length; i++) {
-				menu.add({
-					control: "button",
-					text: "frame " + i,
-					value: i,
-					onclick: "selectFrame",
-				});
-			}
+		for (var i = 0; i < imageSource.length; i++) {
+			menu.add({
+				control: "button",
+				text: "frame " + i,
+				value: i,
+				onclick: "selectFrame",
+			});
 		}
+
+		if (imageSource.length > 1) {
+			menu.add({
+				control: "button",
+				icon: "delete",
+				onclick: "deleteFrame",
+			});
+		}
+
+		menu.add({
+			control: "button",
+			icon: "add",
+			onclick: "addFrame",
+		});
 
 		menu.endGroup();
 	};
@@ -129,6 +141,24 @@ registerCard(function(card) {
 		if (value) {
 			frameIndex = value;
 		}
+	};
+
+	card.addFrame = function() {
+		var store = dataStorage[curDataType].store;
+		var data = store[dataId];
+
+		data.animation.frameIndex = 0;
+		data.animation.frameCount++;
+		data.animation.isAnimated = (data.animation.frameCount > 1);
+
+		addNewFrameToDrawing(data.drw);
+
+		imageSource = renderer.GetImageSource(drawingId).slice();
+		frameIndex = (data.animation.frameCount - 1);
+	};
+
+	card.deleteFrame = function() {
+
 	};
 
 	card.prev = function() {
