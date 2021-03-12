@@ -1093,9 +1093,9 @@ function start() {
 
 	editorContent.appendChild(paintCardView.GetElement());
 
-
+	paintCardView.Boot();
 	// paintCard.select("a");
-	paintCard.boot();
+	// paintCard.boot();
 }
 
 // HACKY GLOBALS!!!

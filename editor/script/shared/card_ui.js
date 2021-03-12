@@ -104,6 +104,8 @@ function CardUI() {
 						if (card.changeDataType) {
 							card.changeDataType(e.target.value);
 						}
+
+						UpdateMenu();
 					};
 
 					var categoryLabel = document.createElement("label");
@@ -153,11 +155,45 @@ function CardUI() {
 			nav.appendChild(delControl);
 
 			// HACK : for now I'm just routing these directly to the card..
-			prevControl.onclick = function() { if (card.prev) { card.prev(); } };
-			nextControl.onclick = function() { if (card.next) { card.next(); } };
-			addControl.onclick = function() { if (card.add) { card.add(); } };
-			copyControl.onclick = function() { if (card.copy) { card.copy(); } };
-			delControl.onclick = function() { if (card.del) { card.del(); } };
+			prevControl.onclick = function() {
+				if (card.prev) {
+					card.prev();
+				}
+
+				UpdateMenu();
+			};
+
+			nextControl.onclick = function() {
+				if (card.next) {
+					card.next();
+				}
+
+				UpdateMenu();
+			};
+
+			addControl.onclick = function() {
+				if (card.add) {
+					card.add();
+				}
+
+				UpdateMenu();
+			};
+
+			copyControl.onclick = function() {
+				if (card.copy) {
+					card.copy();
+				}
+
+				UpdateMenu();
+			};
+
+			delControl.onclick = function() {
+				if (card.del) {
+					card.del();
+				}
+
+				UpdateMenu();
+			};
 		}
 
 		if (card.draw) {
@@ -244,7 +280,7 @@ function CardUI() {
 
 				button.onclick = function() {
 					console.log("CLICK " + options.text);
-					card[options.onclick]();
+					card[options.onclick](options.value);
 					UpdateMenu();
 				}
 
@@ -329,7 +365,10 @@ function CardUI() {
 			}, -1); // todo : what should the interval be really? not constant..
 		}
 
-		UpdateMenu();
+		// ??? correct name and place?
+		this.Boot = function() {
+			card.boot();
+			UpdateMenu();
+		}
 	}
-
 }

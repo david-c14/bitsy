@@ -106,17 +106,16 @@ registerCard(function(card) {
 			text: "animation: ",
 		});
 
-		menu.add({
-			control: "button",
-			text: "frame 1",
-			onclick: "onFrame1",
-		});
-
-		menu.add({
-			control: "button",
-			text: "frame 2",
-			onclick: "onFrame2",
-		});
+		if (imageSource) {
+			for (var i = 0; i < imageSource.length; i++) {
+				menu.add({
+					control: "button",
+					text: "frame " + i,
+					value: i,
+					onclick: "selectFrame",
+				});
+			}
+		}
 
 		menu.endGroup();
 	};
@@ -125,12 +124,11 @@ registerCard(function(card) {
 		showGrid = value;
 	};
 
-	card.onFrame1 = function() {
-		frameIndex = 0;
-	};
-
-	card.onFrame2 = function() {
-		frameIndex = 1;
+	card.selectFrame = function(value) {
+		console.log("on frame? " + value);
+		if (value) {
+			frameIndex = value;
+		}
 	};
 
 	card.prev = function() {
