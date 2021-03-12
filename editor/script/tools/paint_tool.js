@@ -99,7 +99,7 @@ registerCard(function(card) {
 			text: "grid",
 			icon: showGrid ? "visibility" : "visibility_off",
 			value: showGrid,
-			onclick: "toggleGrid",
+			event: "toggleGrid",
 		});
 
 		if (curDataType === "TIL") {
@@ -108,7 +108,7 @@ registerCard(function(card) {
 				text: "wall",
 				icon: data.isWall ? "wall_on" : "wall_off",
 				value: data.isWall,
-				onclick: "toggleWall",
+				event: "toggleWall",
 			});
 		}
 
@@ -116,7 +116,8 @@ registerCard(function(card) {
 
 		menu.add({
 			control: "label",
-			text: "animation: ",
+			text: "animation:",
+			icon: "paint", // need animation icon?
 		});
 
 		for (var i = 0; i < imageSource.length; i++) {
@@ -124,7 +125,7 @@ registerCard(function(card) {
 				control: "button",
 				text: "frame " + i,
 				value: i,
-				onclick: "selectFrame",
+				event: "selectFrame",
 			});
 		}
 
@@ -132,20 +133,21 @@ registerCard(function(card) {
 			menu.add({
 				control: "button",
 				icon: "delete",
-				onclick: "deleteFrame",
+				event: "deleteFrame",
 			});
 		}
 
 		menu.add({
 			control: "button",
 			icon: "add",
-			onclick: "addFrame",
+			event: "addFrame",
 		});
 
 		menu.endGroup();
 	};
 
 	card.toggleGrid = function(value) {
+		console.log("toggle grid ? " + value);
 		showGrid = value;
 	};
 

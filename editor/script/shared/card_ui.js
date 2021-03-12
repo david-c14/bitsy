@@ -31,6 +31,81 @@ function CardUI() {
 		iconId : "item",
 	};
 
+	// shared controls (should these go in their own file??)
+	function createLabel(options) {
+		var label = document.createElement("span");
+
+		if (options.icon) {
+			label.appendChild(iconUtils.CreateIcon(options.icon));
+		}
+
+		if (options.text) {
+			var textSpan = document.createElement("span");
+			textSpan.innerText = options.text;
+			label.appendChild(textSpan);
+		}
+
+		return label;
+	}
+
+	function createButton(options) {
+		var button = document.createElement("button");
+
+		if (options.icon) {
+			button.appendChild(iconUtils.CreateIcon(options.icon));
+		}
+
+		if (options.text) {
+			var textSpan = document.createElement("span");
+			textSpan.innerText = options.text;
+			button.appendChild(textSpan);
+		}
+
+		// "onclick" so many places makes the names confusing
+		if (options.onclick) {
+			button.onclick = options.onclick;
+		}
+
+		return button;
+	}
+
+	// hacky to track this globally??
+	var menuToggleCount = 0;
+
+	function createToggle(options) {
+		var toggle = document.createElement("span");
+
+		var checkbox = document.createElement("input");
+		checkbox.type = "checkbox";
+		checkbox.id = "menu_toggle_" + menuToggleCount;
+		checkbox.checked = options.value;
+
+		if (options.onclick) {
+			checkbox.onclick = options.onclick;
+		}
+
+		menuToggleCount++;
+
+		toggle.appendChild(checkbox);
+
+		var label = document.createElement("label");
+		label.setAttribute("for", checkbox.id);
+
+		if (options.icon) {
+			label.appendChild(iconUtils.CreateIcon(options.icon));
+		}
+
+		if (options.text) {
+			var textSpan = document.createElement("span");
+			textSpan.innerText = options.text;
+			label.appendChild(textSpan);
+		}
+
+		toggle.appendChild(label);
+
+		return toggle;
+	}
+
 	// todo : confusing naming with the system cards??? CardView? CardDisplay? CardWindow?
 	function CardView(config) {
 		var self = this; // todo : I don't love this pattern..
@@ -250,8 +325,6 @@ function CardUI() {
 		}
 		this.EndGroup = EndGroup;
 
-		var menuToggleCount = 0;
-
 		this.AddControl = function(options) {
 			var isGroupActive = (_curGroup != null);
 
@@ -259,62 +332,41 @@ function CardUI() {
 				StartGroup();
 			}
 
+			var control;
+
 			// todo : how much of this should be here? how much in card_ui.js?
 			if (options.control === "label") {
-				var label = document.createElement("span");
-				label.innerText = options.text;
-				_curGroup.appendChild(label);
+				control = createLabel({
+					text: options.text,
+					icon: options.icon,
+				});
 			}
 			else if (options.control === "button") {
-				var button = document.createElement("button");
-
-				if (options.icon) {
-					button.appendChild(iconUtils.CreateIcon(options.icon));
-				}
-
-				if (options.text) {
-					var textSpan = document.createElement("span");
-					textSpan.innerText = options.text;
-					button.appendChild(textSpan);
-				}
-
-				button.onclick = function() {
-					console.log("CLICK " + options.text);
-					card[options.onclick](options.value);
-					UpdateMenu();
-				}
-
-				_curGroup.appendChild(button);
+				control = createButton({
+					text: options.text,
+					icon: options.icon,
+					value: options.value,
+					onclick: function() {
+						// console.log("CLICK " + options.text);
+						card[options.event](options.value);
+						UpdateMenu();
+					},
+				});
 			}
 			else if (options.control === "toggle") {
-				var checkbox = document.createElement("input");
-				checkbox.type = "checkbox";
-				checkbox.id = "menu_toggle_" + menuToggleCount;
-				checkbox.checked = options.value;
+				control = createToggle({
+					text: options.text,
+					icon: options.icon,
+					value: options.value,
+					onclick: function(e) {
+						card[options.event](e.target.checked);
+						UpdateMenu();
+					},
+				});
+			}
 
-				checkbox.onclick = function() {
-					card[options.onclick](checkbox.checked);
-					UpdateMenu();
-				};
-
-				menuToggleCount++;
-
-				_curGroup.appendChild(checkbox);
-
-				var label = document.createElement("label");
-				label.setAttribute("for", checkbox.id);
-
-				if (options.icon) {
-					label.appendChild(iconUtils.CreateIcon(options.icon));
-				}
-
-				if (options.text) {
-					var textSpan = document.createElement("span");
-					textSpan.innerText = options.text;
-					label.appendChild(textSpan);
-				}
-
-				_curGroup.appendChild(label);
+			if (control) {
+				_curGroup.appendChild(control);
 			}
 
 			if (!isGroupActive) {
