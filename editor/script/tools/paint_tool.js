@@ -138,9 +138,7 @@ registerCard(function(card) {
 
 	card.selectFrame = function(value) {
 		console.log("on frame? " + value);
-		if (value) {
-			frameIndex = value;
-		}
+		frameIndex = value;
 	};
 
 	card.addFrame = function() {
@@ -153,12 +151,28 @@ registerCard(function(card) {
 
 		addNewFrameToDrawing(data.drw);
 
+		// doing this all the time seems bleh
 		imageSource = renderer.GetImageSource(drawingId).slice();
+
 		frameIndex = (data.animation.frameCount - 1);
 	};
 
 	card.deleteFrame = function() {
+		var store = dataStorage[curDataType].store;
+		var data = store[dataId];
 
+		// it's annoying to keep animation data in sync with the drawing
+		data.animation.frameIndex = 0;
+		data.animation.frameCount--;
+		data.animation.isAnimated = (data.animation.frameCount > 1);
+
+		removeLastFrameFromDrawing(data.drw);
+
+		imageSource = renderer.GetImageSource(drawingId).slice();
+
+		if (frameIndex >= data.animation.frameCount) {
+			frameIndex = (data.animation.frameCount - 1);
+		}
 	};
 
 	card.prev = function() {

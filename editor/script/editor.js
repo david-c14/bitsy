@@ -3057,6 +3057,17 @@ function addNewFrameToDrawing(drwId) {
 	resetAllAnimations();
 }
 
+function removeLastFrameFromDrawing(drwId) {
+	var imageSource = renderer.GetImageSource(drwId);
+
+	renderer.SetImageSource(drwId, imageSource.slice(0, imageSource.length - 1));
+
+	refreshGameData();
+	resetAllAnimations();
+}
+
+
+// TODO : deprecate and remove this
 function removeDrawingAnimation(drwId) {
 	var imageSource = renderer.GetImageSource(drwId);
 	var oldImageData = imageSource.slice(0);
