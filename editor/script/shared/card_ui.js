@@ -142,15 +142,24 @@ function CardUI() {
 		titleText.innerText = config.title;
 		titleBar.appendChild(titleText);
 
-		var closeButton = document.createElement("button");
-		closeButton.classList.add("cardui-close"); // todo : generic button class?
-		closeButton.appendChild(createIconElement("close"));
-		closeButton.onclick = function(e) {
-			if (onCloseHandler) {
-				onCloseHandler(e);
-			}
-		};
-		titleBar.appendChild(closeButton);
+		// var closeButton = document.createElement("button");
+		// closeButton.classList.add("cardui-close"); // todo : generic button class?
+		// closeButton.appendChild(createIconElement("close"));
+		// closeButton.onclick = function(e) {
+		// 	if (onCloseHandler) {
+		// 		onCloseHandler(e);
+		// 	}
+		// };
+		// titleBar.appendChild(closeButton);
+
+		titleBar.appendChild(createButton({
+			icon: "close",
+			onclick: function(e) {
+				if (onCloseHandler) {
+					onCloseHandler(e);
+				}
+			},
+		}));
 
 		/* TOOL MAIN ELEMENT */
 		var toolRoot = document.createElement("div");
@@ -208,67 +217,60 @@ function CardUI() {
 			nameControl.innerText = "NAME";
 			nav.appendChild(nameControl);
 
-			var prevControl = document.createElement("button");
-			prevControl.appendChild(createIconElement("previous"));
-			nav.appendChild(prevControl);
+			nav.appendChild(createButton({
+				icon: "previous",
+				onclick: function() {
+					if (card.prev) {
+						card.prev();
+					}
 
-			var nextControl = document.createElement("button");
-			nextControl.appendChild(createIconElement("next"));
-			// nextControl.onclick = OnNext;
-			nav.appendChild(nextControl);
-
-			var addControl = document.createElement("button");
-			addControl.appendChild(createIconElement("add"));
-			nav.appendChild(addControl);
-
-			var copyControl = document.createElement("button");
-			copyControl.appendChild(createIconElement("copy"));
-			nav.appendChild(copyControl);
-
-			var delControl = document.createElement("button");
-			delControl.appendChild(createIconElement("delete"));
-			nav.appendChild(delControl);
-
-			// HACK : for now I'm just routing these directly to the card..
-			prevControl.onclick = function() {
-				if (card.prev) {
-					card.prev();
+					UpdateMenu();
 				}
+			}));
 
-				UpdateMenu();
-			};
+			nav.appendChild(createButton({
+				icon: "next",
+				onclick: function() {
+					if (card.next) {
+						card.next();
+					}
 
-			nextControl.onclick = function() {
-				if (card.next) {
-					card.next();
+					UpdateMenu();
 				}
+			}));
 
-				UpdateMenu();
-			};
+			nav.appendChild(createButton({
+				icon: "add",
+				onclick: function() {
+					if (card.add) {
+						card.add();
+					}
 
-			addControl.onclick = function() {
-				if (card.add) {
-					card.add();
+					UpdateMenu();
 				}
+			}));
 
-				UpdateMenu();
-			};
+			nav.appendChild(createButton({
+				icon: "copy",
+				onclick: function() {
+					if (card.copy) {
+						card.copy();
+					}
 
-			copyControl.onclick = function() {
-				if (card.copy) {
-					card.copy();
+					UpdateMenu();
 				}
+			}));
 
-				UpdateMenu();
-			};
+			nav.appendChild(createButton({
+				icon: "delete",
+				onclick: function() {
+					if (card.del) {
+						card.del();
+					}
 
-			delControl.onclick = function() {
-				if (card.del) {
-					card.del();
+					UpdateMenu();
 				}
-
-				UpdateMenu();
-			};
+			}));
 		}
 
 		if (card.draw) {

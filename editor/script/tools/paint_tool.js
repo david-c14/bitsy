@@ -232,16 +232,16 @@ registerCard(function(card) {
 	};
 
 	card.add = function() {
-		// TODO
+		console.log("add!");
 	};
 
 	card.copy = function() {
-		// TODO
+		console.log("copy!");
 	};
 
 	// todo : name too short??
 	card.del = function() {
-		// TODO
+		console.log("delete!");
 	};
 
 	card.changeDataType = function(type) {
