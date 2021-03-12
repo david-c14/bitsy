@@ -2,21 +2,45 @@
 TODO
 - why is the config separate from the card definition?
 - is "register" the term I want?
+
+categories
+- should they be part of the system?
+- or handled by the card?
+- to what extent are they part of the engine?
+- how to handle localization and icons?
+- it might help to have some kind of global worldData storage thingy
+
+todo : what about localization??
+
+todo : what's the best way to handle config for cards (especially pre-load config? is there pre-load config?)
 */
 
 registerCard(function(card) {
 	card.name = "paint";
 
-	// naming? how are these defined?
-	card.categories = [ "avatar", "tile", "sprite", "item", ];
+	// naming? how are these defined? (data?)
+	card.data = [ "AVA", "TIL", "SPR", "ITM", ];
 
+	var dataStorage = {
+		"AVA" : { store: sprite, filter: function(id) { return (id === "A"); }, },
+		"SPR" : { store: sprite, filter: function(id) { return (id != "A"); }, },
+		"TIL" : { store: tile, },
+		"ITM" : { store: item, },
+	};
+
+	var curDataType = "AVA";
+	var dataId = "A";
 	var drawingId = null;
 	var imageSource = null;
 	var frameIndex = 0;
 
 	var bigPixelSize = 16;
-
 	var showGrid = true;
+
+	// todo : will this be needed in the end? name?? (boot, load, start, init??)
+	card.boot = function() {
+		onSelect(dataId);
+	};
 
 	function drawBigPixel(index, x, y) { // todo : add square drawing func?
 		for (var pY = 0; pY < bigPixelSize; pY++) {
@@ -67,10 +91,10 @@ registerCard(function(card) {
 	};
 
 	card.menu = function() {
-		menu.add({
-			control: "label",
-			text: "test label",
-		});
+		// menu.add({
+		// 	control: "label",
+		// 	text: "test label",
+		// });
 
 		menu.add({
 			control: "toggle",
@@ -85,11 +109,72 @@ registerCard(function(card) {
 		showGrid = value;
 	};
 
-	card.select = function(id) {
-		// test stuff...
-		var spr = sprite[id];
-		drawingId = spr.drw;
+	card.prev = function() {
+		var idList = Object.keys(dataStorage[curDataType].store);
 
+		if (dataStorage[curDataType].filter) {
+			idList = idList.filter(dataStorage[curDataType].filter);
+		}
+
+		var i = idList.indexOf(dataId);
+
+		i--;
+		if (i < 0) {
+			i = (idList.length - 1);
+		}
+
+		onSelect(idList[i]);
+	};
+
+	card.next = function() {
+		var idList = Object.keys(dataStorage[curDataType].store);
+
+		if (dataStorage[curDataType].filter) {
+			idList = idList.filter(dataStorage[curDataType].filter);
+		}
+
+		var i = idList.indexOf(dataId);
+
+		i++;
+		if (i >= idList.length) {
+			i = 0;
+		}
+
+		onSelect(idList[i]);
+	};
+
+	card.add = function() {
+		// TODO
+	};
+
+	card.copy = function() {
+		// TODO
+	};
+
+	// todo : name too short??
+	card.del = function() {
+		// TODO
+	};
+
+	card.changeDataType = function(type) {
+		console.log("data change! " + type);
+		curDataType = type;
+
+		var idList = Object.keys(dataStorage[curDataType].store);
+
+		if (dataStorage[curDataType].filter) {
+			idList = idList.filter(dataStorage[curDataType].filter);
+		}
+
+		onSelect(idList[0]);
+	};
+
+	function onSelect(id) {
+		dataId = id;
+		drawingId = dataStorage[curDataType].store[dataId].drw;
 		imageSource = renderer.GetImageSource(drawingId).slice();
 	};
+
+	// TODO : this might return once I have a universal way to handle data type navigation
+	// card.select = function(id) {}
 });

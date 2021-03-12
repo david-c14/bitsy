@@ -8,6 +8,29 @@ function CardUI() {
 		return new CardView(config);
 	};
 
+	// todo ... not sure where thie metadata should actually live??
+	var dataCategories = {};
+
+	dataCategories["AVA"] = {
+		name : "avatar",
+		iconId : "avatar",
+	};
+
+	dataCategories["SPR"] = {
+		name : "sprite",
+		iconId : "sprite",
+	};
+
+	dataCategories["TIL"] = {
+		name : "tile",
+		iconId : "tile",
+	};
+
+	dataCategories["ITM"] = {
+		name : "item",
+		iconId : "item",
+	};
+
 	// todo : confusing naming with the system cards??? CardView? CardDisplay? CardWindow?
 	function CardView(config) {
 		var self = this; // todo : I don't love this pattern..
@@ -59,25 +82,39 @@ function CardUI() {
 		toolRoot.classList.add("cardui-main");
 		cardRoot.appendChild(toolRoot);
 
-		if (card.categories) {
-			if (card.categories.length > 1) {
+		if (card.data) {
+			if (card.data.length > 1) {
+				// todo : rename DATA TYPE SELECT??? */
 				/* CATEGORY SELECT */
 				var categorySelect = document.createElement("form");
 				categorySelect.classList.add("cardui-category");
 				toolRoot.appendChild(categorySelect);
 
-				for (var i = 0; i < card.categories.length; i++) {
+				for (var i = 0; i < card.data.length; i++) {
+					var category = dataCategories[card.data[i]];
+
 					var categoryOption = document.createElement("input");
 					categoryOption.type = "radio";
 					categoryOption.name = card.name + "-category";
-					categoryOption.id = card.name + "-category-" + card.categories[i];
-					categoryOption.value = card.categories[i];
+					categoryOption.id = card.name + "-category-" + card.data[i];
+					categoryOption.value = card.data[i];
 					categorySelect.appendChild(categoryOption);
+
+					categoryOption.onclick = function(e) {
+						if (card.changeDataType) {
+							card.changeDataType(e.target.value);
+						}
+					};
 
 					var categoryLabel = document.createElement("label");
 					categoryLabel.setAttribute("for", categoryOption.id);
-					categoryLabel.innerText = card.categories[i];
 					categorySelect.appendChild(categoryLabel);
+
+					categoryLabel.appendChild(createIconElement(category.iconId));
+
+					var categoryName = document.createElement("span");
+					categoryName.innerText = category.name;
+					categoryLabel.appendChild(categoryName);
 				}
 			}
 
@@ -96,7 +133,6 @@ function CardUI() {
 
 			var prevControl = document.createElement("button");
 			prevControl.appendChild(createIconElement("previous"));
-			// prevControl.onclick = OnPrev;
 			nav.appendChild(prevControl);
 
 			var nextControl = document.createElement("button");
@@ -115,6 +151,13 @@ function CardUI() {
 			var delControl = document.createElement("button");
 			delControl.appendChild(createIconElement("delete"));
 			nav.appendChild(delControl);
+
+			// HACK : for now I'm just routing these directly to the card..
+			prevControl.onclick = function() { if (card.prev) { card.prev(); } };
+			nextControl.onclick = function() { if (card.next) { card.next(); } };
+			addControl.onclick = function() { if (card.add) { card.add(); } };
+			copyControl.onclick = function() { if (card.copy) { card.copy(); } };
+			delControl.onclick = function() { if (card.del) { card.del(); } };
 		}
 
 		if (card.draw) {
@@ -138,57 +181,6 @@ function CardUI() {
 				card.menu();
 			}
 		}
-
-		// // TODO : how much of the nav bar logic should be built-in vs handled by the tool card???
-		// _objectIndex = 0;
-		// _objectRegister = sprite; // hardcoded!!!
-
-		// function OnChangeSelect() {
-		// 	var keys = Object.keys(_objectRegister);
-		// 	nameControl.innerText = card.type + " " + keys[_objectIndex];
-
-		// 	if (card.select) {
-		// 		card.select(keys[_objectIndex]);
-		// 	}
-
-		// 	UpdateMenu();
-		// }
-
-		// function OnPrev() {
-		// 	var keys = Object.keys(_objectRegister);
-
-		// 	_objectIndex--;
-
-		// 	if (_objectIndex < 0) {
-		// 		_objectIndex = keys.length - 1;
-		// 	}
-
-		// 	OnChangeSelect();
-		// }
-
-		// function OnNext() {
-		// 	var keys = Object.keys(_objectRegister);
-
-		// 	_objectIndex++;
-
-		// 	if (_objectIndex >= keys.length) {
-		// 		_objectIndex = 0;
-		// 	}
-
-		// 	OnChangeSelect();
-		// }
-
-		// function OnAdd() {
-		// 	// TODO
-		// }
-
-		// function OnCopy() {
-		// 	// TODO
-		// }
-
-		// function OnDelete() {
-		// 	// TODO
-		// }
 
 		this.GetElement = function() {
 			return cardRoot;
