@@ -91,11 +91,6 @@ registerCard(function(card) {
 	};
 
 	card.menu = function() {
-		// menu.add({
-		// 	control: "label",
-		// 	text: "test label",
-		// });
-
 		menu.add({
 			control: "toggle",
 			text: "grid",
@@ -103,10 +98,39 @@ registerCard(function(card) {
 			value: showGrid,
 			onclick: "toggleGrid",
 		});
+
+		menu.startGroup();
+
+		menu.add({
+			control: "label",
+			text: "animation: ",
+		});
+
+		menu.add({
+			control: "button",
+			text: "frame 1",
+			onclick: "onFrame1",
+		});
+
+		menu.add({
+			control: "button",
+			text: "frame 2",
+			onclick: "onFrame2",
+		});
+
+		menu.endGroup();
 	};
 
 	card.toggleGrid = function(value) {
 		showGrid = value;
+	};
+
+	card.onFrame1 = function() {
+		frameIndex = 0;
+	};
+
+	card.onFrame2 = function() {
+		frameIndex = 1;
 	};
 
 	card.prev = function() {
@@ -173,6 +197,7 @@ registerCard(function(card) {
 		dataId = id;
 		drawingId = dataStorage[curDataType].store[dataId].drw;
 		imageSource = renderer.GetImageSource(drawingId).slice();
+		frameIndex = 0;
 	};
 
 	// TODO : this might return once I have a universal way to handle data type navigation
