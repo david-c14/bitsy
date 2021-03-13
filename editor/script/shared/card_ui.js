@@ -114,7 +114,9 @@ function CardUI() {
 		for (var i = 0; i < options.tabs.length; i++) {
 			var t = options.tabs[i];
 
-			var value = (t.value != undefined ? t.value : "" + i);
+			// todo : do I want an auto-value?
+			// var value = (t.value != undefined ? t.value : "" + i);
+			var value = (t.value != undefined ? t.value : null);
 
 			var tabInput = document.createElement("input");
 			tabInput.type = "radio";
@@ -152,6 +154,31 @@ function CardUI() {
 		return tabForm;
 	}
 
+	function createDialogField(options) {
+		// todo : eventually I want to simplify this widget code a lot, but for now I'm just wrapping it
+		var widget = dialogTool.CreateWidget(
+			options.name,
+			options.parentId,
+			options.dlgId);
+		// ,
+		// 	true,
+		// 	function(id) {
+		// 		obj.dlg = id;
+		// 	},
+		// 	{
+		// 		CreateFromEmptyTextBox: true,
+		// 		OnCreateNewDialog: function(id) {
+		// 			obj.dlg = id;
+		// 			refreshGameData();
+		// 		},
+		// 		GetDefaultName: function() {
+		// 			var desc = paintTool.drawing.getNameOrDescription();
+		// 			return CreateDefaultName(desc + " dialog", dialog, true); // todo : localize
+		// 		}, // todo : localize
+		// 	});
+
+		return widget.GetElement();
+	}
 
 	// todo : confusing naming with the system cards??? CardView? CardDisplay? CardWindow?
 	function CardView(config) {
@@ -439,6 +466,13 @@ function CardUI() {
 						card[options.event](e.target.value);
 						UpdateMenu();
 					},
+				});
+			}
+			else if (options.control === "dialog") {
+				control = createDialogField({
+					name: options.name,
+					dlgId: options.id, // todo : better name??
+					parentId: cardRoot.id, // is this the right thing?
 				});
 			}
 

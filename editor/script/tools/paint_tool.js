@@ -39,6 +39,8 @@ registerCard(function(card) {
 	var imageSource = null;
 	var frameIndex = 0;
 
+	var controlTab = "edit";
+
 	var bigPixelSize = 16;
 	var showGrid = true;
 
@@ -104,78 +106,104 @@ registerCard(function(card) {
 		menu.add({
 			control: "tabs",
 			name: "test",
-			value: testTabVal,
-			event: "switchTestTab",
+			value: controlTab,
+			event: "changeControlTab",
 			tabs: [
-				{ text: "a" },
-				{ text: "b" },
-				{ text: "c" },
+				{ text: "edit", icon: "edit", value: "edit", },
+				{ text: "dialog", icon: "dialog", value: "dialog", },
+				{ text: "animation", icon: "sprite", value: "animation", }, // todo : needs icon
+				// { text: "settings", icon: "settings", value: "settings", }, // todo : name?
 			],
 		});
 
-		menu.add({
-			control: "toggle",
-			text: "grid",
-			icon: showGrid ? "visibility" : "visibility_off",
-			value: showGrid,
-			event: "toggleGrid",
-		});
+		if (controlTab === "edit") {
+			menu.startGroup();
 
-		if (curDataType === "TIL") {
 			menu.add({
 				control: "toggle",
-				text: "wall",
-				icon: data.isWall ? "wall_on" : "wall_off",
-				value: data.isWall,
-				event: "toggleWall",
+				text: "grid",
+				icon: showGrid ? "visibility" : "visibility_off",
+				value: showGrid,
+				event: "toggleGrid",
 			});
-		}
 
-		menu.startGroup();
-
-		menu.add({
-			control: "label",
-			text: "animation:",
-			icon: "paint", // need animation icon?
-		});
-
-		for (var i = 0; i < imageSource.length; i++) {
 			menu.add({
 				control: "button",
-				text: "frame " + i,
-				value: i,
-				event: "selectFrame",
+				text: "find",
+				icon: "search",
+				event: "openFindTool",
 			});
-		}
 
-		if (imageSource.length > 1) {
+			menu.endGroup();
+
+			if (curDataType === "TIL") {
+				menu.add({
+					control: "toggle",
+					text: "wall",
+					icon: data.isWall ? "wall_on" : "wall_off",
+					value: data.isWall,
+					event: "toggleWall",
+				});
+			}
+		}
+		else if (controlTab === "dialog") {
+			if (curDataType === "SPR" || curDataType === "ITM") {
+				menu.add({
+					control: "dialog",
+					name: "dialog",
+					id: data.dlg,
+				});
+			}
+		}
+		else if (controlTab === "animation") {
+			menu.startGroup();
+
+			menu.add({
+				control: "label",
+				text: "animation:",
+				icon: "paint", // need animation icon?
+			});
+
+			for (var i = 0; i < imageSource.length; i++) {
+				menu.add({
+					control: "button",
+					text: "frame " + i,
+					value: i,
+					event: "selectFrame",
+				});
+			}
+
+			if (imageSource.length > 1) {
+				menu.add({
+					control: "button",
+					icon: "delete",
+					event: "deleteFrame",
+				});
+			}
+
 			menu.add({
 				control: "button",
-				icon: "delete",
-				event: "deleteFrame",
+				icon: "add",
+				event: "addFrame",
 			});
+
+			menu.endGroup();
 		}
-
-		menu.add({
-			control: "button",
-			icon: "add",
-			event: "addFrame",
-		});
-
-		menu.endGroup();
 	};
 
 	var testTabVal = 0;
 
-	card.switchTestTab = function(value) {
-		console.log("TEST TAB " + value);
-		testTabVal = value;
-		console.log(typeof(testTabVal));
+	card.changeControlTab = function(value) {
+		controlTab = value;
 	};
 
 	card.toggleGrid = function(value) {
 		console.log("toggle grid ? " + value);
 		showGrid = value;
+	};
+
+	card.openFindTool = function() {
+		showPanel("paintExplorerPanel");
 	};
 
 	card.selectFrame = function(value) {
