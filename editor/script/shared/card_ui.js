@@ -106,6 +106,44 @@ function CardUI() {
 		return toggle;
 	}
 
+	function createTabs(options) {
+		var tabForm = document.createElement("form");
+
+		for (var i = 0; i < options.tabs.length; i++) {
+			var t = options.tabs[i];
+
+			var tabInput = document.createElement("input");
+			tabInput.type = "radio";
+			tabInput.name = options.name;
+			tabInput.id = options.name + "-" + t.value;
+			tabInput.value = t.value;
+			tabForm.appendChild(tabInput);
+
+			if (t.value === options.value) {
+				tabInput.checked = true;
+			}
+
+			tabInput.onclick = function(e) {
+				if (options.onclick) {
+					options.onclick(e.target.value);
+				}
+			};
+
+			var tabLabel = document.createElement("label");
+			tabLabel.setAttribute("for", tabInput.id);
+			tabForm.appendChild(tabLabel);
+
+			tabLabel.appendChild(createIconElement(t.icon));
+
+			var tabName = document.createElement("span");
+			tabName.innerText = t.text;
+			tabLabel.appendChild(tabName);
+		}
+
+		return tabForm;
+	}
+
+
 	// todo : confusing naming with the system cards??? CardView? CardDisplay? CardWindow?
 	function CardView(config) {
 		var self = this; // todo : I don't love this pattern..
@@ -187,40 +225,25 @@ function CardUI() {
 
 		if (card.data) {
 			if (card.data.length > 1) {
-				// todo : rename DATA TYPE SELECT??? */
-				/* CATEGORY SELECT */
-				var categorySelect = document.createElement("form");
-				categorySelect.classList.add("cardui-category");
-				toolRoot.appendChild(categorySelect);
+				var dataTabs = [];
 
 				for (var i = 0; i < card.data.length; i++) {
 					var category = dataCategories[card.data[i]];
+					dataTabs.push({ text: category.name, icon: category.iconId, value: card.data[i], });
+				}
 
-					var categoryOption = document.createElement("input");
-					categoryOption.type = "radio";
-					categoryOption.name = card.name + "-category";
-					categoryOption.id = card.name + "-category-" + card.data[i];
-					categoryOption.value = card.data[i];
-					categorySelect.appendChild(categoryOption);
-
-					categoryOption.onclick = function(e) {
+				toolRoot.appendChild(createTabs({
+					name: card.name + "-data-tabs",
+					tabs: dataTabs,
+					value: card.data[0],
+					onclick: function(value) {
 						if (card.changeDataType) {
-							card.changeDataType(e.target.value);
+							card.changeDataType(value);
 						}
 
 						UpdateMenu();
-					};
-
-					var categoryLabel = document.createElement("label");
-					categoryLabel.setAttribute("for", categoryOption.id);
-					categorySelect.appendChild(categoryLabel);
-
-					categoryLabel.appendChild(createIconElement(category.iconId));
-
-					var categoryName = document.createElement("span");
-					categoryName.innerText = category.name;
-					categoryLabel.appendChild(categoryName);
-				}
+					}
+				}));
 			}
 
 			/* NAV BAR */
