@@ -171,6 +171,13 @@ registerCard(function(card) {
 					value: i,
 					event: "selectFrame",
 				});
+
+				menu.add({
+					control: "thumbnail",
+					type: curDataType,
+					id: dataId,
+					frame: i,
+				});
 			}
 
 			if (imageSource.length > 1) {

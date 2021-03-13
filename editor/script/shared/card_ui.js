@@ -8,6 +8,8 @@ function CardUI() {
 		return new CardView(config);
 	};
 
+	var thumbnailRenderer = new ThumbnailRenderer();
+
 	// todo ... not sure where thie metadata should actually live??
 	var dataCategories = {};
 
@@ -179,6 +181,11 @@ function CardUI() {
 
 		return widget.GetElement();
 	}
+
+	function createThumbnail(options) {
+		var thumbnailImg = document.createElement("img");
+		return thumbnailImg;
+	};
 
 	// todo : confusing naming with the system cards??? CardView? CardDisplay? CardWindow?
 	function CardView(config) {
@@ -474,6 +481,9 @@ function CardUI() {
 					dlgId: options.id, // todo : better name??
 					parentId: cardRoot.id, // is this the right thing?
 				});
+			}
+			else if (options.control === "thumbnail") {
+				control = createThumbnail({});
 			}
 
 			if (control) {
