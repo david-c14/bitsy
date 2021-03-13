@@ -24,17 +24,34 @@
 	flex-grow: 1;
 }
 
+.cardui-main.cardui-size-xsmall {
+	width: 128px;
+}
+
+.cardui-main.cardui-size-small {
+	width: 256px;
+}
+
+.cardui-main.cardui-size-medium {
+	width: 384px;
+}
+
+.cardui-main.cardui-size-large {
+	width: 512px;
+}
+
 .cardui-nav {
 	display: flex;
 }
 
 .cardui-nav-name {
 	flex-grow: 1;
+	width: 10px; /* hack.. */
 }
 
 .cardui-canvas {
-	height: 256px; /* HARDCODED ?? */
-	width: 256px;
+	/*height: 256px;*/
+	/*width: 256px;*/
 }
 
 .cardui-menu {
@@ -43,7 +60,8 @@
 }
 
 .cardui-menu-group {
-
+	display: flex;
+	flex-wrap: wrap;
 }
 
 /* TEST STYLE */
@@ -80,6 +98,7 @@
 }
 
 .cardui-main {
+	margin: 10px;
 	border: dotted 1px black;
 }
 

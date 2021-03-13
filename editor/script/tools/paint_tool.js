@@ -17,6 +17,11 @@ todo : what's the best way to handle config for cards (especially pre-load confi
 
 registerCard(function(card) {
 	card.name = "paint";
+	card.icon = "paint";
+	// todo : what about title? loc?
+
+	// todo : name? part of some larger config?
+	card.sizeHint = "S"; // todo : enum? string? int?
 
 	// naming? how are these defined? (data?)
 	card.data = [ "AVA", "TIL", "SPR", "ITM", ];

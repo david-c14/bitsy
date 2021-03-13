@@ -1081,9 +1081,9 @@ function start() {
 	paintCard = card.load("paint");
 	var paintCardView = cardUI.CreateCardView({
 		card: paintCard,
-		id: "paintTool", // todo : inconsistent names..
-		title: "new paint",
-		iconId: "paint",
+		// id: "paintTool", // todo : inconsistent names..
+		// title: "new paint",
+		// iconId: "paint",
 	});
 
 	// hacky? hook ups with existing panel system

@@ -120,7 +120,7 @@ function CardUI() {
 		/* ROOT ELEMENT */
 		var cardRoot = document.createElement("div");
 		cardRoot.classList.add("cardui-card");
-		cardRoot.id = config.id;
+		cardRoot.id = card.name + "Tool"; //config.id;
 
 		/* TITLE BAR */
 		var titleBar = document.createElement("div");
@@ -134,12 +134,12 @@ function CardUI() {
 
 		var cardIcon = document.createElement("span");
 		cardIcon.classList.add("cardui-icon");
-		cardIcon.appendChild(createIconElement(config.iconId));
+		cardIcon.appendChild(createIconElement(card.icon)); //config.iconId));
 		titleBar.appendChild(cardIcon);
 
 		var titleText = document.createElement("span");
 		titleText.classList.add("cardui-title");
-		titleText.innerText = config.title;
+		titleText.innerText = card.name; // config.title;
 		titleBar.appendChild(titleText);
 
 		// var closeButton = document.createElement("button");
@@ -164,6 +164,25 @@ function CardUI() {
 		/* TOOL MAIN ELEMENT */
 		var toolRoot = document.createElement("div");
 		toolRoot.classList.add("cardui-main");
+
+		if (card.sizeHint === "XS") {
+			toolRoot.classList.add("cardui-size-xsmall");
+		}
+		else if (card.sizeHint === "S") {
+			toolRoot.classList.add("cardui-size-small");
+		}
+		else if (card.sizeHint === "M") {
+			toolRoot.classList.add("cardui-size-medium");
+		}
+		else if (card.sizeHint === "L") {
+			toolRoot.classList.add("cardui-size-large");
+		}
+		else {
+			// make small the default
+			toolRoot.classList.add("cardui-size-small");
+		}
+
+
 		cardRoot.appendChild(toolRoot);
 
 		if (card.data) {
