@@ -64,6 +64,15 @@
 	flex-wrap: wrap;
 }
 
+.cardui-tab-group {
+	display: flex;
+	flex-grow: 1;
+}
+
+.cardui-tab-item {
+	flex-grow: 1;
+}
+
 /* TEST STYLE */
 .cardui-card {
 /*	width: 300px;

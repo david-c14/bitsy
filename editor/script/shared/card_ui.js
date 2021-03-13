@@ -106,8 +106,10 @@ function CardUI() {
 		return toggle;
 	}
 
+	// todo : should I pick a more generic name than tab? switcher? segments? options? radio? select?
 	function createTabs(options) {
 		var tabForm = document.createElement("form");
+		tabForm.classList.add("cardui-tab-group");
 
 		for (var i = 0; i < options.tabs.length; i++) {
 			var t = options.tabs[i];
@@ -132,6 +134,7 @@ function CardUI() {
 			};
 
 			var tabLabel = document.createElement("label");
+			tabLabel.classList.add("cardui-tab-item");
 			tabLabel.setAttribute("for", tabInput.id);
 			tabForm.appendChild(tabLabel);
 
