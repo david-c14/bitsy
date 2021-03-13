@@ -112,20 +112,22 @@ function CardUI() {
 		for (var i = 0; i < options.tabs.length; i++) {
 			var t = options.tabs[i];
 
+			var value = (t.value != undefined ? t.value : "" + i);
+
 			var tabInput = document.createElement("input");
 			tabInput.type = "radio";
 			tabInput.name = options.name;
-			tabInput.id = options.name + "-" + t.value;
-			tabInput.value = t.value;
+			tabInput.id = options.name + "-" + value;
+			tabInput.value = value;
 			tabForm.appendChild(tabInput);
 
-			if (t.value === options.value) {
+			if (value === options.value) {
 				tabInput.checked = true;
 			}
 
 			tabInput.onclick = function(e) {
 				if (options.onclick) {
-					options.onclick(e.target.value);
+					options.onclick(e);
 				}
 			};
 
@@ -133,11 +135,15 @@ function CardUI() {
 			tabLabel.setAttribute("for", tabInput.id);
 			tabForm.appendChild(tabLabel);
 
-			tabLabel.appendChild(createIconElement(t.icon));
+			if (t.icon) {
+				tabLabel.appendChild(createIconElement(t.icon));
+			}
 
-			var tabName = document.createElement("span");
-			tabName.innerText = t.text;
-			tabLabel.appendChild(tabName);
+			if (t.text) {
+				var tabName = document.createElement("span");
+				tabName.innerText = t.text;
+				tabLabel.appendChild(tabName);
+			}
 		}
 
 		return tabForm;
@@ -236,9 +242,9 @@ function CardUI() {
 					name: card.name + "-data-tabs",
 					tabs: dataTabs,
 					value: card.data[0],
-					onclick: function(value) {
+					onclick: function(e) {
 						if (card.changeDataType) {
-							card.changeDataType(value);
+							card.changeDataType(e.target.value);
 						}
 
 						UpdateMenu();
@@ -417,6 +423,17 @@ function CardUI() {
 					value: options.value,
 					onclick: function(e) {
 						card[options.event](e.target.checked);
+						UpdateMenu();
+					},
+				});
+			}
+			else if (options.control === "tabs") {
+				control = createTabs({
+					name: options.name, // todo : auto-generate this??
+					value: options.value,
+					tabs: options.tabs,
+					onclick: function(e) {
+						card[options.event](e.target.value);
 						UpdateMenu();
 					},
 				});

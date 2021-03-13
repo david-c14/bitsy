@@ -99,7 +99,19 @@ registerCard(function(card) {
 		var store = dataStorage[curDataType].store;
 		var data = store[dataId];
 
-		// menu.setName(data.name); 
+		// menu.setName(data.name);
+
+		menu.add({
+			control: "tabs",
+			name: "test",
+			value: testTabVal,
+			event: "switchTestTab",
+			tabs: [
+				{ text: "a" },
+				{ text: "b" },
+				{ text: "c" },
+			],
+		});
 
 		menu.add({
 			control: "toggle",
@@ -151,6 +163,14 @@ registerCard(function(card) {
 		});
 
 		menu.endGroup();
+	};
+
+	var testTabVal = 0;
+
+	card.switchTestTab = function(value) {
+		console.log("TEST TAB " + value);
+		testTabVal = value;
+		console.log(typeof(testTabVal));
 	};
 
 	card.toggleGrid = function(value) {
