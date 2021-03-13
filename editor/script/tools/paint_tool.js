@@ -94,6 +94,8 @@ registerCard(function(card) {
 		var store = dataStorage[curDataType].store;
 		var data = store[dataId];
 
+		menu.setName(data.name);
+
 		menu.add({
 			control: "toggle",
 			text: "grid",

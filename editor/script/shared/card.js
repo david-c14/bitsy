@@ -55,3 +55,13 @@ menu.endGroup = function() {
 
 	_curCardUI.EndGroup();
 }
+
+// TODO : I'm not sure this is the model I want for this
+// this is sort of a push model, but maybe the UI should be pulling from the card??
+menu.setName = function(name) {
+	if (_curCardUI === null) {
+		return;
+	}
+
+	_curCardUI.SetName(name);
+}

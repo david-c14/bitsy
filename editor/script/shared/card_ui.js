@@ -212,9 +212,10 @@ function CardUI() {
 			nav.classList.add("cardui-nav");
 			toolRoot.appendChild(nav);
 
-			nameControl = document.createElement("span");
+			nameControl = document.createElement("input");
 			nameControl.classList.add("cardui-nav-name");
-			nameControl.innerText = "NAME";
+			nameControl.type = "text";
+			// nameControl.innerText = "NAME";
 			nav.appendChild(nameControl);
 
 			nav.appendChild(createButton({
@@ -418,6 +419,10 @@ function CardUI() {
 				}
 			}, -1); // todo : what should the interval be really? not constant..
 		}
+
+		this.SetName = function(name) {
+			nameControl.value = name;
+		};
 
 		// ??? correct name and place?
 		this.Boot = function() {
