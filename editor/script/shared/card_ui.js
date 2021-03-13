@@ -215,6 +215,11 @@ function CardUI() {
 			nameControl = document.createElement("input");
 			nameControl.classList.add("cardui-nav-name");
 			nameControl.type = "text";
+			nameControl.onchange = function(e) {
+				if (card.changeDataName) {
+					card.changeDataName(e.target.value);
+				}
+			};
 			// nameControl.innerText = "NAME";
 			nav.appendChild(nameControl);
 
@@ -293,6 +298,13 @@ function CardUI() {
 
 			if (card.menu) {
 				card.menu();
+			}
+
+			if (card.getDataName) {
+				nameControl.value = card.getDataName();
+			}
+			else {
+				nameControl.value = "";
 			}
 		}
 
@@ -420,9 +432,9 @@ function CardUI() {
 			}, -1); // todo : what should the interval be really? not constant..
 		}
 
-		this.SetName = function(name) {
-			nameControl.value = name;
-		};
+		// this.SetName = function(name) {
+		// 	nameControl.value = name;
+		// };
 
 		// ??? correct name and place?
 		this.Boot = function() {

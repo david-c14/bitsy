@@ -94,7 +94,7 @@ registerCard(function(card) {
 		var store = dataStorage[curDataType].store;
 		var data = store[dataId];
 
-		menu.setName(data.name);
+		// menu.setName(data.name); 
 
 		menu.add({
 			control: "toggle",
@@ -327,6 +327,20 @@ registerCard(function(card) {
 		}
 
 		onSelect(idList[0]);
+	};
+
+	// todo : I don't really like this function name..
+	card.getDataName = function() {
+		var store = dataStorage[curDataType].store;
+		var data = store[dataId];
+		return data.name;
+	};
+
+	card.changeDataName = function(name) {
+		var store = dataStorage[curDataType].store;
+		var data = store[dataId];
+		data.name = name;
+		refreshGameData();
 	};
 
 	function onSelect(id) {
