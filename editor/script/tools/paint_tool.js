@@ -159,26 +159,10 @@ registerCard(function(card) {
 			menu.startGroup();
 
 			menu.add({
-				control: "label",
-				text: "animation:",
-				icon: "paint", // need animation icon?
+				control: "thumbnail",
+				type: curDataType, // todo : name?
+				id: dataId,
 			});
-
-			for (var i = 0; i < imageSource.length; i++) {
-				menu.add({
-					control: "button",
-					text: "frame " + i,
-					value: i,
-					event: "selectFrame",
-				});
-
-				menu.add({
-					control: "thumbnail",
-					type: curDataType,
-					id: dataId,
-					frame: i,
-				});
-			}
 
 			if (imageSource.length > 1) {
 				menu.add({
@@ -193,6 +177,21 @@ registerCard(function(card) {
 				icon: "add",
 				event: "addFrame",
 			});
+
+			menu.endGroup();
+
+			menu.startGroup();
+
+			for (var i = 0; i < imageSource.length; i++) {
+				menu.add({
+					control: "thumbnail",
+					type: curDataType, // todo : name?
+					id: dataId,
+					frame: i,
+					value: i,
+					event: "selectFrame",
+				});
+			}
 
 			menu.endGroup();
 		}

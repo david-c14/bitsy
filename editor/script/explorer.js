@@ -390,13 +390,18 @@ function ThumbnailRenderer() {
 
 		var drawingFrameData = [];
 
-		if( isAnimated || frameIndex == 0 ) {
-			drawingId.draw( drawingThumbnailCtx, 0, 0, palId, 0 /*frameIndex*/ );
-			drawingFrameData.push( drawingThumbnailCtx.getImageData(0,0,8*scale,8*scale).data );
+		// oof this code really needs to be re-written properly
+		if (isAnimated) {
+			var frameCount = drawingId.getEngineObject().animation.frameCount;
+
+			for (var i = 0; i < frameCount; i++) {
+				drawingId.draw(drawingThumbnailCtx, 0, 0, palId, i);
+				drawingFrameData.push(drawingThumbnailCtx.getImageData(0, 0, 8 * scale, 8 * scale).data);
+			}
 		}
-		if( isAnimated || frameIndex == 1 ) {
-			drawingId.draw( drawingThumbnailCtx, 0, 0, palId, 1 /*frameIndex*/ );
-			drawingFrameData.push( drawingThumbnailCtx.getImageData(0,0,8*scale,8*scale).data );
+		else {
+			drawingId.draw(drawingThumbnailCtx, 0, 0, palId, frameIndex);
+			drawingFrameData.push(drawingThumbnailCtx.getImageData(0, 0, 8 * scale, 8 * scale).data);
 		}
 
 		// create encoder

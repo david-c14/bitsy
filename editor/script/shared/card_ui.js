@@ -8,8 +8,6 @@ function CardUI() {
 		return new CardView(config);
 	};
 
-	var thumbnailRenderer = new ThumbnailRenderer();
-
 	// todo ... not sure where thie metadata should actually live??
 	var dataCategories = {};
 
@@ -184,6 +182,36 @@ function CardUI() {
 
 	function createThumbnail(options) {
 		var thumbnailImg = document.createElement("img");
+		thumbnailImg.classList.add('cardui-thumbnail');
+
+		thumbnailImg.onclick = options.onclick;
+
+		var tileType;
+
+		if (options.type === "AVA") {
+			tileType = TileType.Avatar;
+		}
+		else if (options.type === "SPR") {
+			tileType = TileType.Sprite;
+		}
+		else if (options.type === "TIL") {
+			tileType = TileType.Tile;
+		}
+		else if (options.type === "ITM") {
+			tileType = TileType.Item;
+		}
+
+		// TODO : I really need to get rid of this annoying construct
+		var drawingId = new DrawingId(tileType, options.id);
+
+		var thumbnailRenderer = new ThumbnailRenderer();
+
+		thumbnailRenderer.Render(
+			null, // imgId
+			drawingId,
+			options.frame,
+			thumbnailImg);
+
 		return thumbnailImg;
 	};
 
@@ -483,7 +511,17 @@ function CardUI() {
 				});
 			}
 			else if (options.control === "thumbnail") {
-				control = createThumbnail({});
+				control = createThumbnail({
+					type: options.type,
+					id: options.id,
+					frame: options.frame,
+					onclick: function() {
+						if (options.event) {
+							card[options.event](options.value);
+							UpdateMenu();
+						}
+					},
+				});
 			}
 
 			if (control) {

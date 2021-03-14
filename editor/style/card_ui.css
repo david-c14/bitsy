@@ -73,6 +73,12 @@
 	flex-grow: 1;
 }
 
+.cardui-thumbnail {
+	/*background: black;*/
+	width: 32px; /* hardcoded!! */
+	height: 32px;
+}
+
 /* TEST STYLE */
 .cardui-card {
 /*	width: 300px;
