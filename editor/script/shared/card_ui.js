@@ -184,6 +184,10 @@ function CardUI() {
 		var thumbnailImg = document.createElement("img");
 		thumbnailImg.classList.add('cardui-thumbnail');
 
+		if (options.selected) {
+			thumbnailImg.classList.add('cardui-selected');
+		}
+
 		thumbnailImg.onclick = options.onclick;
 
 		var tileType;
@@ -515,6 +519,7 @@ function CardUI() {
 					type: options.type,
 					id: options.id,
 					frame: options.frame,
+					selected: options.selected,
 					onclick: function() {
 						if (options.event) {
 							card[options.event](options.value);

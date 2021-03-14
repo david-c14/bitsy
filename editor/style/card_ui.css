@@ -77,6 +77,12 @@
 	/*background: black;*/
 	width: 32px; /* hardcoded!! */
 	height: 32px;
+	padding: 2px;
+	border: solid 2px white;
+}
+
+.cardui-thumbnail.cardui-selected {
+	border-color: black; /* temp */
 }
 
 /* TEST STYLE */

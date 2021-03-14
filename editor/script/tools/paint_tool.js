@@ -162,6 +162,7 @@ registerCard(function(card) {
 				control: "thumbnail",
 				type: curDataType, // todo : name?
 				id: dataId,
+				selected: true,
 			});
 
 			if (imageSource.length > 1) {
@@ -189,6 +190,7 @@ registerCard(function(card) {
 					id: dataId,
 					frame: i,
 					value: i,
+					selected: frameIndex === i,
 					event: "selectFrame",
 				});
 			}
