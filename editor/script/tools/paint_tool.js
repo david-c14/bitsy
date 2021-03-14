@@ -83,18 +83,45 @@ registerCard(function(card) {
 		}
 	}
 
-	card.click = function(x, y) {
+	var isCursorDown = false;
+	var paintValue = 0;
+
+	card.cursorDown = function(x, y) {
+		isCursorDown = true;
+
 		// convert screen coords to drawing coords
 		var pX = Math.floor(x / bigPixelSize);
 		var pY = Math.floor(y / bigPixelSize);
 
-		imageSource[frameIndex][pY][pX] = (imageSource[frameIndex][pY][pX] > 0) ? 0 : 1;
+		paintValue = (imageSource[frameIndex][pY][pX] > 0) ? 0 : 1;
+
+		imageSource[frameIndex][pY][pX] = paintValue;
 
 		// somewhat hacky
 		renderer.SetImageSource(drawingId, imageSource);
 
 		// super hacky..
 		refreshGameData();
+	};
+
+	card.cursorMove = function(x, y) {
+		if (isCursorDown) {
+			// convert screen coords to drawing coords
+			var pX = Math.floor(x / bigPixelSize);
+			var pY = Math.floor(y / bigPixelSize);
+
+			imageSource[frameIndex][pY][pX] = paintValue;
+
+			// somewhat hacky
+			renderer.SetImageSource(drawingId, imageSource);
+
+			// super hacky..
+			refreshGameData();
+		}
+	};
+
+	card.cursorUp = function(x, y) {
+		isCursorDown = false;
 	};
 
 	card.menu = function() {
@@ -122,7 +149,7 @@ registerCard(function(card) {
 			menu.add({
 				control: "toggle",
 				text: "grid",
-				icon: showGrid ? "visibility" : "visibility_off",
+				icon: (showGrid ? "visibility" : "visibility_off"),
 				value: showGrid,
 				event: "toggleGrid",
 			});
@@ -140,10 +167,35 @@ registerCard(function(card) {
 				menu.add({
 					control: "toggle",
 					text: "wall",
-					icon: data.isWall ? "wall_on" : "wall_off",
+					icon: (data.isWall ? "wall_on" : "wall_off"),
 					value: data.isWall,
 					event: "toggleWall",
 				});
+			}
+			else if (curDataType === "ITM") {
+				menu.startGroup();
+
+				menu.add({
+					control: "label",
+					text: "inventory:",
+					icon: "item",
+				});
+
+				var inventoryCount = player().inventory[dataId];
+
+				menu.add({
+					control: "number", // todo : name? numberField, numberInput, numberPicker?
+					value: (inventoryCount != undefined ? inventoryCount : 0),
+					event: "onInventoryChange",
+				});
+
+				menu.add({
+					control: "button",
+					icon: "open_tool",
+					event: "openInventoryTool",
+				});
+
+				menu.endGroup();
 			}
 		}
 		else if (controlTab === "dialog") {
@@ -156,6 +208,7 @@ registerCard(function(card) {
 			}
 		}
 		else if (controlTab === "animation") {
+			// preview
 			menu.startGroup();
 
 			menu.add({
@@ -181,6 +234,7 @@ registerCard(function(card) {
 
 			menu.endGroup();
 
+			// frames
 			menu.startGroup();
 
 			for (var i = 0; i < imageSource.length; i++) {
@@ -190,7 +244,7 @@ registerCard(function(card) {
 					id: dataId,
 					frame: i,
 					value: i,
-					selected: frameIndex === i,
+					selected: (frameIndex === i),
 					event: "selectFrame",
 				});
 			}
@@ -212,6 +266,16 @@ registerCard(function(card) {
 
 	card.openFindTool = function() {
 		showPanel("paintExplorerPanel");
+	};
+
+	card.openInventoryTool = function() {
+		showPanel("inventoryPanel");
+	};
+
+	card.onInventoryChange = function(value) {
+		// console.log("inventory " + value);
+		player().inventory[dataId] = value;
+		refreshGameData();
 	};
 
 	card.selectFrame = function(value) {
@@ -274,6 +338,7 @@ registerCard(function(card) {
 		var i = idList.indexOf(dataId);
 
 		i--;
+
 		if (i < 0) {
 			i = (idList.length - 1);
 		}
@@ -295,6 +360,7 @@ registerCard(function(card) {
 		var i = idList.indexOf(dataId);
 
 		i++;
+
 		if (i >= idList.length) {
 			i = 0;
 		}

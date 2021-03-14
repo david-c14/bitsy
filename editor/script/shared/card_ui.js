@@ -219,6 +219,15 @@ function CardUI() {
 		return thumbnailImg;
 	};
 
+	function createNumberInput(options) {
+		var input = document.createElement("input");
+		input.type = "number";
+		input.value = options.value;
+		input.onchange = options.onchange;
+
+		return input;
+	};
+
 	// todo : confusing naming with the system cards??? CardView? CardDisplay? CardWindow?
 	function CardView(config) {
 		var self = this; // todo : I don't love this pattern..
@@ -528,6 +537,17 @@ function CardUI() {
 					},
 				});
 			}
+			else if (options.control === "number") {
+				control = createNumberInput({
+					value: options.value,
+					onchange: function(e) {
+						if (options.event) {
+							card[options.event](e.target.value);
+							UpdateMenu();
+						}
+					},
+				});
+			}
 
 			if (control) {
 				_curGroup.appendChild(control);
@@ -560,15 +580,71 @@ function CardUI() {
 				var y = Math.floor(off.y);
 				// END
 
+				if (card.cursorDown) {
+					card.cursorDown(x, y);
+					didCursorAction = true;
+				}
+			};
 
-				console.log("CLICK " + x + " " + y);
+			var didCursorAction = false;
 
-				// todo : what are the actual callbacks I want to support?
-				if (card.click) {
-					card.click(x, y);
+			canvas.onmousemove = function(e) {
+				// HACKY COPY FROM PAINT TOOL
+				e.preventDefault();
+
+				if (isPlayMode) {
+					return; //can't paint during play mode
 				}
 
-				UpdateMenu();
+				console.log("PAINT TOOL!!!");
+				console.log(e);
+
+				var off = getOffset(e);
+
+				off = mobileOffsetCorrection(off,e,(128)); // todo : hardcoded size..
+
+				var x = Math.floor(off.x);
+				var y = Math.floor(off.y);
+				// END
+
+
+				if (card.cursorMove) {
+					card.cursorMove(x, y);
+					didCursorAction = true;
+				}
+			};
+
+			canvas.onmouseup = function(e) {
+				var tempDidCursorAction = didCursorAction;
+				didCursorAction = false;
+
+				// HACKY COPY FROM PAINT TOOL
+				e.preventDefault();
+
+				if (isPlayMode) {
+					return; //can't paint during play mode
+				}
+
+				console.log("PAINT TOOL!!!");
+				console.log(e);
+
+				var off = getOffset(e);
+
+				off = mobileOffsetCorrection(off,e,(128)); // todo : hardcoded size..
+
+				var x = Math.floor(off.x);
+				var y = Math.floor(off.y);
+				// END
+
+
+				if (card.cursorUp) {
+					card.cursorUp(x, y);
+					tempDidCursorAction = true;
+				}
+
+				if (tempDidCursorAction) {
+					UpdateMenu();
+				}
 			};
 
 			// draw loop
