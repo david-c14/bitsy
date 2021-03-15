@@ -137,7 +137,7 @@ installCard(function(card) {
 
 		menu.add({
 			control: "tabs",
-			name: "test",
+			name: "paintControlTabs", // todo : should this be generated?
 			value: controlTab,
 			event: "changeControlTab",
 			tabs: [
