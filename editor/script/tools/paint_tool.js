@@ -58,6 +58,9 @@ registerCard(function(card) {
 	}
 
 	card.draw = function() {
+		var store = dataStorage[curDataType].store;
+		var data = store[dataId];
+
 		// use current palette
 		var r = room[curRoom];
 		var colors = palette[r.pal].colors;
@@ -66,13 +69,15 @@ registerCard(function(card) {
 		gfx.setPaletteColor(1, colors[1][0], colors[1][1], colors[1][2]);
 		gfx.setPaletteColor(2, colors[2][0], colors[2][1], colors[2][2]);
 
+		var colorIndex = data.col;
+
 		gfx.clear(0);
 
 		if (imageSource) {
 			for (var y = 0; y < tilesize; y++) {
 				for (var x = 0; x < tilesize; x++) {
 					if (imageSource[frameIndex][y][x] > 0) {
-						drawBigPixel(1, x, y);
+						drawBigPixel(colorIndex, x, y);
 					}
 
 					if (showGrid) {
