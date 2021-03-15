@@ -1076,31 +1076,28 @@ function start() {
 
 
 	// HACKY CARD CREATION TEST
-	var editorContent = document.getElementById("editorContent");
-
 	paintCard = card.load("paint");
-	var paintCardView = cardUI.CreateCardView({
-		card: paintCard,
-		// id: "paintTool", // todo : inconsistent names..
-		// title: "new paint",
-		// iconId: "paint",
-	});
+	addCardViewToLegacyUI(paintCard);
 
-	// hacky? hook ups with existing panel system
-	paintCardView.AddStyle("panel"); // todo : decouple style from grab-ability
-	paintCardView.OnGrab(grabCard);
-	paintCardView.OnClose(function() { hidePanel("trackTool") }); // this is slightly broken (animation fails)
-
-	editorContent.appendChild(paintCardView.GetElement());
-
-	paintCardView.Boot();
-	// paintCard.select("a");
-	// paintCard.boot();
+	// card.load("settings");
+	settingsCard = card.load("settings");
+	addCardViewToLegacyUI(settingsCard);
 }
 
-// HACKY GLOBALS!!!
-var cardUI = new CardUI();
-var paintCard;
+function addCardViewToLegacyUI(newCard) {
+	var editorContent = document.getElementById("editorContent");
+
+	var cardView = cardUI.CreateCardView(newCard);
+
+	// hacky? hook ups with existing panel system
+	cardView.AddStyle("panel"); // todo : decouple style from grab-ability
+	cardView.OnGrab(grabCard);
+	cardView.OnClose(function() { hidePanel(newCard.name + "Tool") });
+
+	editorContent.appendChild(cardView.GetElement());
+
+	cardView.Boot();
+}
 
 function newDrawing() {
 	paintTool.newDrawing();
@@ -3641,3 +3638,9 @@ function hideFontMissingCharacterWarning() {
 
 /* ICONS */
 var iconUtils = new IconUtils(); // TODO : move?
+
+/* NEW CARD SYSTEM */
+// HACKY GLOBALS!!!
+var cardUI = new CardUI();
+var paintCard;
+var settingsCard;

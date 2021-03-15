@@ -1,5 +1,5 @@
 // public
-function registerCard(initFunc) { // todo : should this be a free floating func?
+function installCard(initFunc) { // todo : should this be a free floating func?
 	var c = {};
 	initFunc(c);
 

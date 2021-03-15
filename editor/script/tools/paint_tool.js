@@ -15,7 +15,7 @@ todo : what about localization??
 todo : what's the best way to handle config for cards (especially pre-load config? is there pre-load config?)
 */
 
-registerCard(function(card) {
+installCard(function(card) {
 	card.name = "paint";
 	card.icon = "paint";
 	// todo : what about title? loc?

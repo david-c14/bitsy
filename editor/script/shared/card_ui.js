@@ -4,8 +4,8 @@ function CardUI() {
 		return iconUtils.CreateIcon(id);
 	}
 
-	this.CreateCardView = function(config) {
-		return new CardView(config);
+	this.CreateCardView = function(card) {
+		return new CardView(card);
 	};
 
 	// todo ... not sure where thie metadata should actually live??
@@ -229,11 +229,11 @@ function CardUI() {
 	};
 
 	// todo : confusing naming with the system cards??? CardView? CardDisplay? CardWindow?
-	function CardView(config) {
+	function CardView(card) {
 		var self = this; // todo : I don't love this pattern..
 
 		/* CARD MODULE */
-		card = config.card;
+		// card = config.card;
 
 		/* EVENT HANDLERS */
 		var onGrabHandler = null;
@@ -426,11 +426,13 @@ function CardUI() {
 				card.menu();
 			}
 
-			if (card.getDataName) {
-				nameControl.value = card.getDataName();
-			}
-			else {
-				nameControl.value = "";
+			if (nameControl) {
+				if (card.getDataName) {
+					nameControl.value = card.getDataName();
+				}
+				else {
+					nameControl.value = "";
+				}
 			}
 		}
 
@@ -663,7 +665,10 @@ function CardUI() {
 
 		// ??? correct name and place?
 		this.Boot = function() {
-			card.boot();
+			if (card.boot) {
+				card.boot();
+			}
+
 			UpdateMenu();
 		}
 	}
