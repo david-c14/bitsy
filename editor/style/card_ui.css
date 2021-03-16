@@ -75,8 +75,11 @@
 
 .cardui-thumbnail {
 	/*background: black;*/
-	width: 32px; /* hardcoded!! */
-	height: 32px;
+	/* hardcoded! */
+/*	width: 32px; 
+	height: 32px;*/
+	width: 15%;
+	height: auto;
 	padding: 2px;
 	border: solid 2px white;
 }
