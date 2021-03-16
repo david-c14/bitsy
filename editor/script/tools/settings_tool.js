@@ -104,6 +104,22 @@ installCard(function(card) {
 			menu.startGroup();
 
 			menu.add({
+				control: "button",
+				text: "download font",
+				icon: "download",
+			});
+
+			menu.add({
+				control: "button",
+				text: "upload font",
+				icon: "upload",
+			});
+
+			menu.endGroup();
+
+			menu.startGroup();
+
+			menu.add({
 				control: "label",
 				text: "text direction:",
 			});
