@@ -73,13 +73,19 @@ installCard(function(card) {
 				text: "language:",
 			});
 
+			var languageList = localization.GetLanguageList();
+			var languageOptions = [];
+			for (var i = 0; i < languageList.length; i++) {
+				languageOptions.push({
+					text: languageList[i].name,
+					value: languageList[i].id,
+				});
+			}
+
 			menu.add({
 				control: "select",
 				// todo : standardize names with "tabs" control?
-				options: [
-					{ text: "option A", value: "A", },
-					{ text: "option B", value: "B", },
-				],
+				options: languageOptions,
 			});
 
 			menu.endGroup();
