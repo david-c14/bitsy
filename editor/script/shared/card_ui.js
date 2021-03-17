@@ -34,6 +34,7 @@ function CardUI() {
 	// shared controls (should these go in their own file??)
 	function createLabel(options) {
 		var label = document.createElement("span");
+		label.classList.add("cardui-label");
 
 		if (options.icon) {
 			label.appendChild(iconUtils.CreateIcon(options.icon));

@@ -107,11 +107,43 @@ installCard(function(card) {
 
 			menu.add({
 				control: "select",
+				value: fontName,
 				options: [
-					{ text: "option A", value: "A", },
-					{ text: "option B", value: "B", },
+					{
+						value: "ascii_small",
+						text: localization.GetStringOrFallback("font_ascii_small", "ASCII Small"),
+					},
+					{
+						value: "unicode_european_small",
+						text: localization.GetStringOrFallback("font_unicode_european_small", "Unicode European Small"),
+					},
+					{
+						value: "unicode_european_large",
+						text: localization.GetStringOrFallback("font_unicode_european_large", "Unicode European Large"),
+					},
+					{
+						value: "unicode_asian",
+						text: localization.GetStringOrFallback("font_unicode_asian", "Unicode Asian"),
+					},
+					{
+						value: "arabic",
+						text: localization.GetStringOrFallback("font_arabic", "Arabic"),
+					},
+					{
+						value: "custom",
+						text: "Custom", // todo - localize!
+					},
 				],
 			});
+
+			menu.endGroup();
+
+			menu.add({
+				control: "label",
+				text: localization.GetString("font_" + fontName + "_description"),
+			});
+
+			menu.startGroup();
 
 			menu.add({
 				control: "button",
@@ -126,11 +158,6 @@ installCard(function(card) {
 			});
 
 			menu.endGroup();
-
-			menu.add({
-				control: "label",
-				text: "<insert font description>",
-			});
 
 			menu.startGroup();
 

@@ -88,6 +88,10 @@
 	border-color: black; /* temp */
 }
 
+.cardui-label {
+	white-space: normal;
+}
+
 /* TEST STYLE */
 .cardui-card {
 /*	width: 300px;
