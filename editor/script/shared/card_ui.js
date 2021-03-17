@@ -228,6 +228,19 @@ function CardUI() {
 		return input;
 	};
 
+	function createSelect(options) {
+		var select = document.createElement("select");
+
+		for (var i = 0; i < options.options.length; i++) {
+			var option = document.createElement("option");
+			option.innerText = options.options[i].text;
+			option.value = options.options[i].value;
+			select.appendChild(option);
+		}
+
+		return select;
+	};
+
 	// todo : confusing naming with the system cards??? CardView? CardDisplay? CardWindow?
 	function CardView(card) {
 		var self = this; // todo : I don't love this pattern..
@@ -548,6 +561,11 @@ function CardUI() {
 							UpdateMenu();
 						}
 					},
+				});
+			}
+			else if (options.control === "select") {
+				control = createSelect({
+					options: options.options, // naming is funny
 				});
 			}
 

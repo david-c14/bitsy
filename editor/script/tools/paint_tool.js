@@ -143,8 +143,8 @@ installCard(function(card) {
 			tabs: [
 				{ text: "edit", icon: "edit", value: "edit", },
 				{ text: "dialog", icon: "dialog", value: "dialog", },
-				{ text: "animation", icon: "sprite", value: "animation", }, // todo : needs icon
-				// { text: "settings", icon: "settings", value: "settings", }, // todo : name?
+				{ text: "animate", icon: "sprite", value: "animation", }, // todo : needs icon
+				{ text: "rules", icon: "settings", value: "rules", }, // todo : also needs icons
 			],
 		});
 
@@ -167,7 +167,63 @@ installCard(function(card) {
 			});
 
 			menu.endGroup();
+		}
+		else if (controlTab === "dialog") {
+			if (curDataType === "SPR" || curDataType === "ITM") {
+				menu.add({
+					control: "dialog",
+					name: "dialog",
+					id: data.dlg,
+				});
+			}
+		}
+		else if (controlTab === "animation") {
+			// preview
+			menu.startGroup();
 
+			menu.add({
+				control: "thumbnail",
+				type: curDataType, // todo : name?
+				id: dataId,
+				selected: true,
+			});
+
+			if (imageSource.length > 1) {
+				menu.add({
+					control: "button",
+					icon: "delete",
+					event: "deleteFrame",
+				});
+			}
+
+			if (flags.SUPER_ANM || imageSource.length < shortAnimationMax) {
+				menu.add({
+					control: "button",
+					icon: "add",
+					event: "addFrame",
+				});
+			}
+
+			menu.endGroup();
+
+			// frames
+			menu.startGroup();
+
+			for (var i = 0; (i < imageSource.length) && (flags.SUPER_ANM || i < shortAnimationMax); i++) {
+				menu.add({
+					control: "thumbnail",
+					type: curDataType, // todo : name?
+					id: dataId,
+					frame: i,
+					value: i,
+					selected: (frameIndex === i),
+					event: "selectFrame",
+				});
+			}
+
+			menu.endGroup();
+		}
+		else if (controlTab === "rules") {
 			if (curDataType === "TIL") {
 				menu.add({
 					control: "toggle",
@@ -202,59 +258,6 @@ installCard(function(card) {
 
 				menu.endGroup();
 			}
-		}
-		else if (controlTab === "dialog") {
-			if (curDataType === "SPR" || curDataType === "ITM") {
-				menu.add({
-					control: "dialog",
-					name: "dialog",
-					id: data.dlg,
-				});
-			}
-		}
-		else if (controlTab === "animation") {
-			// preview
-			menu.startGroup();
-
-			menu.add({
-				control: "thumbnail",
-				type: curDataType, // todo : name?
-				id: dataId,
-				selected: true,
-			});
-
-			if (imageSource.length > 1) {
-				menu.add({
-					control: "button",
-					icon: "delete",
-					event: "deleteFrame",
-				});
-			}
-
-			menu.add({
-				control: "button",
-				icon: "add",
-				event: "addFrame",
-			});
-
-			menu.endGroup();
-
-			// frames
-			menu.startGroup();
-
-			for (var i = 0; i < imageSource.length; i++) {
-				menu.add({
-					control: "thumbnail",
-					type: curDataType, // todo : name?
-					id: dataId,
-					frame: i,
-					value: i,
-					selected: (frameIndex === i),
-					event: "selectFrame",
-				});
-			}
-
-			menu.endGroup();
 		}
 	};
 

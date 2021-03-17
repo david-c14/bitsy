@@ -26,8 +26,12 @@ installCard(function(card) {
 			});
 
 			menu.add({
-				control: "label",
-				text: "<insert color controls>",
+				control: "tabs",
+				tabs: [
+					{ text: "change with room", icon: "room", },
+					{ text: "from palette", icon: "colors", },
+					{ text: "hex code", icon: "text_edit", },
+				],
 			});
 
 			menu.add({
@@ -70,8 +74,12 @@ installCard(function(card) {
 			});
 
 			menu.add({
-				control: "label",
-				text: "<insert language select>",
+				control: "select",
+				// todo : standardize names with "tabs" control?
+				options: [
+					{ text: "option A", value: "A", },
+					{ text: "option B", value: "B", },
+				],
 			});
 
 			menu.endGroup();
@@ -90,18 +98,12 @@ installCard(function(card) {
 			});
 
 			menu.add({
-				control: "label",
-				text: "<insert font select>",
+				control: "select",
+				options: [
+					{ text: "option A", value: "A", },
+					{ text: "option B", value: "B", },
+				],
 			});
-
-			menu.endGroup();
-
-			menu.add({
-				control: "label",
-				text: "<insert font description>",
-			});
-
-			menu.startGroup();
 
 			menu.add({
 				control: "button",
@@ -117,6 +119,11 @@ installCard(function(card) {
 
 			menu.endGroup();
 
+			menu.add({
+				control: "label",
+				text: "<insert font description>",
+			});
+
 			menu.startGroup();
 
 			menu.add({
@@ -125,26 +132,35 @@ installCard(function(card) {
 			});
 
 			menu.add({
-				control: "label",
-				text: "<insert text direction select>",
+				control: "tabs",
+				tabs: [
+					{ text: "Left to Right", value: "LTR", },
+					{ text: "Right to Left", value: "RTL", },
+				],
+				value: textDirection,
+				event: "changeTextDirection",
 			});
 
 			menu.endGroup();
 
-			menu.add({
-				control: "label",
-				text: "(option for languages that read right to left)",
-			});
+			menu.startGroup();
 
 			menu.add({
 				control: "label",
-				text: "animation:",
+				text: "super animations:",
 			});
 
+			var superAnimationsEnabled = (flags.SUPER_ANM === 1);
+
 			menu.add({
-				control: "label",
-				text: "<TODO: animation settings>",
+				control: "toggle",
+				value: superAnimationsEnabled,
+				text: superAnimationsEnabled ? "on" : "off",
+				icon: superAnimationsEnabled ? "checkmark" : "cancel",
+				event: "toggleSuperAnimations",
 			});
+
+			menu.endGroup();
 		}
 	};
 
@@ -154,5 +170,15 @@ installCard(function(card) {
 
 	card.changePageSizeMode = function(value) {
 		curPageSizeMode = value;
+	};
+
+	card.toggleSuperAnimations = function(value) {
+		flags.SUPER_ANM = value ? 1 : 0;
+		refreshGameData();
+	};
+
+	card.changeTextDirection = function(value) {
+		textDirection = value;
+		refreshGameData();
 	};
 });
