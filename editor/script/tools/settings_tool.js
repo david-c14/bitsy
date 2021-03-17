@@ -86,13 +86,15 @@ installCard(function(card) {
 				control: "select",
 				// todo : standardize names with "tabs" control?
 				options: languageOptions,
+				value: localization.GetLanguage(),
+				event: "selectEditorLanguage",
 			});
 
 			menu.endGroup();
 
 			menu.add({
 				control: "label",
-				text: "<insert langauge credit>",
+				text: localization.GetStringOrFallback("language_translator_credit", "English text by Adam Le Doux"),
 			});
 		}
 		else if (curSettingsTab === "system") {
@@ -176,6 +178,12 @@ installCard(function(card) {
 
 	card.changePageSizeMode = function(value) {
 		curPageSizeMode = value;
+	};
+
+	card.selectEditorLanguage = function(value) {
+		var language = value;
+		pickDefaultFontForLanguage(language);
+		on_change_language_inner(language);
 	};
 
 	card.toggleSuperAnimations = function(value) {

@@ -230,11 +230,13 @@ function CardUI() {
 
 	function createSelect(options) {
 		var select = document.createElement("select");
+		select.onchange = options.onchange;
 
 		for (var i = 0; i < options.options.length; i++) {
 			var option = document.createElement("option");
 			option.innerText = options.options[i].text;
 			option.value = options.options[i].value;
+			option.selected = (options.value === options.options[i].value);
 			select.appendChild(option);
 		}
 
@@ -566,6 +568,13 @@ function CardUI() {
 			else if (options.control === "select") {
 				control = createSelect({
 					options: options.options, // naming is funny
+					value: options.value,
+					onchange: function(e) {
+						if (options.event) {
+							card[options.event](e.target.value);
+							UpdateMenu();
+						}
+					},
 				});
 			}
 
