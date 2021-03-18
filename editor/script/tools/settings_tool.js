@@ -108,6 +108,7 @@ installCard(function(card) {
 			menu.add({
 				control: "select",
 				value: fontName,
+				event: "selectFont",
 				options: [
 					{
 						value: "ascii_small",
@@ -211,6 +212,13 @@ installCard(function(card) {
 		var language = value;
 		pickDefaultFontForLanguage(language);
 		on_change_language_inner(language);
+	};
+
+	card.selectFont = function(value) {
+		if (value != "custom") {
+			fontName = value;
+			refreshGameData();
+		}
 	};
 
 	card.toggleSuperAnimations = function(value) {
