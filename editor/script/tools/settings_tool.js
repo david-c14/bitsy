@@ -105,6 +105,17 @@ installCard(function(card) {
 				text: "font:",
 			});
 
+			var customFontName = "Custom";
+
+			var fontStorage = null;
+			if (localStorage.custom_font != null) {
+				fontStorage = JSON.parse(localStorage.custom_font);
+			}
+
+			if (fontStorage != null) {
+				customFontName += " - " + fontStorage.name;
+			}
+
 			menu.add({
 				control: "select",
 				value: fontName,
@@ -132,7 +143,7 @@ installCard(function(card) {
 					},
 					{
 						value: "custom",
-						text: "Custom", // todo - localize!
+						text: customFontName, // todo - localize!
 					},
 				],
 			});
@@ -150,6 +161,7 @@ installCard(function(card) {
 				control: "button",
 				text: "download font",
 				icon: "download",
+				event: "downloadFont",
 			});
 
 			menu.add({
@@ -216,9 +228,24 @@ installCard(function(card) {
 
 	card.selectFont = function(value) {
 		if (value != "custom") {
-			fontName = value;
-			refreshGameData();
+			// fontName = value;
+			// refreshGameData();
+			switchFont(value, true);
 		}
+		else {
+			if (localStorage.custom_font != null) {
+				var fontStorage = JSON.parse(localStorage.custom_font);
+				switchFont(fontStorage.name, true /*doPickTextDirection*/);
+			}
+			else {
+				// fallback
+				switchFont("ascii_small", true /*doPickTextDirection*/);
+			}
+		}
+	};
+
+	card.downloadFont = function() {
+		exportFont();
 	};
 
 	card.toggleSuperAnimations = function(value) {
