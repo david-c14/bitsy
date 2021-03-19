@@ -26,18 +26,22 @@
 
 .cardui-main.cardui-size-xsmall {
 	width: 128px;
+	min-height: 128px;
 }
 
 .cardui-main.cardui-size-small {
 	width: 256px;
+	min-height: 256px;
 }
 
 .cardui-main.cardui-size-medium {
 	width: 384px;
+	min-height: 384px;
 }
 
 .cardui-main.cardui-size-large {
 	width: 512px;
+	min-height: 512px;
 }
 
 .cardui-nav {
@@ -71,6 +75,7 @@
 
 .cardui-tab-item {
 	flex-grow: 1;
+	text-align: center;
 }
 
 .cardui-thumbnail {
@@ -90,6 +95,21 @@
 
 .cardui-label {
 	white-space: normal;
+}
+
+.cardui-select {
+	flex-grow: 1;
+	text-align: center;
+}
+
+.cardui-text {
+	flex-grow: 1;
+	text-align: center;
+}
+
+.cardui-number {
+	flex-grow: 1;
+	text-align: center;
 }
 
 /* TEST STYLE */

@@ -4,7 +4,6 @@ installCard(function(card) {
 	card.sizeHint = "M";
 
 	var curSettingsTab = "publish";
-	var curPageSizeMode = "full";
 
 	card.menu = function() {
 		menu.add({
@@ -27,12 +26,75 @@ installCard(function(card) {
 
 			menu.add({
 				control: "tabs",
+				value: export_settings.bg_mode,
+				event: "changeBackgroundColorMode",
 				tabs: [
-					{ text: "change with room", icon: "room", },
-					{ text: "from palette", icon: "colors", },
-					{ text: "hex code", icon: "text_edit", },
+					{ text: "change with room", icon: "room", value: ExportBackgroundMode.Room, },
+					{ text: "from palette", icon: "colors", value: ExportBackgroundMode.Palette, },
+					{ text: "hex", icon: "text_edit", value: ExportBackgroundMode.Hex, },
 				],
 			});
+
+			if (export_settings.bg_mode === ExportBackgroundMode.Palette) {
+				menu.startGroup();
+
+				menu.add({ control: "label", text: "palette:", });
+
+				// todo : create specialized palette picker?
+				var paletteIdList = Object.keys(palette);
+				var paletteOptions = [];
+
+				for (var i = 0; i < paletteIdList.length; i++) {
+					var id = paletteIdList[i];
+
+					if (id != "default") {
+						paletteOptions.push({
+							value: id,
+							text: (palette[id].name ? palette[id].name : "palette " + id), // todo : localize
+						});
+					}
+				}
+
+				menu.add({
+					control: "select",
+					value: export_settings.bg_pal_id,
+					options: paletteOptions,
+				});
+
+				menu.endGroup();
+			}
+
+			if (export_settings.bg_mode === ExportBackgroundMode.Room || export_settings.bg_mode === ExportBackgroundMode.Palette) {
+				menu.startGroup();
+
+				menu.add({ control: "label", text: "color:", });
+
+				menu.add({
+					control: "select",
+					value: export_settings.bg_pal_index,
+					options: [
+						{ text: "background color", value: 0, },
+						{ text: "tile color", value: 1, },
+						{ text: "sprite color", value: 2, },
+					],
+				});
+
+				menu.endGroup();
+			}
+			
+			if (export_settings.bg_mode === ExportBackgroundMode.Hex) {
+				menu.startGroup();
+
+				menu.add({ control: "label", text: "hex color:", });
+
+				menu.add({
+					control: "text",
+					value: export_settings.page_color,
+					event: "changeHexColor",
+				});
+
+				menu.endGroup();
+			};
 
 			menu.add({
 				control: "label",
@@ -42,7 +104,7 @@ installCard(function(card) {
 			menu.add({
 				control: "tabs",
 				name: "gameWindowMode",
-				value: curPageSizeMode,
+				value: (export_settings.is_fixed_size ? "fixed" : "full"),
 				event: "changePageSizeMode",
 				tabs: [
 					{ text: "full page", icon: "pagesize_full", value: "full", },
@@ -50,11 +112,13 @@ installCard(function(card) {
 				],
 			});
 
-			if (curPageSizeMode === "fixed") {
+			if (export_settings.is_fixed_size) {
 				menu.startGroup();
 
 				menu.add({
 					control: "number",
+					value: export_settings.size,
+					event: "changeGameWindowSize",
 				});
 
 				menu.add({
@@ -105,20 +169,15 @@ installCard(function(card) {
 				text: "font:",
 			});
 
-			var customFontName = "Custom";
-
-			var fontStorage = null;
+			var customFontName = "";
 			if (localStorage.custom_font != null) {
 				fontStorage = JSON.parse(localStorage.custom_font);
-			}
-
-			if (fontStorage != null) {
-				customFontName += " - " + fontStorage.name;
+				customFontName += fontStorage.name;
 			}
 
 			menu.add({
 				control: "select",
-				value: fontName,
+				value: (fontName === customFontName) ? "custom" : fontName,
 				event: "selectFont",
 				options: [
 					{
@@ -143,7 +202,7 @@ installCard(function(card) {
 					},
 					{
 						value: "custom",
-						text: customFontName, // todo - localize!
+						text: "Custom - " + customFontName, // todo - localize!
 					},
 				],
 			});
@@ -182,8 +241,8 @@ installCard(function(card) {
 			menu.add({
 				control: "tabs",
 				tabs: [
-					{ text: "Left to Right", value: "LTR", },
-					{ text: "Right to Left", value: "RTL", },
+					{ text: "Left to Right", value: TextDirection.LeftToRight, },
+					{ text: "Right to Left", value: TextDirection.RightToLeft, },
 				],
 				value: textDirection,
 				event: "changeTextDirection",
@@ -216,8 +275,26 @@ installCard(function(card) {
 		curSettingsTab = value;
 	};
 
+	card.changeBackgroundColorMode = function(value) {
+		export_settings.bg_mode = parseInt(value);
+		localStorage.export_settings = JSON.stringify(export_settings);
+	};
+
+	card.changeHexColor = function(value) {
+		// todo : verify valid hex value?
+		export_settings.page_color = value;
+		localStorage.export_settings = JSON.stringify(export_settings);
+	};
+
 	card.changePageSizeMode = function(value) {
-		curPageSizeMode = value;
+		// note : this is just a global object currently
+		export_settings.is_fixed_size = (value === "fixed");
+		localStorage.export_settings = JSON.stringify(export_settings);
+	};
+
+	card.changeGameWindowSize = function(value) {
+		export_settings.size = value;
+		localStorage.export_settings = JSON.stringify(export_settings);
 	};
 
 	card.selectEditorLanguage = function(value) {

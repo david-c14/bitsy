@@ -222,7 +222,18 @@ function CardUI() {
 
 	function createNumberInput(options) {
 		var input = document.createElement("input");
+		input.classList.add("cardui-number");
 		input.type = "number";
+		input.value = options.value;
+		input.onchange = options.onchange;
+
+		return input;
+	};
+
+	function createTextInput(options) {
+		var input = document.createElement("input");
+		input.classList.add("cardui-text");
+		input.type = "text";
 		input.value = options.value;
 		input.onchange = options.onchange;
 
@@ -231,6 +242,7 @@ function CardUI() {
 
 	function createSelect(options) {
 		var select = document.createElement("select");
+		select.classList.add("cardui-select");
 		select.onchange = options.onchange;
 
 		for (var i = 0; i < options.options.length; i++) {
@@ -557,6 +569,17 @@ function CardUI() {
 			}
 			else if (options.control === "number") {
 				control = createNumberInput({
+					value: options.value,
+					onchange: function(e) {
+						if (options.event) {
+							card[options.event](e.target.value);
+							UpdateMenu();
+						}
+					},
+				});
+			}
+			else if (options.control === "text") {
+				control = createTextInput({
 					value: options.value,
 					onchange: function(e) {
 						if (options.event) {
