@@ -16,11 +16,27 @@
 @@C
 </style>
 
+<!-- EXPORT SETTINGS -->
+<script type="text/json" id="exportedSettings">
+@@ES
+</script>
+
 <!-- SCRIPTS -->
 <script>
 function startExportedGame() {
-	attachCanvas( document.getElementById("game") );
-	load_game( document.getElementById("exportedGameData").text.slice(1) );
+	var settingsSrc = document.getElementById("exportedSettings").text.slice(1);
+	var settingsJson = JSON.parse(settingsSrc);
+
+	if (settingsJson.useCurPal) {
+		var i = settingsJson.bgColorIndex;
+
+		onPaletteChange(function(colors) {
+			document.body.style.background = "rgb(" + colors[i][0] + "," + colors[i][1] +  "," + colors[i][2] +  ")";
+		});
+	}
+
+	attachCanvas(document.getElementById("game"));
+	load_game(document.getElementById("exportedGameData").text.slice(1));
 }
 </script>
 

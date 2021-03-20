@@ -30,48 +30,19 @@ installCard(function(card) {
 				event: "changeBackgroundColorMode",
 				tabs: [
 					{ text: "change with room", icon: "room", value: ExportBackgroundMode.Room, },
-					{ text: "from palette", icon: "colors", value: ExportBackgroundMode.Palette, },
 					{ text: "hex", icon: "text_edit", value: ExportBackgroundMode.Hex, },
 				],
 			});
 
-			if (export_settings.bg_mode === ExportBackgroundMode.Palette) {
-				menu.startGroup();
-
-				menu.add({ control: "label", text: "palette:", });
-
-				// todo : create specialized palette picker?
-				var paletteIdList = Object.keys(palette);
-				var paletteOptions = [];
-
-				for (var i = 0; i < paletteIdList.length; i++) {
-					var id = paletteIdList[i];
-
-					if (id != "default") {
-						paletteOptions.push({
-							value: id,
-							text: (palette[id].name ? palette[id].name : "palette " + id), // todo : localize
-						});
-					}
-				}
-
-				menu.add({
-					control: "select",
-					value: export_settings.bg_pal_id,
-					options: paletteOptions,
-				});
-
-				menu.endGroup();
-			}
-
-			if (export_settings.bg_mode === ExportBackgroundMode.Room || export_settings.bg_mode === ExportBackgroundMode.Palette) {
+			if (export_settings.bg_mode === ExportBackgroundMode.Room) {
 				menu.startGroup();
 
 				menu.add({ control: "label", text: "color:", });
 
 				menu.add({
 					control: "select",
-					value: export_settings.bg_pal_index,
+					value: export_settings.bg_color_index,
+					event: "changeBackgroundColorIndex",
 					options: [
 						{ text: "background color", value: 0, },
 						{ text: "tile color", value: 1, },
@@ -81,8 +52,7 @@ installCard(function(card) {
 
 				menu.endGroup();
 			}
-			
-			if (export_settings.bg_mode === ExportBackgroundMode.Hex) {
+			else if (export_settings.bg_mode === ExportBackgroundMode.Hex) {
 				menu.startGroup();
 
 				menu.add({ control: "label", text: "hex color:", });
@@ -279,6 +249,11 @@ installCard(function(card) {
 		export_settings.bg_mode = parseInt(value);
 		localStorage.export_settings = JSON.stringify(export_settings);
 	};
+
+	card.changeBackgroundColorIndex = function(value) {
+		export_settings.bg_color_index = parseInt(value);
+		localStorage.export_settings = JSON.stringify(export_settings);
+	}
 
 	card.changeHexColor = function(value) {
 		// todo : verify valid hex value?

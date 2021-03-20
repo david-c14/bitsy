@@ -2295,10 +2295,8 @@ function exportGame() {
 	exporter.exportGame(
 		gameData,
 		getTitle(),
-		export_settings.page_color,
 		filenameFromGameTitle() + ".html",
-		export_settings.is_fixed_size,
-		export_settings.size);
+		export_settings);
 }
 
 function exportGameData() {
@@ -3101,14 +3099,12 @@ function on_paint_frame2() {
 // todo : compat with older versions!
 var ExportBackgroundMode = {
 	Room : 0,
-	Palette : 1,
-	Hex : 2,
+	Hex : 1,
 };
 
 var export_settings = {
 	bg_mode : ExportBackgroundMode.Room,
-	bg_pal_id : "0",
-	bg_pal_index : 0,
+	bg_color_index : 0,
 	page_color : "#ffffff",
 	is_fixed_size : false,
 	size : 512,

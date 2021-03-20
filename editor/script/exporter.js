@@ -12,21 +12,34 @@ function replaceTemplateMarker(template, marker, text) {
 	return template.substr( 0, markerIndex ) + text + template.substr( markerIndex + marker.length );
 }
 
-this.exportGame = function(gameData, title, pageColor, filename, isFixedSize, size) {
+this.exportGame = function(gameData, title, filename, settings) {
 	var html = Resources["exportTemplate.html"].substr(); //copy template
 	// console.log(html);
 
 	html = replaceTemplateMarker( html, "@@T", title );
 
-	if( isFixedSize ) {
+	if (settings.is_fixed_size) {
 		html = replaceTemplateMarker( html, "@@C", Resources["exportStyleFixed.css"] );
-		html = replaceTemplateMarker( html, "@@Z", size + "px" );
+		html = replaceTemplateMarker( html, "@@Z", settings.size + "px" );
 	}
 	else {
 		html = replaceTemplateMarker( html, "@@C", Resources["exportStyleFull.css"] );
 	}
 
-	html = replaceTemplateMarker( html, "@@B", pageColor );
+	if (settings.bg_mode === ExportBackgroundMode.Hex) {
+		html = replaceTemplateMarker(html, "@@B", settings.page_color);
+	}
+	else {
+		// use black as default to match canvas while loading
+		html = replaceTemplateMarker(html, "@@B", "black");
+	}
+
+	// todo : inconsistent settings names
+	// insert json settings
+	html = replaceTemplateMarker(html, "@@ES", JSON.stringify({
+		useCurPal: settings.bg_mode === ExportBackgroundMode.Room,
+		bgColorIndex: settings.bg_color_index,
+	}));
 
 	html = replaceTemplateMarker( html, "@@U", Resources["color_util.js"] );
 	html = replaceTemplateMarker( html, "@@X", Resources["transition.js"] );

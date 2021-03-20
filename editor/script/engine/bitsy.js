@@ -177,6 +177,12 @@ function attachCanvas(c) {
 	renderer.AttachContext(ctx);
 }
 
+// TODO: naming? location? global?
+var onPaletteChangeHandler;
+function onPaletteChange(fn) {
+	onPaletteChangeHandler = fn;
+}
+
 var curGameData = null;
 function load_game(game_data, startWithTitle) {
 	curGameData = game_data; //remember the current game (used to reset the game)
@@ -902,6 +908,10 @@ function initRoom(roomId) {
 	// init ending properties
 	for (var i = 0; i < room[roomId].endings.length; i++) {
 		room[roomId].endings[i].property = { locked:false };
+	}
+
+	if (onPaletteChangeHandler) {
+		onPaletteChangeHandler(getPal(curPal()));
 	}
 }
 
