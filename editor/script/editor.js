@@ -946,19 +946,20 @@ function start() {
 
 	markerTool.SetRoom(curRoom);
 
-	// load panel preferences
-	var prefs = getPanelPrefs();
-	localStorage.panel_prefs = JSON.stringify(prefs); // save loaded prefs
-	var sortedWorkspace = prefs.workspace.sort( function(a,b) { return a.position - b.position; } );
-	var editorContent = document.getElementById("editorContent");
-	for(i in sortedWorkspace) {
-		var panelSettings = sortedWorkspace[i];
-		var panelElement = document.getElementById(panelSettings.id);
-		if (panelElement != undefined && panelElement != null) {
-			togglePanelCore( panelSettings.id, panelSettings.visible, false /*doUpdatePrefs*/ );
-			editorContent.insertBefore( panelElement, null ); //insert on the left
-		}
-	}
+	// TODO 
+	// // load panel preferences
+	// var prefs = getPanelPrefs();
+	// localStorage.panel_prefs = JSON.stringify(prefs); // save loaded prefs
+	// var sortedWorkspace = prefs.workspace.sort( function(a,b) { return a.position - b.position; } );
+	// var editorContent = document.getElementById("editorContent");
+	// for(i in sortedWorkspace) {
+	// 	var panelSettings = sortedWorkspace[i];
+	// 	var panelElement = document.getElementById(panelSettings.id);
+	// 	if (panelElement != undefined && panelElement != null) {
+	// 		togglePanelCore( panelSettings.id, panelSettings.visible, false /*doUpdatePrefs*/ );
+	// 		editorContent.insertBefore( panelElement, null ); //insert on the left
+	// 	}
+	// }
 
 	//draw everything
 	on_paint_avatar();
