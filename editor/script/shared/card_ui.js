@@ -722,5 +722,9 @@ function CardUI() {
 
 			UpdateMenu();
 		}
+
+		this.Refresh = function() {
+			UpdateMenu();
+		};
 	}
 }

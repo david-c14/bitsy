@@ -662,6 +662,12 @@ function refreshGameData() {
 	// localStorage.setItem("game_data", gameData); //auto-save
 
 	localStorage.setItem("game_data", gameDataNoFonts);
+
+
+	// incredibly hacky way to keep UI refreshed...
+	for (var i = 0; i < allCardViews.length; i++) {
+		allCardViews[i].Refresh();
+	}
 }
 
 /* TIMER */
@@ -1084,6 +1090,7 @@ function start() {
 	addCardViewToLegacyUI(settingsCard);
 }
 
+var allCardViews = []; // hacky global for hacky reasons (global refresh)
 function addCardViewToLegacyUI(newCard) {
 	var editorContent = document.getElementById("editorContent");
 
@@ -1097,6 +1104,9 @@ function addCardViewToLegacyUI(newCard) {
 	editorContent.appendChild(cardView.GetElement());
 
 	cardView.Boot();
+
+	// :(
+	allCardViews.push(cardView);
 }
 
 function newDrawing() {
@@ -2811,23 +2821,29 @@ function importFontFromFile(e) {
 		var fileText = reader.result;
 		console.log(fileText);
 
-		var customFontName = (fontManager.Create(fileText)).getName();
+		importFont(fileText);
 
-		fontManager.AddResource(customFontName + fontManager.GetExtension(), fileText);
-		switchFont(customFontName); // bitsy engine setting
-
-		var fontStorage = {
-			name : customFontName,
-			fontdata : fileText
-		};
-		localStorage.custom_font = JSON.stringify(fontStorage);
-
-		refreshGameData();
 		updateFontSelectUI();
 
 		// TODO
 		// fontLoadSettings.resources.set("custom.txt", fileText); // hacky!!!
 	}
+}
+
+function importFont(fontData) {
+	var customFontName = (fontManager.Create(fontData)).getName();
+
+	fontManager.AddResource(customFontName + fontManager.GetExtension(), fontData);
+	switchFont(customFontName); // bitsy engine setting
+
+	var fontStorage = {
+		name : customFontName,
+		fontdata : fontData,
+	};
+
+	localStorage.custom_font = JSON.stringify(fontStorage);
+
+	// refreshGameData();
 }
 
 /* ANIMATION EDITING*/

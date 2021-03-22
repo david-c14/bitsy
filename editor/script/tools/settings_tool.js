@@ -29,7 +29,7 @@ installCard(function(card) {
 				value: export_settings.bg_mode,
 				event: "changeBackgroundColorMode",
 				tabs: [
-					{ text: "change with room", icon: "room", value: ExportBackgroundMode.Room, },
+					{ text: "change with game", icon: "colors", value: ExportBackgroundMode.Room, },
 					{ text: "hex", icon: "text_edit", value: ExportBackgroundMode.Hex, },
 				],
 			});
@@ -197,6 +197,7 @@ installCard(function(card) {
 				control: "button",
 				text: "upload font",
 				icon: "upload",
+				event: "uploadFont",
 			});
 
 			menu.endGroup();
@@ -298,6 +299,13 @@ installCard(function(card) {
 
 	card.downloadFont = function() {
 		exportFont();
+	};
+
+	card.uploadFont = function() {
+		ExporterUtils.UploadFile(function(fontData) {
+			console.log(fontData);
+			importFont(fontData);
+		});
 	};
 
 	card.toggleSuperAnimations = function(value) {

@@ -170,5 +170,28 @@ var ExporterUtils = {
 
 			document.body.removeChild(element);
 		}
-	}
+	},
+	UploadFile : function(onload) {
+		var fileInput = document.createElement("input");
+		fileInput.type = "file";
+
+		fileInput.onchange = function(e) {
+			var files = e.target.files;
+			var file = files[0];
+
+			var reader = new FileReader();
+
+			reader.onloadend = function() {
+				var fileText = reader.result;
+
+				if (onload) {
+					onload(fileText);
+				}
+			};
+
+			reader.readAsText(file);
+		};
+
+		fileInput.click();
+	},
 }
