@@ -8,7 +8,11 @@ function CardUI() {
 		return new CardView(card);
 	};
 
-	// todo ... not sure where thie metadata should actually live??
+	this.CreateLegacyCardView = function(options) {
+		return new LegacyCardView(options);
+	};
+
+	// todo ... not sure where this metadata should actually live??
 	var dataCategories = {};
 
 	dataCategories["AVA"] = {
@@ -256,13 +260,7 @@ function CardUI() {
 		return select;
 	};
 
-	// todo : confusing naming with the system cards??? CardView? CardDisplay? CardWindow?
-	function CardView(card) {
-		var self = this; // todo : I don't love this pattern..
-
-		/* CARD MODULE */
-		// card = config.card;
-
+	function CardFrame(name, icon, size) {
 		/* EVENT HANDLERS */
 		var onGrabHandler = null;
 		var onCloseHandler = null;
@@ -270,7 +268,7 @@ function CardUI() {
 		/* ROOT ELEMENT */
 		var cardRoot = document.createElement("div");
 		cardRoot.classList.add("cardui-card");
-		cardRoot.id = card.name + "Tool"; //config.id;
+		cardRoot.id = name + "Tool"; //config.id;
 
 		/* TITLE BAR */
 		var titleBar = document.createElement("div");
@@ -284,23 +282,13 @@ function CardUI() {
 
 		var cardIcon = document.createElement("span");
 		cardIcon.classList.add("cardui-icon");
-		cardIcon.appendChild(createIconElement(card.icon)); //config.iconId));
+		cardIcon.appendChild(createIconElement(icon)); //config.iconId));
 		titleBar.appendChild(cardIcon);
 
 		var titleText = document.createElement("span");
 		titleText.classList.add("cardui-title");
-		titleText.innerText = card.name; // config.title;
+		titleText.innerText = name; // config.title;
 		titleBar.appendChild(titleText);
-
-		// var closeButton = document.createElement("button");
-		// closeButton.classList.add("cardui-close"); // todo : generic button class?
-		// closeButton.appendChild(createIconElement("close"));
-		// closeButton.onclick = function(e) {
-		// 	if (onCloseHandler) {
-		// 		onCloseHandler(e);
-		// 	}
-		// };
-		// titleBar.appendChild(closeButton);
 
 		titleBar.appendChild(createButton({
 			icon: "close",
@@ -315,16 +303,16 @@ function CardUI() {
 		var toolRoot = document.createElement("div");
 		toolRoot.classList.add("cardui-main");
 
-		if (card.sizeHint === "XS") {
+		if (size === "XS") {
 			toolRoot.classList.add("cardui-size-xsmall");
 		}
-		else if (card.sizeHint === "S") {
+		else if (size === "S") {
 			toolRoot.classList.add("cardui-size-small");
 		}
-		else if (card.sizeHint === "M") {
+		else if (size === "M") {
 			toolRoot.classList.add("cardui-size-medium");
 		}
-		else if (card.sizeHint === "L") {
+		else if (size === "L") {
 			toolRoot.classList.add("cardui-size-large");
 		}
 		else {
@@ -332,8 +320,31 @@ function CardUI() {
 			toolRoot.classList.add("cardui-size-small");
 		}
 
-
 		cardRoot.appendChild(toolRoot);
+
+		this.GetFrameRoot = function() {
+			return cardRoot;
+		};
+
+		this.GetToolRoot = function() {
+			return toolRoot;
+		};
+
+		this.OnGrab = function(f) {
+			onGrabHandler = f;
+		};
+
+		this.OnClose = function(f) {
+			onCloseHandler = f;
+		};
+	}
+
+	// todo : confusing naming with the system cards??? CardView? CardDisplay? CardWindow?
+	function CardView(card) {
+		var self = this; // todo : I don't love this pattern..
+
+		var frame = new CardFrame(card.name, card.icon, card.sizeHint);
+		var toolRoot = frame.GetToolRoot();
 
 		if (card.data) {
 			if (card.data.length > 1) {
@@ -463,24 +474,6 @@ function CardUI() {
 				}
 			}
 		}
-
-		this.GetElement = function() {
-			return cardRoot;
-		};
-
-		this.OnGrab = function(f) {
-			onGrabHandler = f;
-		};
-
-		this.OnClose = function(f) {
-			onCloseHandler = f;
-		};
-
-		// todo : replace with config options?
-		// hacky but useful for now to integrate with existin card system
-		this.AddStyle = function(className) {
-			cardRoot.classList.add(className);
-		};
 
 		var _curGroup;
 
@@ -725,6 +718,62 @@ function CardUI() {
 
 		this.Refresh = function() {
 			UpdateMenu();
+		};
+
+		/* hacky pass-throughs to frame */
+		this.GetElement = function() {
+			return frame.GetFrameRoot();
+		};
+
+		this.OnGrab = function(f) {
+			frame.OnGrab(f);
+		};
+
+		this.OnClose = function(f) {
+			frame.OnClose(f);
+		};
+
+		// todo : replace with config options?
+		// hacky but useful for now to integrate with existin card system
+		this.AddStyle = function(className) {
+			frame.GetFrameRoot().classList.add(className);
+		};
+	}
+
+	function LegacyCardView(options) {
+		var frame = new CardFrame(options.name, options.icon, options.size);
+
+		var toolWrapper = document.createElement("div");
+		toolWrapper.classList.add("cardui-legacy-wrapper");
+		toolWrapper.appendChild(options.element);
+
+		frame.GetToolRoot().appendChild(toolWrapper);
+
+		this.Boot = function() {
+			// need this?
+		};
+
+		this.Refresh = function() {
+			// need this?
+		};
+
+		/* hacky pass-throughs to frame */
+		this.GetElement = function() {
+			return frame.GetFrameRoot();
+		};
+
+		this.OnGrab = function(f) {
+			frame.OnGrab(f);
+		};
+
+		this.OnClose = function(f) {
+			frame.OnClose(f);
+		};
+
+		// todo : replace with config options?
+		// hacky but useful for now to integrate with existin card system
+		this.AddStyle = function(className) {
+			frame.GetFrameRoot().classList.add(className);
 		};
 	}
 }

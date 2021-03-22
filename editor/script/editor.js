@@ -1088,6 +1088,8 @@ function start() {
 	// card.load("settings");
 	settingsCard = card.load("settings");
 	addCardViewToLegacyUI(settingsCard);
+
+	addLegacyCardView("download", "download", "downloadToolControls");
 }
 
 var allCardViews = []; // hacky global for hacky reasons (global refresh)
@@ -1104,6 +1106,29 @@ function addCardViewToLegacyUI(newCard) {
 	editorContent.appendChild(cardView.GetElement());
 
 	cardView.Boot();
+
+	// :(
+	allCardViews.push(cardView);
+}
+
+function addLegacyCardView(name, icon, id) {
+	var editorContent = document.getElementById("editorContent");
+
+	var cardView = cardUI.CreateLegacyCardView({
+		name: name,
+		icon: icon,
+		size: "S",
+		element: document.getElementById(id),
+	});
+
+	// hacky? hook ups with existing panel system
+	cardView.AddStyle("panel"); // todo : decouple style from grab-ability
+	cardView.OnGrab(grabCard);
+	cardView.OnClose(function() { hidePanel(name + "Tool") });
+
+	editorContent.appendChild(cardView.GetElement());
+
+	// cardView.Boot();
 
 	// :(
 	allCardViews.push(cardView);
@@ -3111,6 +3136,7 @@ function on_paint_frame2() {
 	paintTool.reloadDrawing();
 }
 
+// todo : naming
 // todo : move into settings tool?
 // todo : compat with older versions!
 var ExportBackgroundMode = {

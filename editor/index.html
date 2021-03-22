@@ -991,35 +991,37 @@
 						</div>
 					</div>
 
-					<div>
-						<span class="localize download_html">download game as html file:</span>
-						<br>
-						<button title="download game as html file" class="color0" onclick="exportGame();">
-							<span class="bitsy_icon">download</span>
-							<span class="localize download_game">download game</span>
-						</button>
-					</div>
+					<div id="downloadToolControls">
+						<div>
+							<span class="localize download_html">download game as html file:</span>
+							<br>
+							<button title="download game as html file" class="color0" onclick="exportGame();">
+								<span class="bitsy_icon">download</span>
+								<span class="localize download_game">download game</span>
+							</button>
+						</div>
 
-					<div>
-						<span class="localize import_html">import game from html file:</span>
-						<br>
-						<label for="importGamePicker" class="filePickerLabel" title="import game from html file on your computer">
-							<span class="bitsy_icon">upload</span>
-							<span class="localize upload_game">upload game</span>
-						</label>
-						<input type="file" id="importGamePicker" style="display:none;" onchange="importGameFromFile(event);"/>
-					</div>
+						<div>
+							<span class="localize import_html">import game from html file:</span>
+							<br>
+							<label for="importGamePicker" class="filePickerLabel" title="import game from html file on your computer">
+								<span class="bitsy_icon">upload</span>
+								<span class="localize upload_game">upload game</span>
+							</label>
+							<input type="file" id="importGamePicker" style="display:none;" onchange="importGameFromFile(event);"/>
+						</div>
 
-					<!-- TODO LOCALIZE - word wrap -->
-					<div id="downloadHelp" class="helpMessage" style="display:none;">
-						Note: your browser doesn't support<br>
-						direct downloads, so sharing requires<br>
-						some extra steps:<br>
-						- press share <br>
-						- a new tab will open <br>
-						- save that tab <br>
-						- name it "mygame.html" <br>
-						- share your game as a web page!
+						<!-- TODO LOCALIZE - word wrap -->
+						<div id="downloadHelp" class="helpMessage" style="display:none;">
+							Note: your browser doesn't support<br>
+							direct downloads, so sharing requires<br>
+							some extra steps:<br>
+							- press share <br>
+							- a new tab will open <br>
+							- save that tab <br>
+							- name it "mygame.html" <br>
+							- share your game as a web page!
+						</div>
 					</div>
 				</div>
 
