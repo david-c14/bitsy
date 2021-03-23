@@ -1,0 +1,15 @@
+:root {
+	--bitsy-bg-color: #ccccff;
+	--bitsy-text-color: #6767b2;
+}
+
+html {
+	font-size: 100%;
+	background: var(--bitsy-bg-color);
+	color: var(--bitsy-text-color);
+}
+
+.bitsy_icon svg {
+	width: 1em;
+	fill: var(--bitsy-text-color);
+}

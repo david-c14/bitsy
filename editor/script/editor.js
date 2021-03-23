@@ -1091,6 +1091,7 @@ function start() {
 	addCardViewToLegacyUI(settingsCard);
 
 	addLegacyCardView("download", "download", "downloadToolControls");
+	addLegacyCardView("about", "about", "aboutInner");
 }
 
 var allCardViews = []; // hacky global for hacky reasons (global refresh)

@@ -54,8 +54,6 @@
 }
 
 .cardui-canvas {
-	/*height: 256px;*/
-	/*width: 256px;*/
 }
 
 .cardui-menu {
@@ -79,10 +77,6 @@
 }
 
 .cardui-thumbnail {
-	/*background: black;*/
-	/* hardcoded! */
-/*	width: 32px; 
-	height: 32px;*/
 	width: 15%;
 	height: auto;
 	padding: 2px;
@@ -110,63 +104,4 @@
 .cardui-number {
 	flex-grow: 1;
 	text-align: center;
-}
-
-/* TEST STYLE */
-.cardui-card {
-/*	width: 300px;
-	height: 300px;*/
-	border: dotted 1px black;
-	border-radius: 0px;
-	padding: 0px;
-	font-family: monospace;
-	color: black;
-	font-size: 16px;
-}
-
-.cardui-titlebar {
-	border: dotted 1px black;
-	/*height: 30px;*/
-}
-
-.cardui-icon {
-	border: dotted 1px black;
-	width: 30px;
-}
-
-.cardui-title {
-	border: dotted 1px black;
-}
-
-.cardui-close {
-	background: white;
-	border: dotted 1px black;
-	border-radius: 0px;
-	width: 30px;
-}
-
-.cardui-main {
-	margin: 10px;
-	border: dotted 1px black;
-}
-
-.cardui-nav {
-	border: dotted 1px black;
-	height: 30px;
-}
-
-.cardui-canvas {
-	border: dotted 1px black;
-}
-
-.cardui-menu {
-	border: dotted 1px black;
-}
-
-.cardui-menu-group {
-	padding: 5px;
-}
-
-.cardui-menu-group span {
-	margin-right: 5px;
 }
