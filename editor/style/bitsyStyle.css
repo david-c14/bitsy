@@ -1,3 +1,16 @@
+/* try to clear out all the default styles */
+button,
+input,
+select,
+textarea {
+	font-family: inherit;
+	font-size: 100%;
+	line-height: 1.15;
+	margin: 0;
+	color: inherit;
+	border: none;
+}
+
 :root {
 	--bitsy-bg-color: #ccccff; /* color names?? */
 	--bitsy-card-color: #ffffff;
@@ -20,6 +33,10 @@ button {
 	fill: var(--bitsy-text-color);
 }
 
+input[type=checkbox]:checked + label .bitsy_icon svg {
+	fill: var(--bitsy-card-color);
+}
+
 /* make class? */
 #topbar {
 	background: var(--bitsy-card-color);
@@ -28,4 +45,17 @@ button {
 /* rename? */
 .panel {
 	background: var(--bitsy-card-color);
+}
+
+input[type=checkbox] {
+	display: none;
+}
+
+input[type=checkbox] + label {
+	background: var(--bitsy-button-color);
+}
+
+input[type=checkbox]:checked + label {
+	background: var(--bitsy-text-color);
+	color: var(--bitsy-card-color);
 }
