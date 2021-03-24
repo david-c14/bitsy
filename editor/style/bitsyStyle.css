@@ -1,6 +1,7 @@
 /* remove browser default styles */
 button {
 	font-size: inherit;
+	font-family: inherit;
 	border: none;
 	color: inherit;
 }
@@ -11,6 +12,7 @@ button {
 	--bitsy-card-color: #ffffff;
 	--bitsy-text-color: #6767b2;
 	--bitsy-button-color: #e8e8ff;
+	--bitsy-buton-display: inline-flex;
 }
 
 /* page */
@@ -20,9 +22,15 @@ html {
 	color: var(--bitsy-text-color);
 }
 
+body {
+	margin: 0;
+	padding: 0;
+}
+
 /* button */
 button {
 	background: var(--bitsy-button-color);
+	display: var(--bitsy-buton-display);
 }
 
 button:active {
@@ -43,6 +51,7 @@ input[type=checkbox] {
 
 input[type=checkbox] + label {
 	background: var(--bitsy-button-color);
+	display: var(--bitsy-buton-display);
 }
 
 input[type=checkbox]:checked + label {
@@ -57,6 +66,7 @@ input[type=radio] {
 
 input[type=radio] + label {
 	background: var(--bitsy-button-color);
+	display: var(--bitsy-buton-display);
 }
 
 input[type=radio]:checked + label {
@@ -64,11 +74,27 @@ input[type=radio]:checked + label {
 	color: var(--bitsy-card-color);
 }
 
-/* misc*/
-#topbar { /* make class? */
+/* main menu */
+.bitsy-menubar {
+	display: flex;
+	flex-direction: column;
 	background: var(--bitsy-card-color);
+	padding: 0.5em;
 }
 
-.panel {
-	background: var(--bitsy-card-color); /* rename? */
+.bitsy-menubar-main {
+	display: flex;
+}
+
+.bitsy-menubar-tools {
+	display: flex;
+}
+
+.bitsy-menubar-logo {
+	display: var(--bitsy-buton-display);
+}
+
+/* cards */
+.panel { /* rename to card? */
+	background: var(--bitsy-card-color);
 }
