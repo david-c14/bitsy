@@ -1,6 +1,8 @@
 :root {
-	--bitsy-bg-color: #ccccff;
+	--bitsy-bg-color: #ccccff; /* color names?? */
+	--bitsy-card-color: #ffffff;
 	--bitsy-text-color: #6767b2;
+	--bitsy-button-color: #e8e8ff;
 }
 
 html {
@@ -9,7 +11,21 @@ html {
 	color: var(--bitsy-text-color);
 }
 
+button {
+	background: var(--bitsy-button-color);
+}
+
 .bitsy_icon svg {
 	width: 1em;
 	fill: var(--bitsy-text-color);
+}
+
+/* make class? */
+#topbar {
+	background: var(--bitsy-card-color);
+}
+
+/* rename? */
+.panel {
+	background: var(--bitsy-card-color);
 }
