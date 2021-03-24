@@ -1,16 +1,11 @@
-/* try to clear out all the default styles */
-button,
-input,
-select,
-textarea {
-	font-family: inherit;
-	font-size: 100%;
-	line-height: 1.15;
-	margin: 0;
-	color: inherit;
+/* remove browser default styles */
+button {
+	font-size: inherit;
 	border: none;
+	color: inherit;
 }
 
+/* theme */
 :root {
 	--bitsy-bg-color: #ccccff; /* color names?? */
 	--bitsy-card-color: #ffffff;
@@ -18,35 +13,30 @@ textarea {
 	--bitsy-button-color: #e8e8ff;
 }
 
+/* page */
 html {
 	font-size: 100%;
 	background: var(--bitsy-bg-color);
 	color: var(--bitsy-text-color);
 }
 
+/* button */
 button {
 	background: var(--bitsy-button-color);
 }
 
+button:active {
+	background: var(--bitsy-text-color);
+	color: var(--bitsy-card-color);
+}
+
+/* icon */
 .bitsy_icon svg {
 	width: 1em;
-	fill: var(--bitsy-text-color);
+	fill: currentColor;
 }
 
-input[type=checkbox]:checked + label .bitsy_icon svg {
-	fill: var(--bitsy-card-color);
-}
-
-/* make class? */
-#topbar {
-	background: var(--bitsy-card-color);
-}
-
-/* rename? */
-.panel {
-	background: var(--bitsy-card-color);
-}
-
+/* checkbox */
 input[type=checkbox] {
 	display: none;
 }
@@ -58,4 +48,27 @@ input[type=checkbox] + label {
 input[type=checkbox]:checked + label {
 	background: var(--bitsy-text-color);
 	color: var(--bitsy-card-color);
+}
+
+/* radio */
+input[type=radio] {
+	display: none;
+}
+
+input[type=radio] + label {
+	background: var(--bitsy-button-color);
+}
+
+input[type=radio]:checked + label {
+	background: var(--bitsy-text-color);
+	color: var(--bitsy-card-color);
+}
+
+/* misc*/
+#topbar { /* make class? */
+	background: var(--bitsy-card-color);
+}
+
+.panel {
+	background: var(--bitsy-card-color); /* rename? */
 }
