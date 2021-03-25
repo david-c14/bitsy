@@ -79,6 +79,17 @@ input[type=radio]:checked + label {
 	color: var(--bitsy-card-color);
 }
 
+/* file */
+input[type=file] {
+	display: none;
+}
+
+input[type=file] + label {
+	background: var(--bitsy-button-color);
+	display: var(--bitsy-buton-display);
+	margin: var(--bitsy-margin-s);
+}
+
 /* root */
 .bitsy-main {
 	display: flex;
@@ -121,6 +132,67 @@ input[type=radio]:checked + label {
 .panel { /* rename to card? */
 	background: var(--bitsy-card-color);
 	margin: var(--bitsy-margin-m);
+}
+
+.cardui-card {
+	display: inline-flex;
+	flex-direction: column;
+}
+
+.cardui-titlebar {
+	display: flex;
+	padding: var(--bitsy-margin-s);
+	background: var(--bitsy-button-color);
+}
+
+.cardui-icon {
+	margin: var(--bitsy-margin-s);
+}
+
+.cardui-title {
+	flex-grow: 1;
+	margin: var(--bitsy-margin-s);
+}
+
+.cardui-main {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	padding: var(--bitsy-margin-m);
+}
+
+.cardui-main.cardui-size-xsmall {
+	width: 128px;
+	min-height: 128px;
+}
+
+.cardui-main.cardui-size-small {
+	width: 256px;
+	min-height: 256px;
+}
+
+.cardui-main.cardui-size-medium {
+	width: 384px;
+	min-height: 384px;
+}
+
+.cardui-main.cardui-size-large {
+	width: 512px;
+	min-height: 512px;
+}
+
+.cardui-nav {
+	display: flex;
+}
+
+.cardui-nav-name {
+	flex-grow: 1;
+	width: 10px; /* hack.. */
+}
+
+.cardui-menu {
+	display: flex;
+	flex-direction: column;
 }
 
 /* legacy */

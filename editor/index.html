@@ -766,11 +766,11 @@
 					<div>
 						<span class="localize import_html">import game from html file:</span>
 						<br>
+						<input type="file" id="importGamePicker" onchange="importGameFromFile(event);"/>
 						<label for="importGamePicker" class="filePickerLabel" title="import game from html file on your computer">
 							<span class="bitsy_icon">upload</span>
 							<span class="localize upload_game">upload game</span>
 						</label>
-						<input type="file" id="importGamePicker" style="display:none;" onchange="importGameFromFile(event);"/>
 					</div>
 
 					<!-- TODO LOCALIZE - word wrap -->
