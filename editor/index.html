@@ -67,7 +67,7 @@
  
 	<body onload="start()">
 
-		<div id="appRoot">
+		<div id="appRoot" class="bitsy-main">
 
 		<div id="topbar" class="bitsy-menubar">
 
@@ -206,8 +206,8 @@
 			</div>
 		</div>
 
-		<div id="editorWindow" onmousewheel="blockScrollBackpage(event);">
-			<div id="editorContent">
+		<div id="editorWindow" class="bitsy-card-view" onmousewheel="blockScrollBackpage(event);">
+			<div id="editorContent" class="bitsy-card-container">
 
 				<div id="titlePanel" class="panel color0">
 					<div class="bar color0">
@@ -885,7 +885,7 @@
 
 		</div>
 
-		<div id="legacyTools" display="none">
+		<div id="legacyTools" class="bitsy-legacy-container">
 			<div id="aboutPanel" class="panel color0">
 				<div class="bar color0">
 					<button title="minimize about window" class="light panelBarClose" onclick="hidePanel('aboutPanel');">

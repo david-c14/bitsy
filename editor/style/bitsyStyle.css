@@ -13,6 +13,8 @@ button {
 	--bitsy-text-color: #6767b2;
 	--bitsy-button-color: #e8e8ff;
 	--bitsy-buton-display: inline-flex;
+	--bitsy-margin-s: 0.3em;
+	--bitsy-margin-m: 0.5em;
 }
 
 /* page */
@@ -31,6 +33,7 @@ body {
 button {
 	background: var(--bitsy-button-color);
 	display: var(--bitsy-buton-display);
+	margin: var(--bitsy-margin-s);
 }
 
 button:active {
@@ -52,6 +55,7 @@ input[type=checkbox] {
 input[type=checkbox] + label {
 	background: var(--bitsy-button-color);
 	display: var(--bitsy-buton-display);
+	margin: var(--bitsy-margin-s);
 }
 
 input[type=checkbox]:checked + label {
@@ -67,11 +71,19 @@ input[type=radio] {
 input[type=radio] + label {
 	background: var(--bitsy-button-color);
 	display: var(--bitsy-buton-display);
+	margin: var(--bitsy-margin-s);
 }
 
 input[type=radio]:checked + label {
 	background: var(--bitsy-text-color);
 	color: var(--bitsy-card-color);
+}
+
+/* root */
+.bitsy-main {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
 }
 
 /* main menu */
@@ -80,6 +92,7 @@ input[type=radio]:checked + label {
 	flex-direction: column;
 	background: var(--bitsy-card-color);
 	padding: 0.5em;
+	margin-bottom: var(--bitsy-margin-m);
 }
 
 .bitsy-menubar-main {
@@ -94,7 +107,23 @@ input[type=radio]:checked + label {
 	display: var(--bitsy-buton-display);
 }
 
+/* card view */
+.bitsy-card-view {
+	overflow: scroll;
+	flex-grow: 1;
+}
+
+.bitsy-card-container {
+	display: flex;
+}
+
 /* cards */
 .panel { /* rename to card? */
 	background: var(--bitsy-card-color);
+	margin: var(--bitsy-margin-m);
+}
+
+/* legacy */
+.bitsy-legacy-container {
+	display: none;
 }
