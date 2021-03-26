@@ -1135,7 +1135,7 @@ function addLegacyCardView(name, id, icon, elementId) {
 	// hacky? hook ups with existing panel system
 	cardView.AddStyle("panel"); // todo : decouple style from grab-ability
 	cardView.OnGrab(grabCard);
-	cardView.OnClose(function() { hidePanel(name + "Tool") });
+	cardView.OnClose(function() { hidePanel(id) });
 
 	editorContent.appendChild(cardView.GetElement());
 
