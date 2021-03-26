@@ -246,7 +246,7 @@ function RoomMarkerTool(markerCanvas1, markerCanvas2) {
 		markerOptions.style.display = "block";
 
 		if (curMarker != null) {
-			markersSelect.style.display = "flex";
+			markersSelect.style.display = "block"; // TODO : fix
 			var w = tilesize * scale;
 			if (curMarker.MarkerCount() == 2) {
 				markerControl1.style.visibility = "visible";

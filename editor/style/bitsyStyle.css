@@ -151,6 +151,7 @@ input[type=file] + label {
 
 .cardui-title {
 	flex-grow: 1;
+	text-align: center;
 	margin: var(--bitsy-margin-s);
 }
 
@@ -198,4 +199,9 @@ input[type=file] + label {
 /* legacy */
 .bitsy-legacy-container {
 	display: none;
+}
+
+.bitsy-legacy-flex-col {
+	display: flex;
+	flex-direction: column;
 }

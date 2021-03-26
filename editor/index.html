@@ -286,7 +286,9 @@
 						<span class="localize room_tool_name">room</span>
 					</div>
 				</div>
-				
+
+				<div id="roomInner" class="bitsy-legacy-flex-col">
+
 				<div id="roomNav" class="navControl">
 					<input type="checkbox" id="playModeCheck" onclick="togglePlayMode(event);" />
 					<label title="play / pause game" for="playModeCheck">
@@ -370,6 +372,8 @@
 						</div>
 					</div>
 				</div>
+
+				</div>
 			</div>
 
 			<div id="exitsPanel" class="panel color3" style="display:none;">
@@ -384,7 +388,7 @@
 						<span class="localize marker_tool_name">exits & endings</span>
 					</div>
 				</div>
-				<div id="exitsPanelContent">
+				<div id="exitsPanelContent" class="bitsy-legacy-flex-col">
 					<div id="markersControls" class="navControl">
 						<!-- TODO : hook up to actual "name", resize -->
 						<input type="text" id="markerName" class="textInputField" size="5" readonly></input>
@@ -438,7 +442,7 @@
 						<span class="localize marker_tool_empty">There are no exits or endings in this room yet! You can add one with this tool. :)</span>
 					</div>
 					<div id="markersSelect">
-						<div id="markerControl1" class="controlBox">
+						<div id="markerControl1" class="controlBox bitsy bitsy-legacy-flex-col">
 							<span>
 								<span id="markerIcon1"></span>
 								<span id="markerName1">marker 1</span>
@@ -493,7 +497,7 @@
 								<span id="exitDirectionIcon" class="bitsy_icon">exit_one_way</span>
 							</button>
 						</div>
-						<div id="markerControl2" class="controlBox" style="display: flex; flex-direction: column;">
+						<div id="markerControl2" class="controlBox bitsy-legacy-flex-col">
 							<span>
 								<span id="markerIcon2"></span>
 								<span id="markerName2">marker 2</span>
@@ -753,7 +757,7 @@
 					</div>
 				</div>
 
-				<div id="downloadToolControls">
+				<div id="downloadInner">
 					<div>
 						<span class="localize download_html">download game as html file:</span>
 						<br>
@@ -907,6 +911,8 @@
 					</div>
 				</div>
 
+				<div id="paintExplorerInner">
+
 				<form>
 					<input type="radio" name="paint explorer mode" value="avatar" onclick="on_paint_avatar();" id="paintExplorerOptionAvatar" checked>
 					<label title="find the avatar: the player's character" for="paintExplorerOptionAvatar" class="left">
@@ -954,6 +960,8 @@
 					</span>
 					<input id="paintExplorerFilterInput" type="text" onkeyup="paintExplorerFilterChange(event);" onchange="paintExplorerFilterChange(event);" placeholder="filter drawings" title="filter drawings by name" size="30">
 				</div>
+
+				</div>
 			</div>
 
 			<div id="colorsPanel" class="panel color1">
@@ -968,6 +976,8 @@
 						<span class="localize palette_tool_name">colors</span>
 					</div>
 				</div>
+
+				<div id="colorsInner">
 
 				<div class="navControl">
 					<input type="text" id="paletteName" title="a name to refer to this color palette" class="textInputField" onchange="on_palette_name_change(event);" size="10"></input>
@@ -1022,6 +1032,8 @@
 					</div>
 					<input id="colorPickerHexText" class="textInputField" title="color picker hex code" type="text" />
 				</div>
+
+				</div>
 			</div>
 
 			<div id="dialogPanel" class="panel color3">
@@ -1036,6 +1048,8 @@
 						<span class="localize dialog_tool_name">dialog</span>
 					</div>
 				</div>
+
+				<div id="dialogInner">
 
 				<div id="dialogEditorHasContent">
 					<div class="navControl">
@@ -1095,6 +1109,8 @@
 				<div id="dialogEditorNoContent" class="controlBox" style="display:none;">
 					<span class="localize dialog_no_selection">Select a sprite or item to edit its dialog.</span>
 				</div>
+
+				</div>
 			</div>
 
 			<div id="inventoryPanel" class="panel color3">
@@ -1110,7 +1126,7 @@
 					</div>
 				</div>
 
-				<div>
+				<div id="inventoryInner">
 					<!-- TODO -->
 					<form>
 						<input type="radio" name="inventory mode" value="item" onclick="showInventoryItem();" id="inventoryOptionItem" checked>
@@ -1147,6 +1163,8 @@
 					</div>
 				</div>
 				
+				<div id="gifInner">
+
 				<button title="start recording a gif of your game" class="color0" id="gifStartButton" onclick="startRecordingGif();">
 					<span class="bitsy_icon">record</span>
 					<span class="localize gif_start">start recording</span>
@@ -1186,6 +1204,8 @@
 				<a title="download latest gif recording of your game" href="" download="recording.gif" id="gifDownload">
 					<span class="localize gif_download">download gif</span>
 				</a>
+
+				</div>
 			</div>
 
 			<div id="dataPanel" class="panel color0" style="display:none;">
@@ -1200,6 +1220,9 @@
 						<span class="localize data_tool_name">game data</span>
 					</div>
 				</div>
+
+				<div id="dataInner">
+
 				<textarea title="raw text of the bitsy game data file (be careful when editing)" id="game_data" onchange="on_game_data_change();"></textarea>
 				<br>
 				<button title="reset everything and start new game" class="color0" onclick="newGameDialog();">
@@ -1216,6 +1239,8 @@
 					<span id="fontDataIcon" class="bitsy_icon">visibility_off</span>
 					<span class="localize font_data_toggle_visible">font data</span>
 				</label>
+
+				</div>
 			</div>
 
 		</div>

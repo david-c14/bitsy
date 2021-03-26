@@ -1090,8 +1090,16 @@ function start() {
 	settingsCard = card.load("settings");
 	addCardViewToLegacyUI(settingsCard);
 
-	addLegacyCardView("download", "download", "downloadToolControls");
+	addLegacyCardView("download", "download", "downloadInner");
 	addLegacyCardView("about", "about", "aboutInner");
+	addLegacyCardView("room", "room", "roomInner");
+	addLegacyCardView("exits & endings", "exit_one_way", "exitsPanelContent");
+	addLegacyCardView("find drawing", "search", "paintExplorerInner");
+	addLegacyCardView("colors", "colors", "colorsInner");
+	addLegacyCardView("dialog", "dialog", "dialogInner");
+	addLegacyCardView("inventory", "item", "inventoryInner");
+	addLegacyCardView("record gif", "record", "gifInner");
+	addLegacyCardView("game data", "game_data", "dataInner");
 }
 
 var allCardViews = []; // hacky global for hacky reasons (global refresh)
