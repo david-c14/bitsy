@@ -1,10 +1,13 @@
 /* remove browser default styles */
-button {
+button, input {
 	font-size: inherit;
 	font-family: inherit;
 	border: none;
 	color: inherit;
 	padding: 0;
+	line-height: inherit;
+	box-shadow: none;
+	outline: none;
 }
 
 /* theme */
@@ -13,8 +16,9 @@ button {
 	--bitsy-card-color: #ffffff;
 	--bitsy-text-color: #6767b2;
 	--bitsy-button-color: #e8e8ff;
-	--bitsy-buton-display: inline-flex;
-	--bitsy-margin-s: 0.3em;
+	--bitsy-button-display: inline-flex;
+	--bitsy-margin-xs: 0.125em;
+	--bitsy-margin-s: 0.25em;
 	--bitsy-margin-m: 0.5em;
 	--bitsy-margin-l: 1.0em;
 }
@@ -22,6 +26,7 @@ button {
 /* page */
 html {
 	font-size: 100%;
+	line-height: 100%;
 	background: var(--bitsy-bg-color);
 	color: var(--bitsy-text-color);
 	overscroll-behavior: none;
@@ -35,13 +40,19 @@ body {
 /* button */
 button {
 	background: var(--bitsy-button-color);
-	display: var(--bitsy-buton-display);
-	margin: var(--bitsy-margin-s);
+	display: var(--bitsy-button-display);
+	padding: var(--bitsy-margin-s);
+	gap: var(--bitsy-margin-m);
 }
 
 button:active {
 	background: var(--bitsy-text-color);
 	color: var(--bitsy-card-color);
+}
+
+/* canvas */
+canvas {
+	margin-bottom: var(--bitsy-margin-s);
 }
 
 /* icon */
@@ -50,20 +61,46 @@ button:active {
 	fill: currentColor;
 }
 
+/* forms */
+form {
+	display: flex;
+	flex-grow: 1;
+	flex-wrap: nowrap !important; /* I don't like using important */
+}
+
+input {
+	font-family: monospace;
+	flex-grow: 1;
+	width: 0;
+	padding: var(--bitsy-margin-s);
+	border: solid var(--bitsy-margin-xs);
+	border-color: var(--bitsy-button-color);
+}
+
+input:hover {
+	border-color: var(--bitsy-text-color);
+}
+
+input:focus {
+	border-color: var(--bitsy-text-color);
+	outline: solid var(--bitsy-margin-xs) var(--bitsy-text-color);
+}
+
+input + label {
+	background: var(--bitsy-button-color);
+	display: var(--bitsy-button-display);
+	padding: var(--bitsy-margin-s);
+	gap: var(--bitsy-margin-m);
+}
+
+input:checked + label {
+	background: var(--bitsy-text-color);
+	color: var(--bitsy-card-color);
+}
+
 /* checkbox */
 input[type=checkbox] {
 	display: none;
-}
-
-input[type=checkbox] + label {
-	background: var(--bitsy-button-color);
-	display: var(--bitsy-buton-display);
-	margin: var(--bitsy-margin-s);
-}
-
-input[type=checkbox]:checked + label {
-	background: var(--bitsy-text-color);
-	color: var(--bitsy-card-color);
 }
 
 /* radio */
@@ -72,25 +109,14 @@ input[type=radio] {
 }
 
 input[type=radio] + label {
-	background: var(--bitsy-button-color);
-	display: var(--bitsy-buton-display);
-	margin: var(--bitsy-margin-s);
-}
-
-input[type=radio]:checked + label {
-	background: var(--bitsy-text-color);
-	color: var(--bitsy-card-color);
+	flex-grow: 1;
+	align-content: center;
+	justify-content: center;
 }
 
 /* file */
 input[type=file] {
 	display: none;
-}
-
-input[type=file] + label {
-	background: var(--bitsy-button-color);
-	display: var(--bitsy-buton-display);
-	margin: var(--bitsy-margin-s);
 }
 
 /* root */
@@ -112,12 +138,8 @@ input[type=file] + label {
 	display: flex;
 }
 
-.bitsy-menubar-tools {
-	display: flex;
-}
-
 .bitsy-menubar-logo {
-	display: var(--bitsy-buton-display);
+	display: var(--bitsy-button-display);
 }
 
 /* card view */
@@ -136,15 +158,19 @@ input[type=file] + label {
 }
 
 /* cards */
-.panel { /* rename to card? */
+.cardui-card {
 	background: var(--bitsy-card-color);
 	margin: var(--bitsy-margin-m);
-}
-
-.cardui-card {
 	display: inline-flex;
 	flex-direction: column;
 	max-height: 100%;
+}
+
+.bitsy-menubar-group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--bitsy-margin-s);
+	margin-bottom: var(--bitsy-margin-s);
 }
 
 .cardui-titlebar {
@@ -186,20 +212,6 @@ input[type=file] + label {
 
 .cardui-main.cardui-size-large {
 	width: 512px;
-}
-
-.cardui-nav {
-	display: flex;
-}
-
-.cardui-nav-name {
-	flex-grow: 1;
-	width: 10px; /* hack.. */
-}
-
-.cardui-menu {
-	display: flex;
-	flex-direction: column;
 }
 
 /* legacy */

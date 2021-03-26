@@ -21,7 +21,7 @@ installCard(function(card) {
 	// todo : what about title? loc?
 
 	// todo : name? part of some larger config?
-	card.sizeHint = "S"; // todo : enum? string? int?
+	card.sizeHint = "M"; // todo : enum? string? int?
 
 	// naming? how are these defined? (data?)
 	card.data = [ "AVA", "TIL", "SPR", "ITM", ];
@@ -204,10 +204,10 @@ installCard(function(card) {
 				});
 			}
 
-			menu.endGroup();
+			// menu.endGroup();
 
 			// frames
-			menu.startGroup();
+			// menu.startGroup();
 
 			for (var i = 0; (i < imageSource.length) && (flags.SUPER_ANM || i < shortAnimationMax); i++) {
 				menu.add({

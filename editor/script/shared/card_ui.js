@@ -114,7 +114,8 @@ function CardUI() {
 	// todo : should I pick a more generic name than tab? switcher? segments? options? radio? select?
 	function createTabs(options) {
 		var tabForm = document.createElement("form");
-		tabForm.classList.add("cardui-tab-group");
+		// tabForm.classList.add("cardui-tab-group");
+		tabForm.classList.add("bitsy-menubar-group");
 
 		for (var i = 0; i < options.tabs.length; i++) {
 			var t = options.tabs[i];
@@ -374,11 +375,11 @@ function CardUI() {
 
 			// create nav bar
 			var nav = document.createElement("div");
-			nav.classList.add("cardui-nav");
+			// nav.classList.add("cardui-menu-group");
+			nav.classList.add("bitsy-menubar-group");
 			toolRoot.appendChild(nav);
 
 			nameControl = document.createElement("input");
-			nameControl.classList.add("cardui-nav-name");
 			nameControl.type = "text";
 			nameControl.onchange = function(e) {
 				if (card.changeDataName) {
@@ -479,7 +480,8 @@ function CardUI() {
 
 		function StartGroup() {
 			_curGroup = document.createElement("div");
-			_curGroup.classList.add("cardui-menu-group");
+			// _curGroup.classList.add("cardui-menu-group");
+			_curGroup.classList.add("bitsy-menubar-group");
 		}
 		this.StartGroup = StartGroup;
 
