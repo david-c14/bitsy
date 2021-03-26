@@ -1,12 +1,11 @@
 /* remove browser default styles */
-button, input {
+button, input, select {
 	font-size: inherit;
 	font-family: inherit;
 	border: none;
 	color: inherit;
 	padding: 0;
 	line-height: inherit;
-	box-shadow: none;
 	outline: none;
 }
 
@@ -62,14 +61,14 @@ canvas {
 	fill: currentColor;
 }
 
-/* forms */
+/* forms, inputs, selects */
 form {
 	display: flex;
 	flex-grow: 1;
 	flex-wrap: nowrap !important; /* I don't like using important */
 }
 
-input {
+select, input {
 	font-family: monospace;
 	flex-grow: 1;
 	width: 0;
@@ -78,11 +77,11 @@ input {
 	border-color: var(--bitsy-button-color);
 }
 
-input:hover {
+select:hover, input:hover {
 	border-color: var(--bitsy-text-color);
 }
 
-input:focus {
+select:focus, input:focus {
 	border-color: var(--bitsy-text-color);
 	outline: solid var(--bitsy-margin-xs) var(--bitsy-text-color);
 }
