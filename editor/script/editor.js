@@ -1090,16 +1090,16 @@ function start() {
 	settingsCard = card.load("settings");
 	addCardViewToLegacyUI(settingsCard);
 
-	addLegacyCardView("download", "download", "downloadInner");
-	addLegacyCardView("about", "about", "aboutInner");
-	addLegacyCardView("room", "room", "roomInner");
-	addLegacyCardView("exits & endings", "exit_one_way", "exitsPanelContent");
-	addLegacyCardView("find drawing", "search", "paintExplorerInner");
-	addLegacyCardView("colors", "colors", "colorsInner");
-	addLegacyCardView("dialog", "dialog", "dialogInner");
-	addLegacyCardView("inventory", "item", "inventoryInner");
-	addLegacyCardView("record gif", "record", "gifInner");
-	addLegacyCardView("game data", "game_data", "dataInner");
+	addLegacyCardView("download", "downloadTool", "download", "downloadInner");
+	addLegacyCardView("about", "aboutTool", "about", "aboutInner");
+	addLegacyCardView("room", "roomTool", "room", "roomInner");
+	addLegacyCardView("exits & endings", "exitsTool", "exit_one_way", "exitsPanelContent");
+	addLegacyCardView("find drawing", "findTool", "search", "paintExplorerInner");
+	addLegacyCardView("colors", "paletteTool", "colors", "colorsInner");
+	addLegacyCardView("dialog", "dialogTool", "dialog", "dialogInner");
+	addLegacyCardView("inventory", "inventoryTool", "item", "inventoryInner");
+	addLegacyCardView("record gif", "gifTool", "record", "gifInner");
+	addLegacyCardView("game data", "dataTool", "game_data", "dataInner");
 }
 
 var allCardViews = []; // hacky global for hacky reasons (global refresh)
@@ -1121,14 +1121,15 @@ function addCardViewToLegacyUI(newCard) {
 	allCardViews.push(cardView);
 }
 
-function addLegacyCardView(name, icon, id) {
+function addLegacyCardView(name, id, icon, elementId) {
 	var editorContent = document.getElementById("editorContent");
 
 	var cardView = cardUI.CreateLegacyCardView({
 		name: name,
+		id, id,
 		icon: icon,
 		size: "S",
-		element: document.getElementById(id),
+		element: document.getElementById(elementId),
 	});
 
 	// hacky? hook ups with existing panel system

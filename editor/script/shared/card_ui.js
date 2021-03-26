@@ -260,7 +260,7 @@ function CardUI() {
 		return select;
 	};
 
-	function CardFrame(name, icon, size) {
+	function CardFrame(name, id, icon, size) {
 		/* EVENT HANDLERS */
 		var onGrabHandler = null;
 		var onCloseHandler = null;
@@ -268,7 +268,7 @@ function CardUI() {
 		/* ROOT ELEMENT */
 		var cardRoot = document.createElement("div");
 		cardRoot.classList.add("cardui-card");
-		cardRoot.id = name + "Tool"; //config.id;
+		cardRoot.id = id;
 
 		/* TITLE BAR */
 		var titleBar = document.createElement("div");
@@ -343,7 +343,7 @@ function CardUI() {
 	function CardView(card) {
 		var self = this; // todo : I don't love this pattern..
 
-		var frame = new CardFrame(card.name, card.icon, card.sizeHint);
+		var frame = new CardFrame(card.name, card.name + "Tool", card.icon, card.sizeHint);
 		var toolRoot = frame.GetToolRoot();
 
 		if (card.data) {
@@ -741,7 +741,7 @@ function CardUI() {
 	}
 
 	function LegacyCardView(options) {
-		var frame = new CardFrame(options.name, options.icon, options.size);
+		var frame = new CardFrame(options.name, options.id, options.icon, options.size);
 
 		var toolWrapper = document.createElement("div");
 		toolWrapper.classList.add("cardui-legacy-wrapper");
