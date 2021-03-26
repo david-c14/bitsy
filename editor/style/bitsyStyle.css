@@ -16,6 +16,7 @@ button {
 	--bitsy-buton-display: inline-flex;
 	--bitsy-margin-s: 0.3em;
 	--bitsy-margin-m: 0.5em;
+	--bitsy-margin-l: 1.0em;
 }
 
 /* page */
@@ -103,8 +104,7 @@ input[type=file] + label {
 	display: flex;
 	flex-direction: column;
 	background: var(--bitsy-card-color);
-	padding: 0.5em;
-	margin-bottom: var(--bitsy-margin-m);
+	padding: var(--bitsy-margin-m);
 }
 
 .bitsy-menubar-main {
@@ -121,12 +121,15 @@ input[type=file] + label {
 
 /* card view */
 .bitsy-card-view {
-	overflow: scroll;
+	overflow-x: scroll;
 	flex-grow: 1;
+	padding: var(--bitsy-margin-m);
+	padding-bottom: var(--bitsy-margin-l);
 }
 
 .bitsy-card-container {
 	display: flex;
+	height: 100%;
 }
 
 /* cards */
@@ -138,6 +141,7 @@ input[type=file] + label {
 .cardui-card {
 	display: inline-flex;
 	flex-direction: column;
+	max-height: 100%;
 }
 
 .cardui-titlebar {
@@ -161,6 +165,8 @@ input[type=file] + label {
 	flex-direction: column;
 	flex-grow: 1;
 	padding: var(--bitsy-margin-m);
+	max-height: 100%;
+	overflow: scroll;
 }
 
 .cardui-main.cardui-size-xsmall {
