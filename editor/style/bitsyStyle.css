@@ -4,6 +4,7 @@ button {
 	font-family: inherit;
 	border: none;
 	color: inherit;
+	padding: 0;
 }
 
 /* theme */
