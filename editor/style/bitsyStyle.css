@@ -129,6 +129,7 @@ input[type=file] + label {
 
 .bitsy-card-container {
 	display: flex;
+	align-items: flex-start;
 	height: 100%;
 }
 
@@ -171,22 +172,18 @@ input[type=file] + label {
 
 .cardui-main.cardui-size-xsmall {
 	width: 128px;
-	min-height: 128px;
 }
 
 .cardui-main.cardui-size-small {
 	width: 256px;
-	min-height: 256px;
 }
 
 .cardui-main.cardui-size-medium {
 	width: 384px;
-	min-height: 384px;
 }
 
 .cardui-main.cardui-size-large {
 	width: 512px;
-	min-height: 512px;
 }
 
 .cardui-nav {
