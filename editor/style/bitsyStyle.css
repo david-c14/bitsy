@@ -43,6 +43,7 @@ button {
 	display: var(--bitsy-button-display);
 	padding: var(--bitsy-margin-s);
 	gap: var(--bitsy-margin-m);
+	align-items: center;
 }
 
 button:active {
@@ -91,6 +92,7 @@ input + label {
 	display: var(--bitsy-button-display);
 	padding: var(--bitsy-margin-s);
 	gap: var(--bitsy-margin-m);
+	align-items: center;
 }
 
 input:checked + label {
@@ -171,6 +173,7 @@ input[type=file] {
 	flex-wrap: wrap;
 	gap: var(--bitsy-margin-s);
 	margin-bottom: var(--bitsy-margin-s);
+	align-items: center;
 }
 
 .cardui-titlebar {
