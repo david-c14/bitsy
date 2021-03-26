@@ -24,6 +24,7 @@ html {
 	font-size: 100%;
 	background: var(--bitsy-bg-color);
 	color: var(--bitsy-text-color);
+	overscroll-behavior: none;
 }
 
 body {
@@ -122,6 +123,7 @@ input[type=file] + label {
 /* card view */
 .bitsy-card-view {
 	overflow-x: scroll;
+	overscroll-behavior: none;
 	flex-grow: 1;
 	padding: var(--bitsy-margin-m);
 	padding-bottom: var(--bitsy-margin-l);
