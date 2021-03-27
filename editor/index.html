@@ -68,6 +68,18 @@
 	<body onload="start()">
 
 		<div id="toolsPanel" class="bitsy-toolbar">
+			<div class="cardui-titlebar">
+				<span class="cardui-icon">
+					<span class="bitsy_icon">tool</span>
+				</span>
+				<span class="cardui-title">tools</span>
+				<button onclick="closeToolbar();">
+					<span class="bitsy_icon">close</span>
+				</button>
+			</div>
+
+			<div class="bitsy-toolbar-toggles">
+
 			<input type="checkbox" value="aboutTool" id="aboutCheck" onclick="togglePanelAnimated(event);" checked/>
 			<label title="show / hide about window" for="aboutCheck">
 				<span class="bitsy_icon icon_space_right">about</span>
@@ -144,6 +156,8 @@
 				<span class="bitsy_icon">new_game</span>
 				<span class="localize reset_game">new game</span>
 			</button>
+
+			</div>
 		</div>
 
 		<div class="bitsy-main">
@@ -152,19 +166,24 @@
 
 				<div id="topbarMain" class="bitsy-menubar-group">
 
-					<div id="toolsCheckFlexItem">
+<!-- 					<div id="toolsCheckFlexItem">
 						<input type="checkbox" value="toolsPanel" id="toolsCheck" onclick="toggleToolBar(event);" />
 						<label title="show / hide toolbar" for="toolsCheck" id="toolsCheckLabel">
 							<span class="bitsy_icon icon_space_right">tool</span>
 							<span class="localize tools_label">tools</span>
 						</label>
-					</div>
+					</div> -->
 
-					<span title="Bitsy ~ make little worlds ~" id="bitsyLogoTitle" class="bitsy-menubar-logo">
+					<button onclick="openToolbar();">
+						<span class="bitsy_icon icon_space_right">tool</span>
+						<span class="localize tools_label">tools</span>
+					</button>
+
+					<label title="Bitsy ~ make little worlds ~" id="bitsyLogoTitle" class="bitsy-menubar-logo">
 						<!-- <img src="image/cat.svg" height="24px" width="24px" id="bitsyLogo"/> -->
 						<span class="bitsy_icon">sprite</span>
 						<span class="localize bitsy_title">Bitsy</span>
-					</span>	
+					</label>
 
 					<!-- <div id="titleFlexItem">
 						<div class="titleWidgetContainer"></div>
@@ -178,6 +197,11 @@
 					</button>
 
 				</div>
+
+<!-- 				<div class="bitsy-menubar-group">
+
+					<input type="text" />
+				</div> -->
 
 			</div>
 

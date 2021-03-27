@@ -56,6 +56,14 @@ button:active {
 	color: var(--bitsy-card-color);
 }
 
+/* label */
+label {
+	display: var(--bitsy-button-display);
+	padding: var(--bitsy-margin-s);
+	gap: var(--bitsy-margin-m);
+	align-items: center;
+}
+
 /* canvas */
 canvas {
 	margin-bottom: var(--bitsy-margin-s);
@@ -139,6 +147,7 @@ input[type=file] {
 	flex-direction: column;
 	background: var(--bitsy-card-color);
 	padding: var(--bitsy-margin-m);
+	box-shadow: 0 var(--bitsy-margin-s) var(--bitsy-margin-s) var(--bitsy-text-color);
 }
 
 .bitsy-menubar-main {
@@ -157,18 +166,26 @@ input[type=file] {
 	top: 0;
 	left: 0;
 	z-index: 100;
-	/*transform: translateX(-20em);*/
-	height: calc(100vh - (var(--bitsy-margin-m) * 2));
+	transform: translateX(-20em);
+	height: 100vh;
 	width: 12em;
-	overflow-y: scroll;
+	display: flex;
+	flex-direction: column;
+	background: var(--bitsy-card-color);
+	box-shadow: 0 0 var(--bitsy-margin-m) var(--bitsy-text-color);
+	transition: transform 0.5s;
+}
+
+.bitsy-toolbar-open {
+	transform: translateX(0em);
+}
+
+.bitsy-toolbar-toggles {
 	display: flex;
 	flex-direction: column;
 	padding: var(--bitsy-margin-m);
-	/*padding-right: var(--bitsy-margin-l);*/
 	gap: var(--bitsy-margin-s);
-	background: var(--bitsy-card-color);
-	/*border-right: solid var(--bitsy-margin-xs) var(--bitsy-button-color);*/
-	display: none; /* temp hack */
+	overflow-y: scroll;
 }
 
 /* card view */

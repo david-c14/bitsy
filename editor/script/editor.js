@@ -1749,6 +1749,14 @@ function toggleToolBar(e) {
 	}
 }
 
+function openToolbar() {
+	document.getElementById("toolsPanel").classList.add("bitsy-toolbar-open");
+}
+
+function closeToolbar() {
+	document.getElementById("toolsPanel").classList.remove("bitsy-toolbar-open");
+}
+
 function toggleDownloadOptions(e) {
 	if( e.target.checked ) {
 		document.getElementById("downloadOptions").style.display = "block";
