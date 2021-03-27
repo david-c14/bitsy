@@ -162,19 +162,6 @@
 
 		<div class="bitsy-main">
 
-				<div class="bitsy-menubar-group" style="padding: 0.5em;">
-					<label>
-						<span class="bitsy_icon">edit</span>
-						<!-- <span>title</span> -->
-					</label>
-
-					<input type="text" />
-
-					<button>
-						<span class="bitsy_icon">close</span>
-					</button>
-				</div>
-
 			<div id="unsupportedFeatures" class="warning" style="display:none;">
 				<span class="localize unsupported_features">uh oh ~ your browser doesn't support all of bitsy's features, so some things might not work right. maybe try another browser, such as:</span>
 				<a href="https://www.google.com/chrome/browser" target="_blank">
@@ -204,13 +191,20 @@
 				</div>
 			</div>
 
+			<div class="bitsy-menubar">
+				<label>
+					<span class="bitsy_icon">edit</span>
+					<!-- <span>title</span> -->
+				</label>
+				<input type="text" />
+			</div>
+
 			<div id="editorWindow" class="bitsy-card-view">
 				<div id="editorContent" class="bitsy-card-container">
 				</div> <!-- Editor Content -->
 			</div> <!-- Editor Window -->
 
 			<div id="topbar" class="bitsy-menubar">
-
 				<button onclick="openToolbar();">
 					<span class="bitsy_icon icon_space_right">tool</span>
 					<span class="localize tools_label">tools</span>
@@ -225,7 +219,6 @@
 					<span class="bitsy_icon">play</span>
 					<span>play</span>
 				</button>
-
 			</div>
 
 		</div>

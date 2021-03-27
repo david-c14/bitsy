@@ -144,10 +144,11 @@ input[type=file] {
 /* main menu */
 .bitsy-menubar {
 	display: flex;
-	/*flex-direction: column;*/
 	background: var(--bitsy-card-color);
 	padding: var(--bitsy-margin-m);
-	box-shadow: var(--bitsy-margin-s) 0 var(--bitsy-margin-s) var(--bitsy-text-color);
+	gap: var(--bitsy-margin-s);
+	align-items: center;
+	/*box-shadow: var(--bitsy-margin-s) 0 var(--bitsy-margin-s) var(--bitsy-text-color);*/
 }
 
 .bitsy-menubar-logo {
