@@ -162,48 +162,18 @@
 
 		<div class="bitsy-main">
 
-			<div id="topbar" class="bitsy-menubar">
-
-				<div id="topbarMain" class="bitsy-menubar-group">
-
-<!-- 					<div id="toolsCheckFlexItem">
-						<input type="checkbox" value="toolsPanel" id="toolsCheck" onclick="toggleToolBar(event);" />
-						<label title="show / hide toolbar" for="toolsCheck" id="toolsCheckLabel">
-							<span class="bitsy_icon icon_space_right">tool</span>
-							<span class="localize tools_label">tools</span>
-						</label>
-					</div> -->
-
-					<button onclick="openToolbar();">
-						<span class="bitsy_icon icon_space_right">tool</span>
-						<span class="localize tools_label">tools</span>
-					</button>
-
-					<label title="Bitsy ~ make little worlds ~" id="bitsyLogoTitle" class="bitsy-menubar-logo">
-						<!-- <img src="image/cat.svg" height="24px" width="24px" id="bitsyLogo"/> -->
-						<span class="bitsy_icon">sprite</span>
-						<span class="localize bitsy_title">Bitsy</span>
+				<div class="bitsy-menubar-group" style="padding: 0.5em;">
+					<label>
+						<span class="bitsy_icon">edit</span>
+						<!-- <span>title</span> -->
 					</label>
 
-					<!-- <div id="titleFlexItem">
-						<div class="titleWidgetContainer"></div>
-					</div> -->
-
-					<!-- <input type="text" /> -->
+					<input type="text" />
 
 					<button>
-						<span class="bitsy_icon">play</span>
-						<span>play</span>
+						<span class="bitsy_icon">close</span>
 					</button>
-
 				</div>
-
-<!-- 				<div class="bitsy-menubar-group">
-
-					<input type="text" />
-				</div> -->
-
-			</div>
 
 			<div id="unsupportedFeatures" class="warning" style="display:none;">
 				<span class="localize unsupported_features">uh oh ~ your browser doesn't support all of bitsy's features, so some things might not work right. maybe try another browser, such as:</span>
@@ -238,6 +208,25 @@
 				<div id="editorContent" class="bitsy-card-container">
 				</div> <!-- Editor Content -->
 			</div> <!-- Editor Window -->
+
+			<div id="topbar" class="bitsy-menubar">
+
+				<button onclick="openToolbar();">
+					<span class="bitsy_icon icon_space_right">tool</span>
+					<span class="localize tools_label">tools</span>
+				</button>
+
+				<label title="Bitsy ~ make little worlds ~" id="bitsyLogoTitle" class="bitsy-menubar-logo">
+					<span class="bitsy_icon">sprite</span>
+					<span class="localize bitsy_title">Bitsy</span>
+				</label>
+
+				<button>
+					<span class="bitsy_icon">play</span>
+					<span>play</span>
+				</button>
+
+			</div>
 
 		</div>
 
