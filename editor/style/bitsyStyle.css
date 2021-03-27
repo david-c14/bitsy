@@ -34,6 +34,12 @@ html {
 body {
 	margin: 0;
 	padding: 0;
+	height: 100%;
+	width: 100%;
+}
+
+p {
+	margin-top: 0;
 }
 
 /* button */
@@ -140,7 +146,29 @@ input[type=file] {
 }
 
 .bitsy-menubar-logo {
+	flex-grow: 1;
 	display: var(--bitsy-button-display);
+	justify-content: center;
+}
+
+/* toolbar */
+.bitsy-toolbar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 100;
+	/*transform: translateX(-20em);*/
+	height: calc(100vh - (var(--bitsy-margin-m) * 2));
+	width: 12em;
+	overflow-y: scroll;
+	display: flex;
+	flex-direction: column;
+	padding: var(--bitsy-margin-m);
+	/*padding-right: var(--bitsy-margin-l);*/
+	gap: var(--bitsy-margin-s);
+	background: var(--bitsy-card-color);
+	/*border-right: solid var(--bitsy-margin-xs) var(--bitsy-button-color);*/
+	display: none; /* temp hack */
 }
 
 /* card view */

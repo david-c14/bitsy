@@ -67,149 +67,153 @@
  
 	<body onload="start()">
 
-		<div id="appRoot" class="bitsy-main">
+		<div id="toolsPanel" class="bitsy-toolbar">
+			<input type="checkbox" value="aboutTool" id="aboutCheck" onclick="togglePanelAnimated(event);" checked/>
+			<label title="show / hide about window" for="aboutCheck">
+				<span class="bitsy_icon icon_space_right">about</span>
+				<span class="localize about_tool_name">about</span>
+			</label>
+			
+			<input type="checkbox" value="roomTool" id="roomCheck" onclick="togglePanelAnimated(event);" checked/>
+			<label title="show / hide room window" for="roomCheck">
+				<span class="bitsy_icon icon_space_right">room</span>
+				<span class="localize room_tool_name">room</span>
+			</label>
 
-		<div id="topbar" class="bitsy-menubar">
+			<input type="checkbox" value="exitsTool" id="exitsCheck" onclick="togglePanelAnimated(event);" />
+			<label title="show / hide exits & endings window" for="exitsCheck">
+				<span class="bitsy_icon icon_space_right">exits_endings</span>
+				<span class="localize marker_tool_name">exits & endings</span>
+			</label>
 
-			<div id="topbarMain" class="bitsy-menubar-main">
+			<input type="checkbox" value="paintTool" id="paintCheck" onclick="togglePanelAnimated(event);"  checked/>
+			<label title="show / hide paint window" for="paintCheck">
+				<span class="bitsy_icon icon_space_right">paint</span>
+				<span class="localize paint_tool_name">paint</span>
+			</label>
+			
+			<input type="checkbox" value="findTool" id="paintExplorerCheck" onclick="togglePanelAnimated(event);" />
+			<label title="show / hide find drawing window" for="paintExplorerCheck">
+				<span class="bitsy_icon icon_space_right">search</span>
+				<span class="localize explorer_tool_name">find drawing</span>
+			</label>
+			
+			<input type="checkbox" value="colorsPanel" id="colorsCheck" onclick="togglePanelAnimated(event);"  checked/>
+			<label title="show / hide color palette window" for="colorsCheck">
+				<span class="bitsy_icon icon_space_right">colors</span>
+				<span class="localize palette_tool_name">colors</span>
+			</label>
 
-				<span title="Bitsy ~ make little worlds ~" id="bitsyLogoTitle" class="bitsy-menubar-logo">
-					<!-- <img src="image/cat.svg" height="24px" width="24px" id="bitsyLogo"/> -->
-					<span class="bitsy_icon">sprite</span>
-					<span class="localize bitsy_title">Bitsy</span>
-				</span>	
+			<input type="checkbox" value="dialogTool" id="dialogCheck" onclick="togglePanelAnimated(event);"  checked/>
+			<label title="show / hide dialog window" for="dialogCheck">
+				<span class="bitsy_icon icon_space_right">dialog</span>
+				<span class="localize dialog_tool_name">dialog</span>
+			</label>
 
-				<div id="titleFlexItem">
-					<div class="titleWidgetContainer"></div>
-				</div>
+			<input type="checkbox" value="inventoryTool" id="inventoryCheck" onclick="togglePanelAnimated(event);"  checked/>
+			<label title="show / hide inventory window" for="inventoryCheck">
+				<span class="bitsy_icon icon_space_right">item</span>
+				<span class="localize inventory_tool_name">inventory</span>
+			</label>
+			
+			<input type="checkbox" value="downloadTool" id="downloadCheck" onclick="togglePanelAnimated(event);"  checked/>
+			<label title="show / hide download window" for="downloadCheck">
+				<span class="bitsy_icon icon_space_right">file</span>
+				<span class="localize download_tool_name">download</span>
+			</label>
+			
+			<input type="checkbox" value="gifTool" id="gifCheck" onclick="togglePanelAnimated(event);" />
+			<label title="show / hide gif recording window" for="gifCheck">
+				<span class="bitsy_icon icon_space_right">record</span>
+				<span class="localize gif_tool_name">record gif</span>
+			</label>
+			
+			<input type="checkbox" value="dataTool" onclick="togglePanelAnimated(event);" id="dataCheck"/>
+			<label title="show / hide game data window" for="dataCheck">
+				<span class="bitsy_icon icon_space_right">game_data</span>
+				<span class="localize data_tool_name">game data</span>
+			</label>
 
-				<div id="toolsCheckFlexItem">
-					<input type="checkbox" value="toolsPanel" id="toolsCheck" onclick="toggleToolBar(event);" />
-					<label title="show / hide toolbar" for="toolsCheck" id="toolsCheckLabel">
-						<span class="bitsy_icon icon_space_right">tool</span>
-						<span class="localize tools_label">tools</span>
-					</label>
-				</div>
+			<input type="checkbox" value="settingsTool" onclick="togglePanelAnimated(event);" id="settingsCheck"/>
+			<label title="show / hide settings window" for="settingsCheck">
+				<span class="bitsy_icon icon_space_right">settings</span>
+				<span class="localize settings_tool_name">settings</span>
+			</label>
 
-				<div id="topbarSpaceFlexItem"> <!-- TODO : do I still want this? -->
-				</div>
-
-			</div>
-
-			<div id="toolsPanel" class="bitsy-menubar-group">
-
-				<input type="checkbox" value="aboutTool" id="aboutCheck" onclick="togglePanelAnimated(event);" checked/>
-				<label title="show / hide about window" for="aboutCheck">
-					<span class="bitsy_icon icon_space_right">about</span>
-					<span class="localize about_tool_name">about</span>
-				</label>
-				
-				<input type="checkbox" value="roomTool" id="roomCheck" onclick="togglePanelAnimated(event);" checked/>
-				<label title="show / hide room window" for="roomCheck">
-					<span class="bitsy_icon icon_space_right">room</span>
-					<span class="localize room_tool_name">room</span>
-				</label>
-
-				<input type="checkbox" value="exitsTool" id="exitsCheck" onclick="togglePanelAnimated(event);" />
-				<label title="show / hide exits & endings window" for="exitsCheck">
-					<span class="bitsy_icon icon_space_right">exits_endings</span>
-					<span class="localize marker_tool_name">exits & endings</span>
-				</label>
-
-				<input type="checkbox" value="paintTool" id="paintCheck" onclick="togglePanelAnimated(event);"  checked/>
-				<label title="show / hide paint window" for="paintCheck">
-					<span class="bitsy_icon icon_space_right">paint</span>
-					<span class="localize paint_tool_name">paint</span>
-				</label>
-				
-				<input type="checkbox" value="findTool" id="paintExplorerCheck" onclick="togglePanelAnimated(event);" />
-				<label title="show / hide find drawing window" for="paintExplorerCheck">
-					<span class="bitsy_icon icon_space_right">search</span>
-					<span class="localize explorer_tool_name">find drawing</span>
-				</label>
-				
-				<input type="checkbox" value="colorsPanel" id="colorsCheck" onclick="togglePanelAnimated(event);"  checked/>
-				<label title="show / hide color palette window" for="colorsCheck">
-					<span class="bitsy_icon icon_space_right">colors</span>
-					<span class="localize palette_tool_name">colors</span>
-				</label>
-
-				<input type="checkbox" value="dialogTool" id="dialogCheck" onclick="togglePanelAnimated(event);"  checked/>
-				<label title="show / hide dialog window" for="dialogCheck">
-					<span class="bitsy_icon icon_space_right">dialog</span>
-					<span class="localize dialog_tool_name">dialog</span>
-				</label>
-
-				<input type="checkbox" value="inventoryTool" id="inventoryCheck" onclick="togglePanelAnimated(event);"  checked/>
-				<label title="show / hide inventory window" for="inventoryCheck">
-					<span class="bitsy_icon icon_space_right">item</span>
-					<span class="localize inventory_tool_name">inventory</span>
-				</label>
-				
-				<input type="checkbox" value="downloadTool" id="downloadCheck" onclick="togglePanelAnimated(event);"  checked/>
-				<label title="show / hide download window" for="downloadCheck">
-					<span class="bitsy_icon icon_space_right">file</span>
-					<span class="localize download_tool_name">download</span>
-				</label>
-				
-				<input type="checkbox" value="gifTool" id="gifCheck" onclick="togglePanelAnimated(event);" />
-				<label title="show / hide gif recording window" for="gifCheck">
-					<span class="bitsy_icon icon_space_right">record</span>
-					<span class="localize gif_tool_name">record gif</span>
-				</label>
-				
-				<input type="checkbox" value="dataTool" onclick="togglePanelAnimated(event);" id="dataCheck"/>
-				<label title="show / hide game data window" for="dataCheck">
-					<span class="bitsy_icon icon_space_right">game_data</span>
-					<span class="localize data_tool_name">game data</span>
-				</label>
-
-				<input type="checkbox" value="settingsTool" onclick="togglePanelAnimated(event);" id="settingsCheck"/>
-				<label title="show / hide settings window" for="settingsCheck">
-					<span class="bitsy_icon icon_space_right">settings</span>
-					<span class="localize settings_tool_name">settings</span>
-				</label>
-
-				<button title="reset everything and start new game" class="color0" onclick="newGameDialog();">
-					<span class="bitsy_icon">new_game</span>
-					<span class="localize reset_game">new game</span>
-				</button>
-			</div>
-		</div>
-
-		<div id="unsupportedFeatures" class="warning" style="display:none;">
-			<span class="localize unsupported_features">uh oh ~ your browser doesn't support all of bitsy's features, so some things might not work right. maybe try another browser, such as:</span>
-			<a href="https://www.google.com/chrome/browser" target="_blank">
-				<span class="localize browser_chrome">chrome</span>
-			</a>,
-			<a href="https://www.mozilla.org/firefox" target="_blank">
-				<span class="localize browser_firefox">firefox</span>
-			</a>
-			<button onclick="hideUnsupportedFeatureWarning();">
-				<span class="localize unsupported_features_dismiss">I'll be ok, hide this message</span>
+			<button title="reset everything and start new game" class="color0" onclick="newGameDialog();">
+				<span class="bitsy_icon">new_game</span>
+				<span class="localize reset_game">new game</span>
 			</button>
 		</div>
 
-		<div id="fontMissingCharacter" class="warning" style="display:none;">
-			<div>
-				<span class="localize font_missing_character">The current font is missing some of the characters used in your dialog. Not all text in your game will display correctly. Consider picking a different font in the settings.</span>
-			</div>
-			<div>
-				<button onclick="showPanel('settingsPanel');">
-					<span class="bitsy_icon">open_tool</span>
-					<span class="localize open_settings">open settings</span>
-				</button>
-				<button onclick="hideFontMissingCharacterWarning();">
-					<span class="bitsy_icon">close</span>
-					<span class="localize close_label">close</span>
-				</button>
-			</div>
-		</div>
+		<div class="bitsy-main">
 
-		<div id="editorWindow" class="bitsy-card-view">
-			<div id="editorContent" class="bitsy-card-container">
-			</div> <!-- Editor Content -->
-		</div> <!-- Editor Window -->
+			<div id="topbar" class="bitsy-menubar">
+
+				<div id="topbarMain" class="bitsy-menubar-group">
+
+					<div id="toolsCheckFlexItem">
+						<input type="checkbox" value="toolsPanel" id="toolsCheck" onclick="toggleToolBar(event);" />
+						<label title="show / hide toolbar" for="toolsCheck" id="toolsCheckLabel">
+							<span class="bitsy_icon icon_space_right">tool</span>
+							<span class="localize tools_label">tools</span>
+						</label>
+					</div>
+
+					<span title="Bitsy ~ make little worlds ~" id="bitsyLogoTitle" class="bitsy-menubar-logo">
+						<!-- <img src="image/cat.svg" height="24px" width="24px" id="bitsyLogo"/> -->
+						<span class="bitsy_icon">sprite</span>
+						<span class="localize bitsy_title">Bitsy</span>
+					</span>	
+
+					<!-- <div id="titleFlexItem">
+						<div class="titleWidgetContainer"></div>
+					</div> -->
+
+					<!-- <input type="text" /> -->
+
+					<button>
+						<span class="bitsy_icon">play</span>
+						<span>play</span>
+					</button>
+
+				</div>
+
+			</div>
+
+			<div id="unsupportedFeatures" class="warning" style="display:none;">
+				<span class="localize unsupported_features">uh oh ~ your browser doesn't support all of bitsy's features, so some things might not work right. maybe try another browser, such as:</span>
+				<a href="https://www.google.com/chrome/browser" target="_blank">
+					<span class="localize browser_chrome">chrome</span>
+				</a>,
+				<a href="https://www.mozilla.org/firefox" target="_blank">
+					<span class="localize browser_firefox">firefox</span>
+				</a>
+				<button onclick="hideUnsupportedFeatureWarning();">
+					<span class="localize unsupported_features_dismiss">I'll be ok, hide this message</span>
+				</button>
+			</div>
+
+			<div id="fontMissingCharacter" class="warning" style="display:none;">
+				<div>
+					<span class="localize font_missing_character">The current font is missing some of the characters used in your dialog. Not all text in your game will display correctly. Consider picking a different font in the settings.</span>
+				</div>
+				<div>
+					<button onclick="showPanel('settingsPanel');">
+						<span class="bitsy_icon">open_tool</span>
+						<span class="localize open_settings">open settings</span>
+					</button>
+					<button onclick="hideFontMissingCharacterWarning();">
+						<span class="bitsy_icon">close</span>
+						<span class="localize close_label">close</span>
+					</button>
+				</div>
+			</div>
+
+			<div id="editorWindow" class="bitsy-card-view">
+				<div id="editorContent" class="bitsy-card-container">
+				</div> <!-- Editor Content -->
+			</div> <!-- Editor Window -->
 
 		</div>
 
