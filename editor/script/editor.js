@@ -1090,16 +1090,16 @@ function start() {
 	settingsCard = card.load("settings");
 	addCardViewToLegacyUI(settingsCard);
 
-	addLegacyCardView("download", "downloadTool", "download", "downloadInner");
-	addLegacyCardView("about", "aboutTool", "about", "aboutInner");
-	addLegacyCardView("room", "roomTool", "room", "roomInner");
-	addLegacyCardView("exits & endings", "exitsTool", "exit_one_way", "exitsPanelContent");
-	addLegacyCardView("find drawing", "findTool", "search", "paintExplorerInner");
-	addLegacyCardView("colors", "paletteTool", "colors", "colorsInner");
-	addLegacyCardView("dialog", "dialogTool", "dialog", "dialogInner");
-	addLegacyCardView("inventory", "inventoryTool", "item", "inventoryInner");
-	addLegacyCardView("record gif", "gifTool", "record", "gifInner");
-	addLegacyCardView("game data", "dataTool", "game_data", "dataInner");
+	addLegacyCardView("download", "downloadTool", "download", "downloadInner", "S");
+	addLegacyCardView("about", "aboutTool", "about", "aboutInner", "S");
+	addLegacyCardView("room", "roomTool", "room", "roomInner", "L");
+	addLegacyCardView("exits & endings", "exitsTool", "exit_one_way", "exitsPanelContent", "M");
+	addLegacyCardView("find drawing", "findTool", "search", "paintExplorerInner", "M");
+	addLegacyCardView("colors", "paletteTool", "colors", "colorsInner", "M");
+	addLegacyCardView("dialog", "dialogTool", "dialog", "dialogInner", "M");
+	addLegacyCardView("inventory", "inventoryTool", "item", "inventoryInner", "S");
+	addLegacyCardView("record gif", "gifTool", "record", "gifInner", "S");
+	addLegacyCardView("game data", "dataTool", "game_data", "dataInner", "M");
 }
 
 var allCardViews = []; // hacky global for hacky reasons (global refresh)
@@ -1121,14 +1121,14 @@ function addCardViewToLegacyUI(newCard) {
 	allCardViews.push(cardView);
 }
 
-function addLegacyCardView(name, id, icon, elementId) {
+function addLegacyCardView(name, id, icon, elementId, sizeHint) {
 	var editorContent = document.getElementById("editorContent");
 
 	var cardView = cardUI.CreateLegacyCardView({
 		name: name,
 		id, id,
 		icon: icon,
-		size: "S",
+		size: sizeHint,
 		element: document.getElementById(elementId),
 	});
 
