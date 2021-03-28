@@ -134,6 +134,17 @@ input[type=file] {
 	display: none;
 }
 
+/* textarea */
+textarea {
+	background: black;
+	color: white;
+	border: none;
+	width: calc(100% - (var(--bitsy-margin-s) * 2));
+	resize: vertical;
+	margin-bottom: var(--bitsy-margin-s);
+	padding: var(--bitsy-margin-s);
+}
+
 /* root */
 .bitsy-main {
 	display: flex;
