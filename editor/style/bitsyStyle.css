@@ -26,7 +26,7 @@ button, input, select {
 html {
 	font-size: 100%;
 	line-height: 100%;
-	background: var(--bitsy-bg-color);
+	background: var(--bitsy-card-color);
 	color: var(--bitsy-text-color);
 	overscroll-behavior: none;
 }
@@ -138,7 +138,18 @@ input[type=file] {
 .bitsy-main {
 	display: flex;
 	flex-direction: column;
-	height: 100vh;
+	height: calc(100vh - (var(--bitsy-margin-s) * 2));
+	padding: var(--bitsy-margin-s);
+}
+
+.bitsy-main-workbench { /* name? */
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden; /* I feel this shouldn't be needed? */
+	padding: var(--bitsy-margin-s);
+	background: var(--bitsy-bg-color);
+	border-radius: var(--bitsy-margin-m);
 }
 
 /* main menu */
@@ -185,13 +196,24 @@ input[type=file] {
 	overflow-y: scroll;
 }
 
+/* title */
+.bitsy-title-edit {
+	margin: var(--bitsy-margin-m);
+	margin-bottom: 0;
+	/*max-width: 50em;*/
+}
+
 /* card view */
 .bitsy-card-view {
 	overflow-x: scroll;
 	overscroll-behavior: none;
 	flex-grow: 1;
-	padding: var(--bitsy-margin-m);
+	margin: var(--bitsy-margin-m);
+	margin-top: 0;
+	margin-bottom: 0;
+	padding: var(--bitsy-margin-s);
 	padding-bottom: var(--bitsy-margin-l);
+	padding-top: 0;
 }
 
 .bitsy-card-container {
@@ -204,6 +226,7 @@ input[type=file] {
 .cardui-card {
 	background: var(--bitsy-card-color);
 	margin: var(--bitsy-margin-m);
+	margin-left: 0;
 	display: inline-flex;
 	flex-direction: column;
 	max-height: 100%;
