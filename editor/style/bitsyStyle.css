@@ -216,9 +216,10 @@ textarea {
 
 /* card view */
 .bitsy-card-view {
-	overflow-x: scroll;
 	overscroll-behavior: none;
+	display: flex;
 	flex-grow: 1;
+	overflow-x: scroll;
 	margin: var(--bitsy-margin-m);
 	margin-top: 0;
 	margin-bottom: 0;
@@ -230,7 +231,6 @@ textarea {
 .bitsy-card-container {
 	display: flex;
 	align-items: flex-start;
-	height: 100%;
 }
 
 /* cards */
