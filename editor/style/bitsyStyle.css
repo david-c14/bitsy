@@ -277,19 +277,23 @@ textarea {
 }
 
 .cardui-main.cardui-size-xsmall {
-	width: 128px;
+	width: 8em;
 }
 
 .cardui-main.cardui-size-small {
-	width: 256px;
+	width: 16em;
 }
 
 .cardui-main.cardui-size-medium {
-	width: 384px;
+	width: 24em;
 }
 
 .cardui-main.cardui-size-large {
-	width: 512px;
+	width: 32em;
+}
+
+.cardui-main canvas {
+	width: 100%;
 }
 
 /* legacy */
