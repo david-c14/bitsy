@@ -165,6 +165,7 @@ textarea {
 
 /* main menu */
 .bitsy-menubar {
+	flex-shrink: 0;
 	display: flex;
 	background: var(--bitsy-card-color);
 	padding: var(--bitsy-margin-m);
@@ -209,6 +210,7 @@ textarea {
 
 /* title */
 .bitsy-title-edit {
+	flex-shrink: 0;
 	margin: var(--bitsy-margin-m);
 	margin-bottom: 0;
 	/*max-width: 50em;*/
@@ -252,6 +254,7 @@ textarea {
 }
 
 .cardui-titlebar {
+	flex-shrink: 0;
 	display: flex;
 	padding: var(--bitsy-margin-s);
 	background: var(--bitsy-button-color);
@@ -268,8 +271,6 @@ textarea {
 }
 
 .cardui-main {
-	display: flex;
-	flex-direction: column;
 	flex-grow: 1;
 	padding: var(--bitsy-margin-m);
 	max-height: 100%;
@@ -304,4 +305,10 @@ textarea {
 .bitsy-legacy-flex-col {
 	display: flex;
 	flex-direction: column;
+}
+
+.panelShadow {
+	background: var(--bitsy-text-color);
+	margin: var(--bitsy-margin-m);
+	margin-left: 0;
 }
