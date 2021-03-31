@@ -266,6 +266,13 @@ textarea {
 	scroll-snap-align: center;
 }
 
+@media (max-aspect-ratio: 3/4) {
+	.cardui-card {
+		height: 100%;
+		width: calc(100vw - (6 * var(--bitsy-margin-s)));
+	}
+}
+
 .bitsy-menubar-group {
 	display: flex;
 	flex-wrap: wrap;
@@ -298,20 +305,22 @@ textarea {
 	overflow: scroll;
 }
 
-.cardui-main.cardui-size-xsmall {
-	width: 8em;
-}
+@media (min-aspect-ratio: 3/4) {
+	.cardui-main.cardui-size-xsmall {
+		width: 8em;
+	}
 
-.cardui-main.cardui-size-small {
-	width: 16em;
-}
+	.cardui-main.cardui-size-small {
+		width: 16em;
+	}
 
-.cardui-main.cardui-size-medium {
-	width: 24em;
-}
+	.cardui-main.cardui-size-medium {
+		width: 24em;
+	}
 
-.cardui-main.cardui-size-large {
-	width: 32em;
+	.cardui-main.cardui-size-large {
+		width: 32em;
+	}
 }
 
 .cardui-main canvas {
