@@ -168,7 +168,8 @@ textarea {
 	display: flex;
 	flex-direction: column;
 	height: calc(100vh - (var(--bitsy-margin-s) * 2));
-	padding: var(--bitsy-margin-s);
+	/*padding: var(--bitsy-margin-s);*/
+	overflow: hidden; /* seems like a hack */
 }
 
 .bitsy-main-workbench { /* name? */
@@ -178,7 +179,7 @@ textarea {
 	overflow: hidden; /* I feel this shouldn't be needed? */
 	padding: var(--bitsy-margin-s);
 	background: var(--bitsy-bg-color);
-	border-radius: var(--bitsy-margin-m);
+	/*border-radius: var(--bitsy-margin-m);*/
 }
 
 /* main menu */
@@ -246,6 +247,7 @@ textarea {
 	padding: var(--bitsy-margin-s);
 	padding-bottom: var(--bitsy-margin-l);
 	padding-top: 0;
+	scroll-snap-type: x mandatory;
 }
 
 .bitsy-card-container {
@@ -261,6 +263,7 @@ textarea {
 	display: inline-flex;
 	flex-direction: column;
 	max-height: 100%;
+	scroll-snap-align: center;
 }
 
 .bitsy-menubar-group {
