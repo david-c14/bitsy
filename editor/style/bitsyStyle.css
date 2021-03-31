@@ -24,6 +24,7 @@ button, input, select {
 
 /* page */
 html {
+	font-family: "Nunito", Helvetica, Arial, sans-serif;
 	font-size: 100%;
 	line-height: 100%;
 	background: var(--bitsy-card-color);
