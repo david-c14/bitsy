@@ -16,10 +16,10 @@ button, input, select {
 	--bitsy-text-color: #6767b2;
 	--bitsy-button-color: #e8e8ff;
 	--bitsy-button-display: inline-flex;
-	--bitsy-margin-xs: 0.125em;
-	--bitsy-margin-s: 0.25em;
-	--bitsy-margin-m: 0.5em;
-	--bitsy-margin-l: 1.0em;
+	--bitsy-margin-xs: 0.125rem;
+	--bitsy-margin-s: 0.25rem;
+	--bitsy-margin-m: 0.5rem;
+	--bitsy-margin-l: 1.0rem;
 }
 
 /* page */
@@ -317,19 +317,19 @@ textarea {
 
 @media (min-aspect-ratio: 3/4) {
 	.cardui-main.cardui-size-xsmall {
-		width: 8em;
+		width: 8rem;
 	}
 
 	.cardui-main.cardui-size-small {
-		width: 16em;
+		width: 16rem;
 	}
 
 	.cardui-main.cardui-size-medium {
-		width: 24em;
+		width: 24rem;
 	}
 
 	.cardui-main.cardui-size-large {
-		width: 32em;
+		width: 32rem;
 	}
 }
 
@@ -378,4 +378,32 @@ textarea {
 	width: 100%;
 	padding-top: 100%; /* make it square! */
 	background: var(--bitsy-button-color);
+}
+
+#paintExplorerInner {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+#paintExplorerViewport {
+	flex-grow: 1;
+	flex-basis: 25em;
+	height: 100%;
+	border: solid var(--bitsy-margin-xs);
+	border-color: var(--bitsy-button-color);
+	padding: var(--bitsy-margin-m);
+	overflow-y: auto;
+}
+
+#paintExplorerForm {
+	display: inline-block;
+}
+
+#paintExplorerFormInner > * {
+	margin: var(--bitsy-margin-s);
+}
+
+.explorerThumbnail {
+	width: 3rem;
 }

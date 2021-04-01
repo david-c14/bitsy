@@ -946,6 +946,13 @@
 						</label>
 					</form>
 
+					<div class="controlBox bitsy-menubar-group" id="paintExplorerFilter">
+						<span id="paintExplorerFilterIcon">
+							<span class="bitsy_icon icon_space_right">search</span>
+						</span>
+						<input id="paintExplorerFilterInput" type="text" onkeyup="paintExplorerFilterChange(event);" onchange="paintExplorerFilterChange(event);" placeholder="filter drawings" title="filter drawings by name" size="30">
+					</div>
+
 					<div id="paintExplorerViewport">
 						<div id="paintExplorerContent">
 
@@ -959,13 +966,6 @@
 								</div>
 							</form>
 						</div>
-					</div>
-
-					<div class="controlBox bitsy-menubar-group" id="paintExplorerFilter">
-						<span id="paintExplorerFilterIcon">
-							<span class="bitsy_icon icon_space_right">search</span>
-						</span>
-						<input id="paintExplorerFilterInput" type="text" onkeyup="paintExplorerFilterChange(event);" onchange="paintExplorerFilterChange(event);" placeholder="filter drawings" title="filter drawings by name" size="30">
 					</div>
 
 				</div>
