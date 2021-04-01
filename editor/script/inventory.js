@@ -41,6 +41,7 @@ function updateInventoryItemUI(){
 
 		var itemDiv = document.createElement("div");
 		itemDiv.classList.add("controlBox");
+		itemDiv.classList.add("bitsy-menubar-group");
 		itemDiv.id = "inventoryItem_" + id;
 		itemDiv.title = itemName;
 		viewport.appendChild(itemDiv);
@@ -139,6 +140,7 @@ function updateInventoryVariableUI(){
 		var varDiv = document.createElement("div");
 		varDiv.classList.add("controlBox");
 		varDiv.classList.add("inventoryVariableBox");
+		varDiv.classList.add("bitsy-menubar-group");
 		varDiv.id = "inventoryVariable_" + id;
 		varDiv.title = "variable " + id;
 		viewport.appendChild(varDiv);
