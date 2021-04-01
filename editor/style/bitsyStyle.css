@@ -342,6 +342,12 @@ textarea {
 	display: none;
 }
 
+.cardui-legacy-wrapper {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
 .bitsy-legacy-flex-col {
 	display: flex;
 	flex-direction: column;
@@ -351,4 +357,15 @@ textarea {
 	background: var(--bitsy-text-color);
 	margin: var(--bitsy-margin-m);
 	margin-left: 0;
+}
+
+/* legacy - specific tools */
+#dataInner {
+	flex-grow: 1;
+}
+
+#game_data {
+	height: 30em;
+	resize: none;
+	flex-grow: 1;
 }
