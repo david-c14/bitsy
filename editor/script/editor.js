@@ -1098,7 +1098,7 @@ function start() {
 	addLegacyCardView("colors", "paletteTool", "colors", "colorsInner", "M");
 	addLegacyCardView("dialog", "dialogTool", "dialog", "dialogInner", "M");
 	addLegacyCardView("inventory", "inventoryTool", "item", "inventoryInner", "S");
-	addLegacyCardView("record gif", "gifTool", "record", "gifInner", "S");
+	addLegacyCardView("record gif", "gifTool", "record", "gifInner", "M");
 	addLegacyCardView("game data", "dataTool", "game_data", "dataInner", "M");
 }
 

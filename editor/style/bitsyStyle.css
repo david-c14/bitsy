@@ -369,3 +369,13 @@ textarea {
 	resize: none;
 	flex-grow: 1;
 }
+
+#gifPreview {
+	width: 100%;
+}
+
+#gifPlaceholder {
+	width: 100%;
+	padding-top: 100%; /* make it square! */
+	background: var(--bitsy-button-color);
+}
