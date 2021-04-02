@@ -445,3 +445,43 @@ textarea {
 	flex-direction: column;
 	overflow: hidden;
 }
+
+#colorPickerContainer {
+	position: relative;
+}
+
+#colorPickerSelect {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+#colorPickerSliderBg {
+	padding: var(--bitsy-margin-s);
+	margin: var(--bitsy-margin-s);
+}
+
+#colorPickerSliderThumb {
+	height: var(--bitsy-margin-m);
+	width: var(--bitsy-margin-m);
+	background: white;
+	border: solid var(--bitsy-margin-s) black;
+	pointer-events: none;
+}
+
+#colorPaletteForm input[type=radio] + label {
+	border: solid 1px #ddd;
+	margin: var(--bitsy-margin-s);
+}
+
+#colorPaletteForm input[type=radio]:checked + label {
+	border: solid 2px black;
+}
+
+#colorPaletteForm input[type="radio"] + label.colorPaletteLabelDark {
+	color: white; /* white text for dark backgrounds */
+}
+
+#colorPaletteForm input[type="radio"] + label.colorPaletteLabelLight {
+	color: black; /* black text for light backgrounds */
+}

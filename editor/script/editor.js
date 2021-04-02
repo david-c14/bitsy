@@ -1095,7 +1095,7 @@ function start() {
 	addLegacyCardView("room", "roomTool", "room", "roomInner", "L");
 	addLegacyCardView("exits & endings", "exitsTool", "exit_one_way", "exitsPanelContent", "M");
 	addLegacyCardView("find drawing", "findTool", "search", "paintExplorerInner", "M");
-	addLegacyCardView("colors", "paletteTool", "colors", "colorsInner", "M");
+	addLegacyCardView("colors", "paletteTool", "colors", "colorsInner", "S");
 	addLegacyCardView("dialog", "dialogTool", "dialog", "dialogInner", "M");
 	addLegacyCardView("inventory", "inventoryTool", "item", "inventoryInner", "S");
 	addLegacyCardView("record gif", "gifTool", "record", "gifInner", "M");

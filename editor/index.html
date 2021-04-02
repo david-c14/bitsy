@@ -1013,7 +1013,7 @@
 						</button>
 					</div>
 
-					<form id="colorPaletteForm">
+					<form id="colorPaletteForm" class="bitsy-legacy-flex-col">
 						<input type="radio" name="colorPalette" value="background" id="colorPaletteOptionBackground" onclick="changeColorPickerIndex(0);" checked>
 						<label id="colorPaletteLabelBackground" for="colorPaletteOptionBackground" title="pick background color">
 							<span class="bitsy_icon icon_space_right">room</span>
@@ -1034,12 +1034,19 @@
 					</form>
 
 					<div id="colorPicker" title="color picker">
-						<canvas id="colorPickerWheel"></canvas>
-						<canvas id="colorPickerSelect" title="color picker wheel"></canvas>
-						<div id="colorPickerSliderBg" title="color picker darkness / lightness slider">
+						<div id="colorPickerContainer">
+							<canvas id="colorPickerWheel"></canvas>
+
+							<canvas id="colorPickerSelect" title="color picker wheel"></canvas>
+						</div>
+
+						<div id="colorPickerSliderBg" class="bitsy-menubar-group" title="color picker darkness / lightness slider">
 							<div id="colorPickerSliderThumb"></div>
 						</div>
-						<input id="colorPickerHexText" class="textInputField" title="color picker hex code" type="text" />
+
+						<div class="bitsy-menubar-group">
+							<input id="colorPickerHexText" class="textInputField" title="color picker hex code" type="text" />
+						</div>
 					</div>
 
 				</div>
