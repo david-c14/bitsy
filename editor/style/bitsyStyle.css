@@ -312,12 +312,22 @@ textarea {
 	}
 }
 
+/* todo - name? */
 .bitsy-menubar-group {
 	display: flex;
 	flex-wrap: wrap;
 	/*gap: var(--bitsy-margin-s);*/
 	margin-bottom: var(--bitsy-margin-s);
 	align-items: center;
+}
+
+.bitsy-menu-scrollview {
+	flex-grow: 1;
+	flex-basis: 100%;
+	border: solid var(--bitsy-margin-xs);
+	border-color: var(--bitsy-button-color);
+	padding: var(--bitsy-margin-m);
+	overflow-y: auto;
 }
 
 .cardui-titlebar {
@@ -414,16 +424,7 @@ textarea {
 	flex-grow: 1;
 	display: flex;
 	flex-direction: column;
-}
-
-#paintExplorerViewport {
-	flex-grow: 1;
-	flex-basis: 25em;
-	height: 100%;
-	border: solid var(--bitsy-margin-xs);
-	border-color: var(--bitsy-button-color);
-	padding: var(--bitsy-margin-m);
-	overflow-y: auto;
+	overflow: hidden;
 }
 
 #paintExplorerForm {
@@ -436,4 +437,11 @@ textarea {
 
 .explorerThumbnail {
 	width: 3rem;
+}
+
+#inventoryInner {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
 }
