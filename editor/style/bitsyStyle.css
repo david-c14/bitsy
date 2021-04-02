@@ -234,6 +234,11 @@ textarea {
 	flex-grow: 1;
 	display: var(--bitsy-button-display);
 	justify-content: center;
+	font-size: 150%;
+}
+
+.bitsy-menubar-logo > * {
+	margin: var(--bitsy-margin-s);
 }
 
 /* toolbar */

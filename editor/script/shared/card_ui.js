@@ -160,6 +160,7 @@ function CardUI() {
 		return tabForm;
 	}
 
+	// hmm... this isn't working currently -- do I want to refactor this control anyway?
 	function createDialogField(options) {
 		// todo : eventually I want to simplify this widget code a lot, but for now I'm just wrapping it
 		var widget = dialogTool.CreateWidget(

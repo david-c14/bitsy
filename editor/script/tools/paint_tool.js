@@ -170,10 +170,19 @@ installCard(function(card) {
 		}
 		else if (controlTab === "dialog") {
 			if (curDataType === "SPR" || curDataType === "ITM") {
+				// menu.add({
+				// 	control: "dialog",
+				// 	name: "dialog",
+				// 	id: data.dlg,
+				// });
+
+				// the dialog control is currently broken, so:
+				var curDialogStr = (data.dlg in dialog) ? dialog[data.dlg].src : "";
+
 				menu.add({
-					control: "dialog",
-					name: "dialog",
-					id: data.dlg,
+					control: "text",
+					value: curDialogStr,
+					event: "onDialogChange",
 				});
 			}
 		}
@@ -274,6 +283,25 @@ installCard(function(card) {
 
 	card.openFindTool = function() {
 		showPanel("paintExplorerPanel");
+	};
+
+	card.onDialogChange = function(value) {
+		var store = dataStorage[curDataType].store;
+		var data = store[dataId];
+
+		if (data.dlg === null) {
+			data.dlg = nextAvailableDialogId();
+
+			dialog[data.dlg] = {
+				src: "",
+				name: null,
+			};
+		}
+
+		dialog[data.dlg].src = value;
+
+		// todo : need to move this up in to the card_ui framework..
+		refreshGameData();
 	};
 
 	card.openInventoryTool = function() {

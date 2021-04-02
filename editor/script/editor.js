@@ -1100,6 +1100,9 @@ function start() {
 	addLegacyCardView("inventory", "inventoryTool", "item", "inventoryInner", "S");
 	addLegacyCardView("record gif", "gifTool", "record", "gifInner", "M");
 	addLegacyCardView("game data", "dataTool", "game_data", "dataInner", "M");
+
+	// hack...
+	document.getElementById("tempTitleEdit").value = getTitle();
 }
 
 var allCardViews = []; // hacky global for hacky reasons (global refresh)
