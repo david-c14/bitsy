@@ -27,6 +27,8 @@ html {
 	font-family: "Nunito", Helvetica, Arial, sans-serif;
 	font-size: 100%;
 	line-height: 100%;
+	width: 100%;
+	height: 100%;
 	background: var(--bitsy-card-color);
 	color: var(--bitsy-text-color);
 	overscroll-behavior: none;
@@ -66,9 +68,8 @@ html {
 body {
 	margin: 0;
 	padding: 0;
-	height: 100%;
 	width: 100%;
-	overflow: hidden; /* hmmm */
+	height: 100%;
 }
 
 p {
@@ -200,9 +201,12 @@ textarea {
 .bitsy-main {
 	display: flex;
 	flex-direction: column;
-	height: calc(100vh - (var(--bitsy-margin-s) * 2));
+	height: calc(100% - (var(--bitsy-margin-s) * 2));
+	/*width: calc(100% - (var(--bitsy-margin-s) * 2));*/
+	width: 100%;
 	/*padding: var(--bitsy-margin-s);*/
-	overflow: hidden; /* seems like a hack */
+	/*overflow: hidden;*/
+	/*height: 100%;*/
 }
 
 .bitsy-main-workbench { /* name? */
