@@ -427,7 +427,7 @@
 						</button>
 					</div>
 					<!-- todo : move style elsewhere -->
-					<div id="addMarkerOptions" class="controlBox" style="display: flex; flex-direction: column; min-width: 300px">
+					<div id="addMarkerOptions" class="controlBox bitsy-legacy-flex-col">
 						<button title="add two-way exit" onclick="newExit();">
 							<span class="bitsy_icon">add</span> <span id="addExitText" class="localize exit_label">exit</span>
 						</button>
@@ -451,8 +451,8 @@
 						<span class="localize marker_tool_empty">There are no exits or endings in this room yet! You can add one with this tool. :)</span>
 					</div>
 					<div id="markersSelect">
-						<div id="markerControl1" class="controlBox bitsy bitsy-legacy-flex-col">
-							<span>
+						<div id="markerControl1" class="controlBox">
+							<span class="bitsy-menubar-group">
 								<span id="markerIcon1"></span>
 								<span id="markerName1">marker 1</span>
 							</span>
@@ -460,13 +460,13 @@
 							<canvas id="markerCanvas1" title="location of marker (click to go to room)" onclick="selectMarkerRoom1();" style="margin-top: 5px;"></canvas>
 
 							<div class="markerPosControl">
-								<div class="markerCoordinatesHolder" title="marker coordinates">
+								<div class="markerCoordinatesHolder bitsy-menubar-group" title="marker coordinates">
 									<span id="textMarkerPos1">room 0 (0,0)</span>
 									<span id="textMoveMessage1">
 										<i class="localize marker_move_click">click in room</i>
 									</span>
 								</div>
-								<div title="marker controls">
+								<div title="marker controls" class="bitsy-menubar-group">
 									<input type="checkbox" id="toggleMoveMarker1" onclick="toggleMoveMarker1(event);" />
 									<label for="toggleMoveMarker1" title="click to place marker in current room">
 										<span id="toggleMoveMarkerIcon1" class="bitsy_icon">set_exit_location</span>
@@ -486,15 +486,15 @@
 									</span>
 								</div>
 								<div id="editControlsMarker1" title="edit coordinates" style="margin-top: 5px; display: none;">
-									<div>
+									<div class="bitsy-menubar-group">
 										<span class="localize room_label">room</span>: 
 										<select id="editRoomMarker1"></select>
 									</div>
-									<div>
+									<div class="bitsy-menubar-group">
 										<span class="localize axis_x_label">x</span>: 
 										<input id="editPosXMarker1" type="number" min="0" max="15" style="width:6ch;"></input>
 									</div>
-									<div>
+									<div class="bitsy-menubar-group">
 										<span class="localize axis_y_label">y</span>: 
 										<input id="editPosYMarker1" type="number" min="0" max="15" style="width:6ch;"></input>
 									</div>
@@ -506,8 +506,8 @@
 								<span id="exitDirectionIcon" class="bitsy_icon">exit_one_way</span>
 							</button>
 						</div>
-						<div id="markerControl2" class="controlBox bitsy-legacy-flex-col">
-							<span>
+						<div id="markerControl2" class="controlBox">
+							<span class="bitsy-menubar-group">
 								<span id="markerIcon2"></span>
 								<span id="markerName2">marker 2</span>
 							</span>
@@ -515,13 +515,13 @@
 							<canvas id="markerCanvas2" title="location of marker (click to go to room)" onclick="selectMarkerRoom2();" style="margin-top: 5px;"></canvas>
 
 							<div class="markerPosControl">
-								<div class="markerCoordinatesHolder" title="marker coordinates">
+								<div class="markerCoordinatesHolder bitsy-menubar-group" title="marker coordinates">
 									<span id="textMarkerPos2">room 0 (0,0)</span>
 									<span id="textMoveMessage2">
 										<i class="localize marker_move_click">click in room</i>
 									</span>
 								</div>
-								<div title="marker controls">
+								<div title="marker controls" class="bitsy-menubar-group">
 									<input type="checkbox" id="toggleMoveMarker2" onclick="toggleMoveMarker2(event);" />
 									<label for="toggleMoveMarker2" title="click to move marker">
 										<span id="toggleMoveMarkerIcon2" class="bitsy_icon">set_exit_location</span>
@@ -548,15 +548,15 @@
 									</span>
 								</div>
 								<div id="editControlsMarker2" title="edit coordinates" style="margin-top: 5px; display: none;">
-									<div>
+									<div class="bitsy-menubar-group">
 										<span class="localize room_label">room</span>: 
 										<select id="editRoomMarker2"></select>
 									</div>
-									<div>
+									<div class="bitsy-menubar-group">
 										<span class="localize axis_x_label">x</span>: 
 										<input id="editPosXMarker2" type="number" min="0" max="15" style="width:6ch;"></input>
 									</div>
-									<div>
+									<div class="bitsy-menubar-group">
 										<span class="localize axis_y_label">y</span>: 
 										<input id="editPosYMarker2" type="number" min="0" max="15" style="width:6ch;"></input>
 									</div>
@@ -570,12 +570,12 @@
 							</div>
 						</div>
 						<div id="exitOptions">
-							<div>
+							<div class="bitsy-menubar-group">
 								<span class="bitsy_icon">exit_one_way</span>
 								<span>exit options:</span> <!-- TODO : localize -->
 							</div>
 
-							<div title="select transition effect" class="controlBox">
+							<div title="select transition effect" class="controlBox bitsy-menubar-group">
 								<span class="bitsy_icon">transition_effect</span>
 								<span class="localize exit_transition_label">transition effect</span>: 
 								<select id="exitTransitionEffectSelect" onchange="onChangeExitTransitionEffect(event.target.value, 0);">
@@ -595,12 +595,12 @@
 							</div>
 						</div>
 						<div id="returnExitOptions" style="margin-top: 10px">
-							<div>
+							<div class="bitsy-menubar-group">
 								<span class="bitsy_icon">exit_one_way_reverse</span>
 								<span>return exit options:</span> <!-- TODO : localize -->
 							</div>
 
-							<div title="select transition effect" class="controlBox">
+							<div title="select transition effect" class="controlBox bitsy-menubar-group">
 								<span class="bitsy_icon">transition_effect</span>
 								<span class="localize exit_transition_label">transition effect</span>: 
 								<select id="returnExitTransitionEffectSelect" onchange="onChangeExitTransitionEffect(event.target.value, 1);">
