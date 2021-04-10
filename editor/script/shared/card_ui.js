@@ -275,11 +275,6 @@ function CardUI() {
 		/* TITLE BAR */
 		var titleBar = document.createElement("div");
 		titleBar.classList.add("cardui-titlebar");
-		titleBar.onmousedown = function(e) {
-			if (onGrabHandler) {
-				onGrabHandler(e);
-			}
-		};
 		cardRoot.appendChild(titleBar);
 
 		var cardIcon = document.createElement("span");
@@ -291,6 +286,13 @@ function CardUI() {
 		titleText.classList.add("cardui-title");
 		titleText.innerText = name; // config.title;
 		titleBar.appendChild(titleText);
+
+		// only attach grab handler to title text to avoid interfering with close button
+		titleText.onmousedown = function(e) {
+			if (onGrabHandler) {
+				onGrabHandler(e);
+			}
+		};
 
 		titleBar.appendChild(createButton({
 			icon: "close",
