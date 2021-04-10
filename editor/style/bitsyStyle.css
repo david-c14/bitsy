@@ -79,7 +79,6 @@ p {
 /* gaps */
 button,
 label,
-.bitsy-menubar,
 .bitsy-toolbar-toggles,
 .bitsy-menubar-group {
 	margin: calc(-0.5 * var(--bitsy-margin-s));
@@ -87,7 +86,6 @@ label,
 
 button > *,
 label > *,
-.bitsy-menubar > *,
 .bitsy-toolbar-toggles > *,
 .bitsy-menubar-group > * {
 	margin: calc(0.5 * var(--bitsy-margin-s));
@@ -272,10 +270,12 @@ textarea {
 
 /* title */
 .bitsy-title-edit {
+	display: flex;
 	flex-shrink: 0;
+	padding: var(--bitsy-margin-s);
 	margin: var(--bitsy-margin-m);
 	margin-bottom: 0;
-	/*max-width: 50em;*/
+	background: var(--bitsy-card-color);
 }
 
 /* card view */
@@ -315,7 +315,6 @@ textarea {
 
 @media (max-aspect-ratio: 3/4) {
 	.cardui-card {
-		height: 100%;
 		width: calc(100vw - (6 * var(--bitsy-margin-s)));
 		scroll-snap-align: center;
 	}
