@@ -7,5 +7,7 @@
 		"sizes": "256x256",
 		"type": "image/png"
 	}],
-	"display": "standalone"
+	"display": "standalone",
+	"background_color": "#ccccff",
+	"theme_color": "#6767b2"
 }
