@@ -2,12 +2,16 @@
 button, input, select {
 	font-size: inherit;
 	font-family: inherit;
-	border: none;
+	line-height: inherit;
+	background: inherit;
 	color: inherit;
 	padding: 0;
-	line-height: inherit;
+	margin: 0;
+	border: none;
+	border-radius: 0;
 	outline: none;
 	box-shadow: none;
+	-webkit-appearance: none;
 }
 
 /* theme */
