@@ -7,6 +7,7 @@ button, input, select {
 	padding: 0;
 	line-height: inherit;
 	outline: none;
+	box-shadow: none;
 }
 
 /* theme */
@@ -119,7 +120,7 @@ select:hover, input:hover {
 
 select:focus, input:focus {
 	border-color: var(--bitsy-text-color);
-	outline: solid var(--bitsy-margin-xs) var(--bitsy-text-color);
+	/*outline: solid var(--bitsy-margin-xs) var(--bitsy-text-color);*/
 }
 
 input + label {
@@ -251,8 +252,9 @@ textarea {
 	padding: var(--bitsy-margin-s);
 	margin: var(--bitsy-margin-m);
 	margin-bottom: 0;
-	background: var(--bitsy-card-color);;
-	border-radius: var(--bitsy-margin-s)
+	background: var(--bitsy-card-color);
+	border-radius: var(--bitsy-margin-s);
+	border-bottom: solid var(--bitsy-margin-xs) var(--bitsy-text-color);
 }
 
 /* card view */
@@ -267,6 +269,7 @@ textarea {
 	padding: var(--bitsy-margin-s);
 	padding-bottom: var(--bitsy-margin-l);
 	padding-top: 0;
+	padding-left: 0;
 }
 
 @media (max-aspect-ratio: 3/4) {
@@ -289,6 +292,7 @@ textarea {
 	flex-direction: column;
 	max-height: 100%;
 	border-radius: var(--bitsy-margin-s);
+	border-bottom: solid var(--bitsy-margin-xs) var(--bitsy-text-color);
 }
 
 @media (max-aspect-ratio: 3/4) {
