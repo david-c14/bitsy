@@ -68,6 +68,7 @@ button {
 	padding: var(--bitsy-margin-s);
 	/*gap: var(--bitsy-margin-m);*/
 	align-items: center;
+	border-radius: var(--bitsy-margin-s);
 }
 
 button:active {
@@ -81,6 +82,7 @@ label {
 	padding: var(--bitsy-margin-s);
 	/*gap: var(--bitsy-margin-m);*/
 	align-items: center;
+	border-radius: var(--bitsy-margin-s);
 }
 
 /* canvas */
@@ -108,6 +110,7 @@ select, input {
 	padding: var(--bitsy-margin-s);
 	border: solid var(--bitsy-margin-xs);
 	border-color: var(--bitsy-button-color);
+	border-radius: var(--bitsy-margin-s);
 }
 
 select:hover, input:hover {
@@ -163,6 +166,7 @@ textarea {
 	margin-bottom: var(--bitsy-margin-s);
 	padding: var(--bitsy-margin-s);
 	scrollbar-color: white black;
+	border-radius: var(--bitsy-margin-s);
 }
 
 /* root */
@@ -185,6 +189,7 @@ textarea {
 	padding: var(--bitsy-margin-s);
 	background: var(--bitsy-bg-color);
 	/*border-radius: var(--bitsy-margin-m);*/
+	border-radius: 0 0 var(--bitsy-margin-s) var(--bitsy-margin-s);
 }
 
 /* main menu */
@@ -223,6 +228,7 @@ textarea {
 	background: var(--bitsy-card-color);
 	box-shadow: 0 0 var(--bitsy-margin-m) var(--bitsy-text-color);
 	transition: transform 0.5s;
+	border-radius: 0 var(--bitsy-margin-s) var(--bitsy-margin-s) 0;
 }
 
 .bitsy-toolbar-open {
@@ -245,7 +251,8 @@ textarea {
 	padding: var(--bitsy-margin-s);
 	margin: var(--bitsy-margin-m);
 	margin-bottom: 0;
-	background: var(--bitsy-card-color);
+	background: var(--bitsy-card-color);;
+	border-radius: var(--bitsy-margin-s)
 }
 
 /* card view */
@@ -281,6 +288,7 @@ textarea {
 	display: inline-flex;
 	flex-direction: column;
 	max-height: 100%;
+	border-radius: var(--bitsy-margin-s);
 }
 
 @media (max-aspect-ratio: 3/4) {
@@ -306,6 +314,7 @@ textarea {
 	border-color: var(--bitsy-button-color);
 	padding: var(--bitsy-margin-m);
 	overflow-y: auto;
+	border-radius: var(--bitsy-margin-s);
 }
 
 .cardui-titlebar {
@@ -313,6 +322,7 @@ textarea {
 	display: flex;
 	padding: var(--bitsy-margin-s);
 	background: var(--bitsy-button-color);
+	border-radius: var(--bitsy-margin-s) var(--bitsy-margin-s) 0 0;
 }
 
 .cardui-icon {
@@ -375,6 +385,7 @@ textarea {
 	background: var(--bitsy-text-color);
 	margin: var(--bitsy-margin-m);
 	margin-left: 0;
+	border-radius: var(--bitsy-margin-s);
 }
 
 /* legacy - specific tools */
