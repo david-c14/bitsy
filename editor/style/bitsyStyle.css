@@ -51,19 +51,21 @@ p {
 	margin-top: 0;
 }
 
-/* gaps */
-button,
-label,
-.bitsy-toolbar-toggles,
-.bitsy-menubar-group {
-	margin: calc(-0.5 * var(--bitsy-margin-s));
+span {
+	display: inline-flex;
 }
 
+/* gaps */
 button > *,
 label > *,
 .bitsy-toolbar-toggles > *,
 .bitsy-menubar-group > * {
-	margin: calc(0.5 * var(--bitsy-margin-s));
+	margin: var(--bitsy-margin-xs);
+}
+
+/* very hacky: I should probably fix the fact that forms are getting nested within menubar-groups.. */
+.bitsy-menubar-group > form {
+	margin: 0;
 }
 
 /* button */
@@ -106,6 +108,19 @@ form {
 	display: flex;
 	flex-grow: 1;
 	flex-wrap: nowrap !important; /* I don't like using important */
+}
+
+form label {
+	border-radius: 0;
+	/*margin-right: 0 !important;*/
+}
+
+form label:first-of-type {
+	border-radius: var(--bitsy-margin-s) 0 0 var(--bitsy-margin-s);
+}
+
+form label:last-of-type {
+	border-radius: 0 var(--bitsy-margin-s) var(--bitsy-margin-s) 0;
 }
 
 select, input {
@@ -339,8 +354,10 @@ textarea {
 
 .cardui-title {
 	flex-grow: 1;
-	text-align: center;
+	/*text-align: center;*/
+	justify-content: center;
 	margin: var(--bitsy-margin-s);
+	user-select: none;
 }
 
 .cardui-main {
