@@ -18,6 +18,7 @@ function CardUI() {
 	dataCategories["AVA"] = {
 		name : "avatar",
 		iconId : "avatar",
+		navDisabled : true, // hacky?
 	};
 
 	dataCategories["SPR"] = {
@@ -69,6 +70,10 @@ function CardUI() {
 		// "onclick" so many places makes the names confusing
 		if (options.onclick) {
 			button.onclick = options.onclick;
+		}
+
+		if (options.disabled) {
+			button.disabled = true;
 		}
 
 		return button;
@@ -140,6 +145,11 @@ function CardUI() {
 					options.onclick(e);
 				}
 			};
+
+			// todo : should this be disabled? or enabled?
+			if (t.disabled) {
+				tabInput.disabled = true;
+			}
 
 			var tabLabel = document.createElement("label");
 			tabLabel.classList.add("cardui-tab-item");
@@ -350,7 +360,11 @@ function CardUI() {
 		var frame = new CardFrame(card.name, card.name + "Tool", card.icon, card.sizeHint);
 		var toolRoot = frame.GetToolRoot();
 
+		var nameControl;
+
 		if (card.data) {
+			var curDataType = card.data[0];
+
 			if (card.data.length > 1) {
 				var dataTabs = [];
 
@@ -362,10 +376,99 @@ function CardUI() {
 				toolRoot.appendChild(createTabs({
 					name: card.name + "-data-tabs",
 					tabs: dataTabs,
-					value: card.data[0],
+					value: curDataType,
 					onclick: function(e) {
+						curDataType = e.target.value;
+
 						if (card.changeDataType) {
-							card.changeDataType(e.target.value);
+							card.changeDataType(curDataType);
+						}
+
+						createNavControls();
+						UpdateMenu();
+					}
+				}));
+			}
+
+
+			var nav = document.createElement("div");
+			nav.classList.add("bitsy-menubar-group");
+			toolRoot.appendChild(nav);
+
+			function createNavControls() {
+				nav.innerHTML = "";
+
+				var isNavDisabled = dataCategories[curDataType].navDisabled;
+
+				nameControl = document.createElement("input");
+				nameControl.type = "text";
+				nameControl.onchange = function(e) {
+					if (card.changeDataName) {
+						card.changeDataName(e.target.value);
+					}
+				};
+
+				if (isNavDisabled) {
+					nameControl.value = dataCategories[curDataType].name;
+					nameControl.disabled = true;
+				}
+
+				nav.appendChild(nameControl);
+
+				nav.appendChild(createButton({
+					icon: "previous",
+					disabled: isNavDisabled,
+					onclick: function() {
+						if (card.prev) {
+							card.prev();
+						}
+
+						UpdateMenu();
+					}
+				}));
+
+				nav.appendChild(createButton({
+					icon: "next",
+					disabled: isNavDisabled,
+					onclick: function() {
+						if (card.next) {
+							card.next();
+						}
+
+						UpdateMenu();
+					}
+				}));
+
+				nav.appendChild(createButton({
+					icon: "add",
+					disabled: isNavDisabled,
+					onclick: function() {
+						if (card.add) {
+							card.add();
+						}
+
+						UpdateMenu();
+					}
+				}));
+
+				nav.appendChild(createButton({
+					icon: "copy",
+					disabled: isNavDisabled,
+					onclick: function() {
+						if (card.copy) {
+							card.copy();
+						}
+
+						UpdateMenu();
+					}
+				}));
+
+				nav.appendChild(createButton({
+					icon: "delete",
+					disabled: isNavDisabled,
+					onclick: function() {
+						if (card.del) {
+							card.del();
 						}
 
 						UpdateMenu();
@@ -373,79 +476,7 @@ function CardUI() {
 				}));
 			}
 
-			/* NAV BAR */
-			var nameControl;
-
-			// create nav bar
-			var nav = document.createElement("div");
-			// nav.classList.add("cardui-menu-group");
-			nav.classList.add("bitsy-menubar-group");
-			toolRoot.appendChild(nav);
-
-			nameControl = document.createElement("input");
-			nameControl.type = "text";
-			nameControl.onchange = function(e) {
-				if (card.changeDataName) {
-					card.changeDataName(e.target.value);
-				}
-			};
-			// nameControl.innerText = "NAME";
-			nav.appendChild(nameControl);
-
-			nav.appendChild(createButton({
-				icon: "previous",
-				onclick: function() {
-					if (card.prev) {
-						card.prev();
-					}
-
-					UpdateMenu();
-				}
-			}));
-
-			nav.appendChild(createButton({
-				icon: "next",
-				onclick: function() {
-					if (card.next) {
-						card.next();
-					}
-
-					UpdateMenu();
-				}
-			}));
-
-			nav.appendChild(createButton({
-				icon: "add",
-				onclick: function() {
-					if (card.add) {
-						card.add();
-					}
-
-					UpdateMenu();
-				}
-			}));
-
-			nav.appendChild(createButton({
-				icon: "copy",
-				onclick: function() {
-					if (card.copy) {
-						card.copy();
-					}
-
-					UpdateMenu();
-				}
-			}));
-
-			nav.appendChild(createButton({
-				icon: "delete",
-				onclick: function() {
-					if (card.del) {
-						card.del();
-					}
-
-					UpdateMenu();
-				}
-			}));
+			createNavControls();
 		}
 
 		if (card.draw) {
@@ -469,7 +500,7 @@ function CardUI() {
 				card.menu();
 			}
 
-			if (nameControl) {
+			if (nameControl && !nameControl.disabled) {
 				if (card.getDataName) {
 					nameControl.value = card.getDataName();
 				}
@@ -515,6 +546,7 @@ function CardUI() {
 					text: options.text,
 					icon: options.icon,
 					value: options.value,
+					disabled: options.disabled,
 					onclick: function() {
 						// console.log("CLICK " + options.text);
 						card[options.event](options.value);

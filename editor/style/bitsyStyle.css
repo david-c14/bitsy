@@ -83,6 +83,10 @@ button:active {
 	color: var(--bitsy-card-color);
 }
 
+button:disabled {
+	opacity: 0.5;
+}
+
 /* label */
 label {
 	display: var(--bitsy-button-display);
@@ -153,6 +157,19 @@ input + label {
 input:checked + label {
 	background: var(--bitsy-text-color);
 	color: var(--bitsy-card-color);
+}
+
+input:disabled + label {
+	opacity: 0.5;
+}
+
+input:disabled {
+	background: var(--bitsy-button-color);
+	opacity: 0.5;
+}
+
+input:disabled:hover {
+	border-color: var(--bitsy-button-color);
 }
 
 /* checkbox */

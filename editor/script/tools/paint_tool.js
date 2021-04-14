@@ -135,20 +135,37 @@ installCard(function(card) {
 
 		// menu.setName(data.name);
 
+		if (controlTab === "dialog" && (curDataType === "AVA" || curDataType === "TIL")) {
+			controlTab = "edit";
+		}
+
 		menu.add({
 			control: "tabs",
 			name: "paintControlTabs", // todo : should this be generated?
 			value: controlTab,
 			event: "changeControlTab",
 			tabs: [
-				{ text: "edit", icon: "edit", value: "edit", },
-				{ text: "dialog", icon: "dialog", value: "dialog", },
-				{ text: "animate", icon: "sprite", value: "animation", }, // todo : needs icon
-				{ text: "rules", icon: "settings", value: "rules", }, // todo : also needs icons
+				{
+					text: "edit",
+					icon: "edit",
+					value: "edit",
+				},
+				{
+					text: "dialog",
+					icon: "dialog",
+					value: "dialog",
+					disabled: (curDataType === "AVA" || curDataType === "TIL"),
+				},
+				{
+					text: "animate", // todo : name?
+					icon: "sprite", // todo : needs icon
+					value: "animation",
+				},
 			],
 		});
 
 		if (controlTab === "edit") {
+			// shared edit controls
 			menu.startGroup();
 
 			menu.add({
@@ -167,72 +184,8 @@ installCard(function(card) {
 			});
 
 			menu.endGroup();
-		}
-		else if (controlTab === "dialog") {
-			if (curDataType === "SPR" || curDataType === "ITM") {
-				// menu.add({
-				// 	control: "dialog",
-				// 	name: "dialog",
-				// 	id: data.dlg,
-				// });
 
-				// the dialog control is currently broken, so:
-				var curDialogStr = (data.dlg in dialog) ? dialog[data.dlg].src : "";
-
-				menu.add({
-					control: "text",
-					value: curDialogStr,
-					event: "onDialogChange",
-				});
-			}
-		}
-		else if (controlTab === "animation") {
-			// preview
-			menu.startGroup();
-
-			menu.add({
-				control: "thumbnail",
-				type: curDataType, // todo : name?
-				id: dataId,
-				selected: true,
-			});
-
-			if (imageSource.length > 1) {
-				menu.add({
-					control: "button",
-					icon: "delete",
-					event: "deleteFrame",
-				});
-			}
-
-			if (flags.SUPER_ANM || imageSource.length < shortAnimationMax) {
-				menu.add({
-					control: "button",
-					icon: "add",
-					event: "addFrame",
-				});
-			}
-
-			// menu.endGroup();
-
-			// frames
-			// menu.startGroup();
-
-			for (var i = 0; (i < imageSource.length) && (flags.SUPER_ANM || i < shortAnimationMax); i++) {
-				menu.add({
-					control: "thumbnail",
-					type: curDataType, // todo : name?
-					id: dataId,
-					frame: i,
-					value: i,
-					selected: (frameIndex === i),
-					event: "selectFrame",
-				});
-			}
-
-			menu.endGroup();
-		}
-		else if (controlTab === "rules") {
+			// type-specific edit controls
 			if (curDataType === "TIL") {
 				menu.add({
 					control: "toggle",
@@ -267,6 +220,68 @@ installCard(function(card) {
 
 				menu.endGroup();
 			}
+		}
+		else if (controlTab === "dialog") {
+			if (curDataType === "SPR" || curDataType === "ITM") {
+				// menu.add({
+				// 	control: "dialog",
+				// 	name: "dialog",
+				// 	id: data.dlg,
+				// });
+
+				// the dialog control is currently broken, so:
+				var curDialogStr = (data.dlg in dialog) ? dialog[data.dlg].src : "";
+
+				menu.add({
+					control: "text",
+					value: curDialogStr,
+					event: "onDialogChange",
+				});
+			}
+		}
+		else if (controlTab === "animation") {
+			// preview
+			menu.startGroup();
+
+			menu.add({
+				control: "thumbnail",
+				type: curDataType, // todo : name?
+				id: dataId,
+				selected: true,
+			});
+
+			menu.add({
+				control: "button",
+				icon: "delete",
+				event: "deleteFrame",
+				disabled: (imageSource.length <= 1),
+			});
+
+			menu.add({
+				control: "button",
+				icon: "add",
+				event: "addFrame",
+				disabled: (!flags.SUPER_ANM && (imageSource.length >= shortAnimationMax)),
+			});
+
+			// menu.endGroup();
+
+			// frames
+			// menu.startGroup();
+
+			for (var i = 0; (i < imageSource.length) && (flags.SUPER_ANM || i < shortAnimationMax); i++) {
+				menu.add({
+					control: "thumbnail",
+					type: curDataType, // todo : name?
+					id: dataId,
+					frame: i,
+					value: i,
+					selected: (frameIndex === i),
+					event: "selectFrame",
+				});
+			}
+
+			menu.endGroup();
 		}
 	};
 
