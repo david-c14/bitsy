@@ -652,9 +652,6 @@ function CardUI() {
 					return; //can't paint during play mode
 				}
 
-				console.log("PAINT TOOL!!!");
-				console.log(e);
-
 				var off = getOffset(e);
 
 				off = mobileOffsetCorrection(off,e,(128)); // todo : hardcoded size..
@@ -679,9 +676,6 @@ function CardUI() {
 					return; //can't paint during play mode
 				}
 
-				console.log("PAINT TOOL!!!");
-				console.log(e);
-
 				var off = getOffset(e);
 
 				off = mobileOffsetCorrection(off,e,(128)); // todo : hardcoded size..
@@ -689,7 +683,6 @@ function CardUI() {
 				var x = Math.floor(off.x);
 				var y = Math.floor(off.y);
 				// END
-
 
 				if (card.cursorMove) {
 					card.cursorMove(x, y);
@@ -708,9 +701,6 @@ function CardUI() {
 					return; //can't paint during play mode
 				}
 
-				console.log("PAINT TOOL!!!");
-				console.log(e);
-
 				var off = getOffset(e);
 
 				off = mobileOffsetCorrection(off,e,(128)); // todo : hardcoded size..
@@ -718,7 +708,6 @@ function CardUI() {
 				var x = Math.floor(off.x);
 				var y = Math.floor(off.y);
 				// END
-
 
 				if (card.cursorUp) {
 					card.cursorUp(x, y);
@@ -728,6 +717,30 @@ function CardUI() {
 				if (tempDidCursorAction) {
 					UpdateMenu();
 				}
+			};
+
+			canvas.ontouchstart = function(e) {
+				e.preventDefault();
+				// update event to translate from touch-style to mouse-style structure
+				e.clientX = e.touches[0].clientX;
+				e.clientY = e.touches[0].clientY;
+
+				canvas.onmousedown(e);
+			};
+
+			canvas.ontouchmove = function(e) {
+				e.preventDefault();
+				// update event to translate from touch-style to mouse-style structure
+				e.clientX = e.touches[0].clientX;
+				e.clientY = e.touches[0].clientY;
+
+				canvas.onmousemove(e);
+			};
+
+			canvas.ontouchend = function(e) {
+				e.preventDefault();
+
+				canvas.onmouseup(e);
 			};
 
 			// draw loop
