@@ -104,6 +104,7 @@ canvas {
 /* icon */
 .bitsy_icon svg {
 	width: 1em;
+	height: 1em;
 	fill: currentColor;
 }
 
