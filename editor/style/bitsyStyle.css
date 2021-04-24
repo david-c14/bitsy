@@ -55,6 +55,19 @@ span {
 	display: inline-flex;
 }
 
+/* webkit scrollbar */
+/*::-webkit-scrollbar {
+	background-color: var(--bitsy-button-color);
+	border-radius: var(--bitsy-margin-s);
+	width: var(--bitsy-margin-m);
+	height: var(--bitsy-margin-m);
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: var(--bitsy-text-color);
+	border-radius: var(--bitsy-margin-s);
+}*/
+
 /* gaps */
 button > *,
 label > *,
