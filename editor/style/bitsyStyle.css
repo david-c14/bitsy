@@ -39,6 +39,7 @@ html {
 	overscroll-behavior: none;
 	scrollbar-color: var(--bitsy-text-color) var(--bitsy-button-color);
 	image-rendering: crisp-edges;
+	image-rendering: pixelated;
 }
 
 body {

@@ -14,4 +14,6 @@ body {
 	display: block;
 	width:@@Z;
 	height:@@Z;
+	image-rendering: crisp-edges;
+	image-rendering: pixelated;
 }

@@ -16,4 +16,6 @@ body {
 	max-width:100vh;
 	margin:auto;
 	display:block;
+	image-rendering: crisp-edges;
+	image-rendering: pixelated;
 }
