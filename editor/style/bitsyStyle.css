@@ -536,6 +536,10 @@ textarea {
 	pointer-events: none;
 }
 
+#colorPickerContainer {
+	image-rendering: auto;
+}
+
 #colorPaletteForm input[type=radio] + label {
 	border: solid 1px #ddd;
 	margin: var(--bitsy-margin-s);
