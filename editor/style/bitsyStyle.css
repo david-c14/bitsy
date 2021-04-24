@@ -151,6 +151,14 @@ select, input {
 	border-radius: var(--bitsy-margin-s);
 }
 
+select {
+	background-image: url(../image/down_arrow_select.svg);
+	background-position: center right;
+	background-repeat: no-repeat;
+	background-size: var(--bitsy-margin-l);
+	padding-right: calc(1.25 * var(--bitsy-margin-l));
+}
+
 select:hover, input:hover {
 	border-color: var(--bitsy-text-color);
 }
