@@ -38,6 +38,7 @@ html {
 	color: var(--bitsy-text-color);
 	overscroll-behavior: none;
 	scrollbar-color: var(--bitsy-text-color) var(--bitsy-button-color);
+	image-rendering: crisp-edges;
 }
 
 body {
@@ -277,7 +278,8 @@ textarea {
 	flex-grow: 1;
 	display: var(--bitsy-button-display);
 	justify-content: center;
-	font-size: 150%;
+	font-size: 130%;
+	font-weight: bold;
 }
 
 .bitsy-menubar-logo > * {
@@ -396,6 +398,7 @@ textarea {
 	padding: var(--bitsy-margin-s);
 	background: var(--bitsy-button-color);
 	border-radius: var(--bitsy-margin-s) var(--bitsy-margin-s) 0 0;
+	font-weight: bold;
 }
 
 .cardui-icon {
