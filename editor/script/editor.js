@@ -1047,9 +1047,13 @@ function start() {
 	localStorage.engine_version = JSON.stringify( version );
 
 	// load saved export settings
-	if( localStorage.export_settings ) {
-		export_settings = JSON.parse( localStorage.export_settings );
-		document.getElementById("pageColor").value = export_settings.page_color;
+	if (localStorage.export_settings) {
+		export_settings = JSON.parse(localStorage.export_settings);
+
+		// todo : back compat based on version #?
+		if (export_settings.bg_mode === undefined || export_settings.bg_color_index === undefined) {
+			resetExportSettings();
+		}
 	}
 
 	// TODO : interesting idea but needs work!
@@ -3174,15 +3178,16 @@ var export_settings = {
 	size : 512,
 };
 
-function on_change_color_page() {
-	var hex = document.getElementById("pageColor").value;
-	//console.log(hex);
-	var rgb = hexToRgb( hex );
-	// document.body.style.background = hex;
-	document.getElementById("roomPanel").style.background = hex;
-	export_settings.page_color = hex;
+function resetExportSettings() {
+	export_settings = {
+		bg_mode : ExportBackgroundMode.Room,
+		bg_color_index : 0,
+		page_color : "#ffffff",
+		is_fixed_size : false,
+		size : 512,
+	};
 
-	localStorage.export_settings = JSON.stringify( export_settings );
+	localStorage.export_settings = JSON.stringify(export_settings);
 }
 
 function getComplimentingColor(palId) {
