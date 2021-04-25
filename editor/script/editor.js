@@ -200,7 +200,7 @@ function makeTile(id,imageData) {
 		animation : { //todo
 			isAnimated : (!imageData) ? false : (imageData.length>1),
 			frameIndex : 0,
-			frameCount : (!imageData) ? 2 : (imageData.length),
+			frameCount : (!imageData) ? 1 : (imageData.length),
 		},
 		name : null
 	};
@@ -219,7 +219,7 @@ function makeSprite(id,imageData) {
 		animation : { //todo
 			isAnimated : (!imageData) ? false : (imageData.length>1), // more duplication :(
 			frameIndex : 0,
-			frameCount : (!imageData) ? 2 : (imageData.length),
+			frameCount : (!imageData) ? 1 : (imageData.length),
 		},
 		dlg : null,
 		name : null
@@ -238,7 +238,7 @@ function makeItem(id,imageData) { // NOTE : same as tile right now? make more li
 		animation : { //todo
 			isAnimated : (!imageData) ? false : (imageData.length>1), // more duplication :(
 			frameIndex : 0,
-			frameCount : (!imageData) ? 2 : (imageData.length),
+			frameCount : (!imageData) ? 1 : (imageData.length),
 		},
 		dlg : null,
 		name : null
@@ -2897,206 +2897,11 @@ function importFont(fontData) {
 	// refreshGameData();
 }
 
-/* ANIMATION EDITING*/
-function on_toggle_animated() {
-	console.log("ON TOGGLE ANIMATED");
-	console.log(document.getElementById("animatedCheckbox").checked);
-	console.log(drawing.type);
-	console.log("~~~~~");
-	if ( document.getElementById("animatedCheckbox").checked ) {
-		if ( drawing.type === TileType.Sprite || drawing.type === TileType.Avatar ) {
-			addSpriteAnimation();
-		}
-		else if ( drawing.type === TileType.Tile ) {
-			addTileAnimation();
-		}
-		else if ( drawing.type === TileType.Item ) {
-			addItemAnimation();
-		}
-		document.getElementById("animation").setAttribute("style","display:block;");
-		iconUtils.LoadIcon(document.getElementById("animatedCheckboxIcon"), "expand_more");
-		console.log(drawing.id);
-		renderAnimationPreview( drawing.id );
-	}
-	else {
-		if ( drawing.type === TileType.Sprite || drawing.type === TileType.Avatar ) {
-			removeSpriteAnimation();
-		}
-		else if ( drawing.type === TileType.Tile ) {
-			removeTileAnimation();			
-		}
-		else if ( drawing.type === TileType.Item ) {
-			console.log("REMOVE ITEM ANIMATION");
-			removeItemAnimation();
-		}
-		document.getElementById("animation").setAttribute("style","display:none;");
-		iconUtils.LoadIcon(document.getElementById("animatedCheckboxIcon"), "expand_less");
-	}
-	renderPaintThumbnail( drawing.id );
-}
-
-function addSpriteAnimation() {
-	//set editor mode
-	paintTool.isCurDrawingAnimated = true;
-	paintTool.curDrawingFrameIndex = 0;
-
-	//mark sprite as animated
-	sprite[drawing.id].animation.isAnimated = true;
-	sprite[drawing.id].animation.frameIndex = 0;
-	sprite[drawing.id].animation.frameCount = 2;
-
-	//add blank frame to sprite (or restore removed animation)
-	var spriteImageId = "SPR_" + drawing.id;
-	if (sprite[drawing.id].cachedAnimation != null) {
-		restoreDrawingAnimation( spriteImageId, sprite[drawing.id].cachedAnimation )
-	}
-	else {
-		addNewFrameToDrawing( spriteImageId );
-	}
-
-	// TODO RENDERER : refresh images
-
-	//refresh data model
-	refreshGameData();
-	paintTool.reloadDrawing();
-
-	// reset animations
-	resetAllAnimations();
-}
-
-function removeSpriteAnimation() {
-	//set editor mode
-	paintTool.isCurDrawingAnimated = false;
-
-	//mark sprite as non-animated
-	sprite[drawing.id].animation.isAnimated = false;
-	sprite[drawing.id].animation.frameIndex = 0;
-	sprite[drawing.id].animation.frameCount = 0;
-
-	//remove all but the first frame of the sprite
-	var spriteImageId = "SPR_" + drawing.id;
-	cacheDrawingAnimation( sprite[drawing.id], spriteImageId );
-	removeDrawingAnimation( spriteImageId );
-
-	// TODO RENDERER : refresh images
-
-	//refresh data model
-	refreshGameData();
-	paintTool.reloadDrawing();
-
-	// reset animations
-	resetAllAnimations();
-}
-
-function addTileAnimation() {
-	//set editor mode
-	paintTool.isCurDrawingAnimated = true;
-	paintTool.curDrawingFrameIndex = 0;
-
-	//mark tile as animated
-	tile[drawing.id].animation.isAnimated = true;
-	tile[drawing.id].animation.frameIndex = 0;
-	tile[drawing.id].animation.frameCount = 2;
-
-	//add blank frame to tile (or restore removed animation)
-	var tileImageId = "TIL_" + drawing.id;
-	if (tile[drawing.id].cachedAnimation != null) {
-		restoreDrawingAnimation( tileImageId, tile[drawing.id].cachedAnimation )
-	}
-	else {
-		addNewFrameToDrawing( tileImageId );
-	}
-
-	// TODO RENDERER : refresh images
-
-	//refresh data model
-	refreshGameData();
-	paintTool.reloadDrawing();
-
-	// reset animations
-	resetAllAnimations();
-}
-
-function removeTileAnimation() {
-	//set editor mode
-	paintTool.isCurDrawingAnimated = false;
-
-	//mark tile as non-animated
-	tile[drawing.id].animation.isAnimated = false;
-	tile[drawing.id].animation.frameIndex = 0;
-	tile[drawing.id].animation.frameCount = 0;
-
-	//remove all but the first frame of the tile
-	var tileImageId = "TIL_" + drawing.id;
-	cacheDrawingAnimation( tile[drawing.id], tileImageId );
-	removeDrawingAnimation( tileImageId );
-
-	// TODO RENDERER : refresh images
-
-	//refresh data model
-	refreshGameData();
-	paintTool.reloadDrawing();
-
-	// reset animations
-	resetAllAnimations();
-}
-
-// TODO : so much duplication it makes me sad :(
-function addItemAnimation() {
-	//set editor mode
-	paintTool.isCurDrawingAnimated = true;
-	paintTool.curDrawingFrameIndex = 0;
-
-	//mark item as animated
-	item[drawing.id].animation.isAnimated = true;
-	item[drawing.id].animation.frameIndex = 0;
-	item[drawing.id].animation.frameCount = 2;
-
-	//add blank frame to item (or restore removed animation)
-	var itemImageId = "ITM_" + drawing.id;
-	if (item[drawing.id].cachedAnimation != null) {
-		restoreDrawingAnimation( itemImageId, item[drawing.id].cachedAnimation )
-	}
-	else {
-		addNewFrameToDrawing( itemImageId );
-	}
-
-	// TODO RENDERER : refresh images
-
-	//refresh data model
-	refreshGameData();
-	paintTool.reloadDrawing();
-
-	// reset animations
-	resetAllAnimations();
-}
-
-function removeItemAnimation() {
-	//set editor mode
-	paintTool.isCurDrawingAnimated = false;
-
-	//mark item as non-animated
-	item[drawing.id].animation.isAnimated = false;
-	item[drawing.id].animation.frameIndex = 0;
-	item[drawing.id].animation.frameCount = 0;
-
-	//remove all but the first frame of the item
-	var itemImageId = "ITM_" + drawing.id;
-	cacheDrawingAnimation( item[drawing.id], itemImageId );
-	removeDrawingAnimation( itemImageId );
-
-	// TODO RENDERER : refresh images
-
-	//refresh data model (TODO : these should really be a shared method)
-	refreshGameData();
-	paintTool.reloadDrawing();
-
-	// reset animations
-	resetAllAnimations();
-}
-
+/* ANIMATION EDIT FUNCTIONS */
 // NOTE : is it ok for this to remain global??
 function addNewFrameToDrawing(drwId) {
+	// console.log("NEW FRAME " + drwId);
+
 	// copy last frame data into new frame
 	var imageSource = renderer.GetImageSource(drwId);
 
@@ -3114,54 +2919,16 @@ function addNewFrameToDrawing(drwId) {
 	imageSource.push(newFrame);
 
 	renderer.SetImageSource(drwId, imageSource);
-
-	// todo : use event or something instead?
-	refreshGameData();
-	resetAllAnimations();
 }
 
 function removeLastFrameFromDrawing(drwId) {
 	var imageSource = renderer.GetImageSource(drwId);
 
 	renderer.SetImageSource(drwId, imageSource.slice(0, imageSource.length - 1));
-
-	refreshGameData();
-	resetAllAnimations();
 }
 
 
-// TODO : deprecate and remove this
-function removeDrawingAnimation(drwId) {
-	var imageSource = renderer.GetImageSource(drwId);
-	var oldImageData = imageSource.slice(0);
-	renderer.SetImageSource( drwId, [ oldImageData[0] ] );
-}
-
-// let's us restore the animation during the session if the user wants it back
-function cacheDrawingAnimation(drawing,sourceId) {
-	var imageSource = renderer.GetImageSource(sourceId);
-	var oldImageData = imageSource.slice(0);
-	drawing.cachedAnimation = [ oldImageData[1] ]; // ah the joys of javascript
-}
-
-function restoreDrawingAnimation(sourceId,cachedAnimation) {
-	var imageSource = renderer.GetImageSource(sourceId);
-	for (f in cachedAnimation) {
-		imageSource.push( cachedAnimation[f] );	
-	}
-	renderer.SetImageSource(sourceId, imageSource);
-}
-
-function on_paint_frame1() {
-	paintTool.curDrawingFrameIndex = 0;
-	paintTool.reloadDrawing();
-}
-
-function on_paint_frame2() {
-	paintTool.curDrawingFrameIndex = 1;
-	paintTool.reloadDrawing();
-}
-
+/* EXPORT SETTINGS */
 // todo : naming
 // todo : move into settings tool?
 // todo : compat with older versions!
@@ -3202,6 +2969,7 @@ function getComplimentingColor(palId) {
 		return "#000";
 	}
 }
+
 
 /* MOVEABLE PANESL */
 var grabbedPanel = {

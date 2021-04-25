@@ -348,6 +348,11 @@ installCard(function(card) {
 		imageSource = renderer.GetImageSource(drawingId).slice();
 
 		frameIndex = (data.animation.frameCount - 1);
+
+		// todo : did I actually need to pull this out of the add new frame global func?
+		// todo.. stop with all this boilerplate! (build into tool update loop?)
+		refreshGameData();
+		resetAllAnimations();
 	};
 
 	card.deleteFrame = function() {
@@ -366,6 +371,9 @@ installCard(function(card) {
 		if (frameIndex >= data.animation.frameCount) {
 			frameIndex = (data.animation.frameCount - 1);
 		}
+
+		refreshGameData();
+		resetAllAnimations();
 	};
 
 	card.toggleWall = function(value) {
