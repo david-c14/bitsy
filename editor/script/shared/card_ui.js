@@ -385,7 +385,7 @@ function CardUI() {
 						}
 
 						createNavControls();
-						UpdateMenu();
+						UpdateCard();
 					}
 				}));
 			}
@@ -423,7 +423,7 @@ function CardUI() {
 							card.prev();
 						}
 
-						UpdateMenu();
+						UpdateCard();
 					}
 				}));
 
@@ -435,7 +435,7 @@ function CardUI() {
 							card.next();
 						}
 
-						UpdateMenu();
+						UpdateCard();
 					}
 				}));
 
@@ -447,7 +447,7 @@ function CardUI() {
 							card.add();
 						}
 
-						UpdateMenu();
+						UpdateCard();
 					}
 				}));
 
@@ -459,7 +459,7 @@ function CardUI() {
 							card.copy();
 						}
 
-						UpdateMenu();
+						UpdateCard();
 					}
 				}));
 
@@ -471,7 +471,7 @@ function CardUI() {
 							card.del();
 						}
 
-						UpdateMenu();
+						UpdateCard();
 					}
 				}));
 			}
@@ -479,11 +479,23 @@ function CardUI() {
 			createNavControls();
 		}
 
+		var canvas;
+
 		if (card.draw) {
 			// todo : should the canvas stuff in here go into its own object? "standard-bitsy-card-ui" or something?
-			var canvas = document.createElement("canvas");
+			canvas = document.createElement("canvas");
 			canvas.classList.add("cardui-canvas");
 			toolRoot.appendChild(canvas);
+		}
+
+		function UpdateCardCanvas() {
+			if (canvas) {
+				gfxAttachCanvas(canvas);
+
+				if (card.draw) {
+					card.draw();
+				}
+			}
 		}
 
 		// name? settings? options? controls?
@@ -491,7 +503,7 @@ function CardUI() {
 		menu.classList.add("cardui-menu");
 		toolRoot.appendChild(menu);
 
-		function UpdateMenu() {
+		function UpdateCardMenu() {
 			setCurCardView(self);
 
 			menu.innerHTML = "";
@@ -508,6 +520,11 @@ function CardUI() {
 					nameControl.value = "";
 				}
 			}
+		}
+
+		function UpdateCard() {
+			UpdateCardCanvas();
+			UpdateCardMenu();
 		}
 
 		var _curGroup;
@@ -550,7 +567,7 @@ function CardUI() {
 					onclick: function() {
 						// console.log("CLICK " + options.text);
 						card[options.event](options.value);
-						UpdateMenu();
+						UpdateCard();
 					},
 				});
 			}
@@ -561,7 +578,7 @@ function CardUI() {
 					value: options.value,
 					onclick: function(e) {
 						card[options.event](e.target.checked);
-						UpdateMenu();
+						UpdateCard();
 					},
 				});
 			}
@@ -572,7 +589,7 @@ function CardUI() {
 					tabs: options.tabs,
 					onclick: function(e) {
 						card[options.event](e.target.value);
-						UpdateMenu();
+						UpdateCard();
 					},
 				});
 			}
@@ -592,7 +609,7 @@ function CardUI() {
 					onclick: function() {
 						if (options.event) {
 							card[options.event](options.value);
-							UpdateMenu();
+							UpdateCard();
 						}
 					},
 				});
@@ -603,7 +620,7 @@ function CardUI() {
 					onchange: function(e) {
 						if (options.event) {
 							card[options.event](e.target.value);
-							UpdateMenu();
+							UpdateCard();
 						}
 					},
 				});
@@ -614,7 +631,7 @@ function CardUI() {
 					onchange: function(e) {
 						if (options.event) {
 							card[options.event](e.target.value);
-							UpdateMenu();
+							UpdateCard();
 						}
 					},
 				});
@@ -626,7 +643,7 @@ function CardUI() {
 					onchange: function(e) {
 						if (options.event) {
 							card[options.event](e.target.value);
-							UpdateMenu();
+							UpdateCard();
 						}
 					},
 				});
@@ -715,7 +732,7 @@ function CardUI() {
 				}
 
 				if (tempDidCursorAction) {
-					UpdateMenu();
+					UpdateCard();
 				}
 			};
 
@@ -742,15 +759,6 @@ function CardUI() {
 
 				canvas.onmouseup(e);
 			};
-
-			// draw loop
-			setInterval(function() {
-				gfxAttachCanvas(canvas);
-
-				if (card.draw) {
-					card.draw();
-				}
-			}, -1); // todo : what should the interval be really? not constant..
 		}
 
 		// this.SetName = function(name) {
@@ -763,11 +771,11 @@ function CardUI() {
 				card.boot();
 			}
 
-			UpdateMenu();
+			UpdateCard();
 		}
 
 		this.Refresh = function() {
-			UpdateMenu();
+			UpdateCard();
 		};
 
 		/* hacky pass-throughs to frame */
