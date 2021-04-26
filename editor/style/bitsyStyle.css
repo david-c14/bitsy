@@ -499,6 +499,20 @@ textarea {
 	display: inline-block;
 }
 
+#paintExplorerForm label {
+	border-radius: var(--bitsy-margin-s);
+}
+
+#paintExplorerForm label img {
+	border-color: var(--bitsy-card-color);
+	border-width: var(--bitsy-margin-xs);
+	border-style: solid;
+}
+
+#paintExplorerFormInner {
+	display: block;
+}
+
 #paintExplorerFormInner > * {
 	margin: var(--bitsy-margin-s);
 }
