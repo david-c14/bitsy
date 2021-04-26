@@ -120,112 +120,110 @@ function ColorPicker( wheelId, selectId, sliderId, sliderBgId, hexTextId ) {
 	}
 
 	var isMouseDown = false;
-	function pickColor(e, isMouseUp) {
-		if( isMouseUp == null || isMouseUp == undefined ) {
-			isMouseUp = false;
+	function pickColor(e, options) {
+		var isMouseUp = options && options.isMouseUp;
+		var isCollisionStrict = options && options.isCollisionStrict;
+
+		var bounds = selectCanvas.getBoundingClientRect();
+
+		var containerX = e.clientX - bounds.left;
+		var containerY = e.clientY - bounds.top;
+
+		var containerCenterX = bounds.width / 2;
+		var containerCenterY = bounds.height / 2;
+		var minContainerSize = Math.min(bounds.width, bounds.height);
+		var containerSizeRatio = width / minContainerSize; // could be either dimension (if it's a square)
+		var radiusRatio = radius / width;
+		var containerRadius = minContainerSize * radiusRatio;
+
+		var xRel = containerX - containerCenterX;
+		var yRel = containerY - containerCenterY;
+
+		var dist = Math.sqrt(Math.pow(xRel, 2) + Math.pow(yRel, 2));
+
+		var canvasX = centerX;
+		var canvasY = centerY;
+
+		if (dist >= containerRadius && !isCollisionStrict) {
+			var canvasXRel = (xRel / dist) * (radius - 1);
+			var canvasYRel = (yRel / dist) * (radius - 1);
+
+			canvasX = centerX + canvasXRel;
+			canvasY = centerY + canvasYRel;
+
+			dist = containerRadius - 1; // the minus one is to avoid hitting unfilled pixels
+		}
+		else {
+			// adjust X and Y coordinates to account for the "contain" algorithm used to center the color wheel (mobile)
+
+			if (bounds.width > bounds.height) {
+				containerX -= (bounds.width - bounds.height) / 2;
+			}
+			else if (bounds.height > bounds.width) {
+				containerY -= (bounds.height - bounds.width) / 2;
+			}
+
+			canvasX = containerX * containerSizeRatio;
+			canvasY = containerY * containerSizeRatio;
 		}
 
-		// console.log(isMouseDown);
+		if (dist < containerRadius) {
+			var pixelData = wheelContext.getImageData(canvasX, canvasY, 1, 1).data;
+			var rgbColor = { r:pixelData[0], g:pixelData[1], b:pixelData[2] };
+			curColor = RGBtoHSV(rgbColor.r, rgbColor.g, rgbColor.b);
 
-		if(isMouseDown) {
-			// console.log(e);
-			var bounds = selectCanvas.getBoundingClientRect();
-			// console.log(bounds);
+			var hueHsvColor = { h:curColor.h, s:1.0, v:1.0 };
+			var hueRgbColor = HSVtoRGB(hueHsvColor);
+			var rgbColorStr = "rgb(" + hueRgbColor.r + "," + hueRgbColor.g + "," + hueRgbColor.b + ")";
+			sliderBg.style.background = "linear-gradient( to right, " + rgbColorStr + ", black )";
 
-			// console.log("-- pick color --")
+			events.Raise("color_picker_change", { rgbColor: HSVtoRGB(curColor), isMouseUp: isMouseUp, });
 
-			var containerX = e.clientX - bounds.left;
-			var containerY = e.clientY - bounds.top;
-
-			var containerCenterX = bounds.width / 2;
-			var containerCenterY = bounds.height / 2;
-			var minContainerSize = Math.min( bounds.width, bounds.height );
-			var containerSizeRatio = width / minContainerSize; // could be either dimension (if it's a square)
-			var radiusRatio = radius / width;
-			var containerRadius = minContainerSize * radiusRatio;
-
-			// console.log("center",containerCenterX,containerCenterY);
-
-			var xRel = containerX - containerCenterX;
-			var yRel = containerY - containerCenterY;
-
-			// console.log("rel",xRel,yRel);
-
-			var dist = Math.sqrt( Math.pow( xRel, 2 ) + Math.pow( yRel, 2 ) );
-
-			// console.log("dist",dist);
-			// console.log("canvasRadius",containerRadius);
-
-			var canvasX = centerX;
-			var canvasY = centerY;
-
-			if( dist >= containerRadius ) {
-				var canvasXRel = ( xRel / dist ) * (radius - 1);
-				var canvasYRel = ( yRel / dist ) * (radius - 1);
-
-				canvasX = centerX + canvasXRel;
-				canvasY = centerY + canvasYRel;
-
-				dist = containerRadius - 1; // the minus one is to avoid hitting unfilled pixels
-			}
-			else {
-				// return;
-				// adjust X and Y coordinates to account for the "contain" algorithm used to center the color wheel (mobile)
-
-				if( bounds.width > bounds.height ) {
-					containerX -= (bounds.width - bounds.height) / 2;
-				}
-				else if( bounds.height > bounds.width ) {
-					containerY -= (bounds.height - bounds.width) / 2;
-				}
-
-				canvasX = containerX * containerSizeRatio;
-				canvasY = containerY * containerSizeRatio;
-				// console.log("ADJUSTED X Y",x, y);
-			}
-
-			if( dist < containerRadius ) {
-				var pixelData = wheelContext.getImageData( canvasX, canvasY, 1, 1 ).data;
-				var rgbColor = { r:pixelData[0], g:pixelData[1], b:pixelData[2] };
-				curColor = RGBtoHSV( rgbColor.r, rgbColor.g, rgbColor.b );
-
-				var hueHsvColor = { h:curColor.h, s:1.0, v:1.0 };
-				var hueRgbColor = HSVtoRGB( hueHsvColor );
-				var rgbColorStr = "rgb(" + hueRgbColor.r + "," + hueRgbColor.g + "," + hueRgbColor.b + ")";
-				sliderBg.style.background = "linear-gradient( to right, " + rgbColorStr + ", black )";
-
-				events.Raise("color_picker_change", { rgbColor: HSVtoRGB(curColor), isMouseUp: isMouseUp });
-			}
+			return true;
+		}
+		else {
+			return false; // didn't actually hit the color wheel
 		}
 	}
 
 	function pickColorStart(e) {
-		e.preventDefault();
-		isMouseDown = true;
-		pickColor(e, false);
+		isMouseDown = pickColor(e, { isCollisionStrict: true, });
+
+		if (isMouseDown) {
+			// only prevent scrolling if we're actually within the wheel's radius
+			e.preventDefault();
+		}
+	}
+
+	function pickColorMove(e) {
+		if (isMouseDown) {
+			e.preventDefault();
+			pickColor(e);
+		}
 	}
 
 	function pickColorEnd(e) {
-		console.log("color picker end");
-		pickColor(e, true);
-		isMouseDown = false;
+		if (isMouseDown) {
+			pickColor(e, { isMouseUp: true, });
+			isMouseDown = false;
+		}
 	}
 
 	function pickColorTouchMove(e) {
-		// console.log(e.touches[0]);
-
 		if (isMouseDown) {
 			e.preventDefault();
+
 			// update event to translate from touch-style to mouse-style structure
 			e.clientX = e.touches[0].clientX;
 			e.clientY = e.touches[0].clientY;
-			pickColor(e, false);
+
+			pickColor(e);
 		}
 	}
 
 	function pickColorTouchStart(e) {
 		// console.log(e.touches[0]);
-		e.preventDefault();
+		// e.preventDefault();
 		// update event to translate from touch-style to mouse-style structure
 		e.clientX = e.touches[0].clientX;
 		e.clientY = e.touches[0].clientY;
@@ -339,7 +337,7 @@ function ColorPicker( wheelId, selectId, sliderId, sliderBgId, hexTextId ) {
 		selectContext = selectCanvas.getContext("2d");
 
 		selectCanvas.addEventListener("mousedown", pickColorStart);
-		document.addEventListener("mousemove", pickColor);
+		document.addEventListener("mousemove", pickColorMove);
 		document.addEventListener("mouseup", pickColorEnd);
 
 		selectCanvas.addEventListener('touchstart', pickColorTouchStart);
