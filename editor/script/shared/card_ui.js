@@ -365,32 +365,6 @@ function CardUI() {
 		if (card.data) {
 			var curDataType = card.data[0];
 
-			if (card.data.length > 1) {
-				var dataTabs = [];
-
-				for (var i = 0; i < card.data.length; i++) {
-					var category = dataCategories[card.data[i]];
-					dataTabs.push({ text: category.name, icon: category.iconId, value: card.data[i], });
-				}
-
-				toolRoot.appendChild(createTabs({
-					name: card.name + "-data-tabs",
-					tabs: dataTabs,
-					value: curDataType,
-					onclick: function(e) {
-						curDataType = e.target.value;
-
-						if (card.changeDataType) {
-							card.changeDataType(curDataType);
-						}
-
-						createNavControls();
-						UpdateCard();
-					}
-				}));
-			}
-
-
 			var nav = document.createElement("div");
 			nav.classList.add("bitsy-menubar-group");
 			toolRoot.appendChild(nav);
@@ -471,6 +445,31 @@ function CardUI() {
 							card.del();
 						}
 
+						UpdateCard();
+					}
+				}));
+			}
+
+			if (card.data.length > 1) {
+				var dataTabs = [];
+
+				for (var i = 0; i < card.data.length; i++) {
+					var category = dataCategories[card.data[i]];
+					dataTabs.push({ text: category.name, icon: category.iconId, value: card.data[i], });
+				}
+
+				toolRoot.appendChild(createTabs({
+					name: card.name + "-data-tabs",
+					tabs: dataTabs,
+					value: curDataType,
+					onclick: function(e) {
+						curDataType = e.target.value;
+
+						if (card.changeDataType) {
+							card.changeDataType(curDataType);
+						}
+
+						createNavControls();
 						UpdateCard();
 					}
 				}));

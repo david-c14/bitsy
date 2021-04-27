@@ -241,6 +241,20 @@ textarea {
 	border-radius: var(--bitsy-margin-s);
 }
 
+/* input icon label (name?) */
+.input-icon-label {
+	background: var(--bitsy-button-color);
+	margin-right: 0;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.input-labelled {
+	margin-left: 0;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
 /* root */
 .bitsy-main {
 	display: flex;

@@ -925,6 +925,18 @@
 
 				<div id="paintExplorerInner">
 
+					<div class="controlBox bitsy-menubar-group" id="paintExplorerFilter">
+						<label id="paintExplorerFilterIcon" class="input-icon-label">
+							<span class="bitsy_icon icon_space_right">search</span>
+						</label>
+
+						<input id="paintExplorerFilterInput" class="input-labelled" type="text" onkeyup="paintExplorerFilterChange(event);" onchange="paintExplorerFilterChange(event);" placeholder="search by name" title="filter drawings by name" size="30">
+
+						<button id="paintExplorerAdd" title="add drawing" onclick="newDrawing(); return false;">
+							<span class="bitsy_icon">add</span>
+						</button>
+					</div>
+
 					<form class="bitsy-menubar-group">
 						<input type="radio" name="paint explorer mode" value="avatar" onclick="on_paint_avatar();" id="paintExplorerOptionAvatar" checked>
 						<label title="find the avatar: the player's character" for="paintExplorerOptionAvatar" class="left">
@@ -951,24 +963,12 @@
 						</label>
 					</form>
 
-					<div class="controlBox bitsy-menubar-group" id="paintExplorerFilter">
-						<span id="paintExplorerFilterIcon">
-							<span class="bitsy_icon icon_space_right">search</span>
-						</span>
-						<input id="paintExplorerFilterInput" type="text" onkeyup="paintExplorerFilterChange(event);" onchange="paintExplorerFilterChange(event);" placeholder="filter drawings" title="filter drawings by name" size="30">
-					</div>
-
 					<div id="paintExplorerViewport" class="bitsy-menu-scrollview">
 						<div id="paintExplorerContent">
 
 							<form id="paintExplorerForm">
 								<span id="paintExplorerFormInner">
 								</span>
-								<div id="paintExplorerAdd">
-									<button title="add drawing" onclick="newDrawing(); return false;">
-										<span class="bitsy_icon">add</span>
-									</button>
-								</div>
 							</form>
 						</div>
 					</div>
