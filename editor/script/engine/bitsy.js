@@ -1683,6 +1683,7 @@ function parseTile(lines, i) {
 	//tile data
 	tile[id] = {
 		id : id,
+		type : "TIL",
 		drw : drwId, //drawing id
 		col : colorIndex,
 		animation : {
@@ -1754,6 +1755,7 @@ function parseSprite(lines, i) {
 	//sprite data
 	sprite[id] = {
 		id : id,
+		type : (id === "A") ? "AVA" : "SPR",
 		drw : drwId, //drawing id
 		col : colorIndex,
 		dlg : dialogId,
@@ -1821,6 +1823,7 @@ function parseItem(lines, i) {
 	//item data
 	item[id] = {
 		id : id,
+		type : "ITM",
 		drw : drwId, //drawing id
 		col : colorIndex,
 		dlg : dialogId,

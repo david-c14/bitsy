@@ -127,6 +127,23 @@ function PaintExplorer(idPrefix,selectCallback) {
 		}
 
 		renderOutOfDateThumbnailsInViewport();
+
+		// hacky update to global ui..
+		document.getElementById("paintExplorerFilterInput").value = "";
+		document.getElementById("paintExplorerAdd").disabled = (type === TileType.Avatar);
+
+		if (type === TileType.Avatar) {
+			document.getElementById("paintExplorerOptionAvatar").checked = true;
+		}
+		else if (type === TileType.Sprite) {
+			document.getElementById("paintExplorerOptionSprite").checked = true;
+		}
+		else if (type === TileType.Item) {
+			document.getElementById("paintExplorerOptionItem").checked = true;
+		}
+		else if (type === TileType.Tile) {
+			document.getElementById("paintExplorerOptionTile").checked = true;
+		}
 	}
 	this.Refresh = function( type, doKeepOldThumbnails, filterString, skipRenderStep ) {
 		refresh( type, doKeepOldThumbnails, filterString, skipRenderStep );
