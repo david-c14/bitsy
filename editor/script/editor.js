@@ -1587,9 +1587,10 @@ function editDrawingAtCoordinate(x, y) {
 		return;
 	}
 
-	var item = getItem(curRoom, x, y);
-	if (item) {
-		selectDrawing(item);
+	var itm = getItem(curRoom, x, y);
+
+	if (itm) {
+		selectDrawing(item[itm.id]);
 		return;
 	}
 
