@@ -203,8 +203,6 @@ function load_game(game_data, startWithTitle) {
 
 	setInitialVariables();
 
-	// setInterval(updateLoadingScreen, 300); // hack test
-
 	onready(startWithTitle);
 }
 
@@ -224,9 +222,9 @@ function reset_cur_game() {
 
 var update_interval = null;
 function onready(startWithTitle) {
-	if(startWithTitle === undefined || startWithTitle === null) startWithTitle = true;
-
-	clearInterval(loading_interval);
+	if (startWithTitle === undefined || startWithTitle === null) {
+		startWithTitle = true;
+	}
 
 	input = new InputManager();
 
@@ -327,100 +325,6 @@ function stopGame() {
 	window.onblur = null;
 
 	clearInterval(update_interval);
-}
-
-/* loading animation */
-var loading_anim_data = [
-	[
-		0,1,1,1,1,1,1,0,
-		0,0,1,1,1,1,0,0,
-		0,0,1,1,1,1,0,0,
-		0,0,0,1,1,0,0,0,
-		0,0,0,1,1,0,0,0,
-		0,0,1,0,0,1,0,0,
-		0,0,1,0,0,1,0,0,
-		0,1,1,1,1,1,1,0,
-	],
-	[
-		0,1,1,1,1,1,1,0,
-		0,0,1,0,0,1,0,0,
-		0,0,1,1,1,1,0,0,
-		0,0,0,1,1,0,0,0,
-		0,0,0,1,1,0,0,0,
-		0,0,1,0,0,1,0,0,
-		0,0,1,1,1,1,0,0,
-		0,1,1,1,1,1,1,0,
-	],
-	[
-		0,1,1,1,1,1,1,0,
-		0,0,1,0,0,1,0,0,
-		0,0,1,0,0,1,0,0,
-		0,0,0,1,1,0,0,0,
-		0,0,0,1,1,0,0,0,
-		0,0,1,1,1,1,0,0,
-		0,0,1,1,1,1,0,0,
-		0,1,1,1,1,1,1,0,
-	],
-	[
-		0,1,1,1,1,1,1,0,
-		0,0,1,0,0,1,0,0,
-		0,0,1,0,0,1,0,0,
-		0,0,0,1,1,0,0,0,
-		0,0,0,1,1,0,0,0,
-		0,0,1,1,1,1,0,0,
-		0,0,1,1,1,1,0,0,
-		0,1,1,1,1,1,1,0,
-	],
-	[
-		0,0,0,0,0,0,0,0,
-		1,0,0,0,0,0,0,1,
-		1,1,1,0,0,1,1,1,
-		1,1,1,1,1,0,0,1,
-		1,1,1,1,1,0,0,1,
-		1,1,1,0,0,1,1,1,
-		1,0,0,0,0,0,0,1,
-		0,0,0,0,0,0,0,0,
-	]
-];
-var loading_anim_frame = 0;
-var loading_anim_speed = 500;
-var loading_interval = null;
-
-function loadingAnimation() {
-	//create image
-	var loadingAnimImg = ctx.createImageData(8*scale, 8*scale);
-	//draw image
-	for (var y = 0; y < 8; y++) {
-		for (var x = 0; x < 8; x++) {
-			var i = (y * 8) + x;
-			if (loading_anim_data[loading_anim_frame][i] == 1) {
-				//scaling nonsense
-				for (var sy = 0; sy < scale; sy++) {
-					for (var sx = 0; sx < scale; sx++) {
-						var pxl = 4 * ( (((y*scale)+sy) * (8*scale)) + ((x*scale)+sx) );
-						loadingAnimImg.data[pxl+0] = 255;
-						loadingAnimImg.data[pxl+1] = 255;
-						loadingAnimImg.data[pxl+2] = 255;
-						loadingAnimImg.data[pxl+3] = 255;
-					}
-				}
-			}
-		}
-	}
-	//put image on canvas
-	ctx.putImageData(loadingAnimImg,scale*(width/2 - 4),scale*(height/2 - 4));
-	//update frame
-	loading_anim_frame++;
-	if (loading_anim_frame >= 5) loading_anim_frame = 0;
-}
-
-function updateLoadingScreen() {
-	// TODO : in progress
-	ctx.fillStyle = "rgb(0,0,0)";
-	ctx.fillRect(0,0,canvas.width,canvas.height);
-
-	loadingAnimation();
-	drawSprite( getSpriteImage(sprite["a"],"0",0), 8, 8, ctx );
 }
 
 function update() {
@@ -1980,23 +1884,16 @@ function parseFlag(lines, i) {
 	return i;
 }
 
-function drawTile(img,x,y,context) {
+function drawTile(drawing, paletteId, frameIndex, x, y, context) {
 	if (!context) { //optional pass in context; otherwise, use default
 		context = ctx;
 	}
+
+	var img = renderer.GetImage(drawing, paletteId, frameIndex);
+
 	// NOTE: images are now canvases, instead of raw image data (for chrome performance reasons)
-	context.drawImage(img,x*tilesize*scale,y*tilesize*scale,tilesize*scale,tilesize*scale);
+	context.drawImage(img, x * tilesize * scale, y * tilesize * scale, tilesize * scale, tilesize * scale);
 }
-
-function drawSprite(img,x,y,context) { //this may differ later (or not haha)
-	drawTile(img,x,y,context);
-}
-
-function drawItem(img,x,y,context) {
-	drawTile(img,x,y,context); //TODO these methods are dumb and repetitive
-}
-
-// var debugLastRoomDrawn = "0";
 
 function drawRoom(room,context,frameIndex) { // context & frameIndex are optional
 	if (!context) { //optional pass in context; otherwise, use default (ok this is REAL hacky isn't it)
@@ -2036,7 +1933,7 @@ function drawRoom(room,context,frameIndex) { // context & frameIndex are optiona
 				}
 				else {
 					// console.log(id);
-					drawTile( getTileImage(tile[id],paletteId,frameIndex), j, i, context );
+					drawTile(tile[id], paletteId, frameIndex, j, i, context);
 				}
 			}
 		}
@@ -2045,29 +1942,16 @@ function drawRoom(room,context,frameIndex) { // context & frameIndex are optiona
 	//draw items
 	for (var i = 0; i < room.items.length; i++) {
 		var itm = room.items[i];
-		drawItem( getItemImage(item[itm.id],paletteId,frameIndex), itm.x, itm.y, context );
+		drawTile(item[itm.id], paletteId, frameIndex, itm.x, itm.y, context);
 	}
 
 	//draw sprites
 	for (id in sprite) {
 		var spr = sprite[id];
 		if (spr.room === room.id) {
-			drawSprite( getSpriteImage(spr,paletteId,frameIndex), spr.x, spr.y, context );
+			drawTile(spr, paletteId, frameIndex, spr.x, spr.y, context);
 		}
 	}
-}
-
-// TODO : remove these get*Image methods
-function getTileImage(t,palId,frameIndex) {
-	return renderer.GetImage(t,palId,frameIndex);
-}
-
-function getSpriteImage(s,palId,frameIndex) {
-	return renderer.GetImage(s,palId,frameIndex);
-}
-
-function getItemImage(itm,palId,frameIndex) {
-	return renderer.GetImage(itm,palId,frameIndex);
 }
 
 function curPal() {

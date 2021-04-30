@@ -185,29 +185,26 @@ function CardUI() {
 
 		thumbnailImg.onclick = options.onclick;
 
-		var tileType;
+		var d = null;
 
-		if (options.type === "AVA") {
-			tileType = TileType.Avatar;
+		if (options.type === TileType.Avatar) {
+			d = sprite["A"];
 		}
-		else if (options.type === "SPR") {
-			tileType = TileType.Sprite;
+		else if (options.type === TileType.Sprite) {
+			d = sprite[options.id];
 		}
-		else if (options.type === "TIL") {
-			tileType = TileType.Tile;
+		else if (options.type === TileType.Tile) {
+			d = tile[options.id];
 		}
-		else if (options.type === "ITM") {
-			tileType = TileType.Item;
+		else if (options.type === TileType.Item) {
+			d = item[options.id];
 		}
-
-		// TODO : I really need to get rid of this annoying construct
-		var drawingId = new DrawingId(tileType, options.id);
 
 		var thumbnailRenderer = new ThumbnailRenderer();
 
 		thumbnailRenderer.Render(
 			null, // imgId
-			drawingId,
+			d, // drawing
 			options.frame,
 			thumbnailImg);
 
@@ -579,7 +576,7 @@ function CardUI() {
 			}
 			else if (options.control === "thumbnail") {
 				control = createThumbnail({
-					type: options.type,
+					type: options.type, // todo : replace with single drawing parameter?
 					id: options.id,
 					frame: options.frame,
 					selected: options.selected,

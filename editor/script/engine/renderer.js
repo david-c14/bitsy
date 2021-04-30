@@ -1,21 +1,8 @@
-/*
-TODO
-- reset renderer function
-- react to changes in: drawings, palettes
-- possible future plan: limit size of cache (remove old images)
-- change image store path from (pal > col > draw) to (draw > pal > col)
-- get rid of old getSpriteImage (etc) methods
-- get editor working again [in progress]
-- move debug timer class into core (seems useful)
-*/
-
 function Renderer(tilesize, scale) {
-
-console.log("!!!!! NEW RENDERER");
 
 var imageStore = { // TODO : rename to imageCache
 	source: {},
-	render: {}
+	render: {},
 };
 
 var palettes = null; // TODO : need null checks?

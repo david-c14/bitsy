@@ -149,6 +149,26 @@ function PaintExplorer(idPrefix) {
 		refresh( type, doKeepOldThumbnails, filterString, skipRenderStep );
 	};
 
+	// is this a one off? or something that needs to go in a util?
+	function getDrawingObject(type, id) {
+		var d = null;
+
+		if (type === TileType.Avatar) {
+			d = sprite["A"];
+		}
+		else if (type === TileType.Sprite) {
+			d = sprite[id];
+		}
+		else if (type === TileType.Tile) {
+			d = tile[id];
+		}
+		else if (type === TileType.Item) {
+			d = item[id];
+		}
+
+		return d;
+	}
+
 	function addThumbnail(id) {
 		if (drawingCategory == null) { // TODO: used combined id + type instead?
 			return;
@@ -163,7 +183,7 @@ function PaintExplorer(idPrefix) {
 		radio.name = idPrefix + "Radio";
 		radio.id = idPrefix + "Radio_" + id;
 		radio.value = id;
-		radio.checked = id === selectedDrawingId;
+		radio.checked = (id === selectedDrawingId);
 
 		paintExplorerForm.appendChild(radio);
 
@@ -198,17 +218,17 @@ function PaintExplorer(idPrefix) {
 
 		div.appendChild(img);
 
-		if(displayCaptions) {
+		if (displayCaptions) {
+			var d = getDrawingObject(drawingCategory, id);
+
 			var nameCaption = document.createElement("figcaption");
 			nameCaption.id = idPrefix + "Caption_" + id;
 
 			nameCaption.innerText = img.title;
-			var curPaintMode = drawingCategory;
-			var drawingId = new DrawingId( curPaintMode, id );
-			var obj = drawingId.getEngineObject();
-			if( obj.name === undefined || obj.name === null ) {
-				// console.log("default name!!!!");
-				nameCaption.classList.add( "thumbnailDefaultName" );
+
+			// note: this seems odd - refactor?
+			if (d.name === undefined || d.name === null) {
+				nameCaption.classList.add("thumbnailDefaultName");
 			}
 
 			div.appendChild(nameCaption);
@@ -220,25 +240,7 @@ function PaintExplorer(idPrefix) {
 
 		radio.onclick = function(e) {
 			// todo : re-implement double click to open paint
-
-			var type = drawingCategory;
-			var id = e.target.value;
-			var d = null;
-
-			// is this a one off? or something that needs to go in a util?
-			if (type === TileType.Avatar) {
-				d = sprite["A"];
-			}
-			else if (type === TileType.Sprite) {
-				d = sprite[id];
-			}
-			else if (type === TileType.Tile) {
-				d = tile[id];
-			}
-			else if (type === TileType.Item) {
-				d = item[id];
-			}
-
+			var d = getDrawingObject(drawingCategory, e.target.value);
 			if (d != null) {
 				selectDrawing(d);
 			}
@@ -283,7 +285,7 @@ function PaintExplorer(idPrefix) {
 	function updateAndForceRenderThumbnail(id) {
 		updateThumbnail(id);
 		var imgId = getThumbnailId(id);
-		renderer.Render( imgId, new DrawingId(drawingCategory,id) );
+		renderer.Render(imgId, getDrawingObject(drawingCategory, id));
 	}
 
 	this.RenderThumbnail = function(id) {
@@ -318,11 +320,9 @@ function PaintExplorer(idPrefix) {
 
 			if (isInViewport && cacheEntry.outOfDate) {
 				x++;
-				renderer.Render( imgId, new DrawingId(drawingCategory,id) );
+				renderer.Render(imgId, getDrawingObject(drawingCategory, id));
 			}
 		}
-
-		console.log("RENDER COUNT " + x);
 	}
 
 	function getThumbnailId(id) {
@@ -330,13 +330,15 @@ function PaintExplorer(idPrefix) {
 	}
 
 	function changeSelection(id) {
-		console.log("CHANGE SELECTION " + id);
 		selectedDrawingId = id; // store that value
+
 		var paintExplorerForm = document.getElementById(idPrefix + "FormInner");
-		for( var i = 0; i < paintExplorerForm.childNodes.length; i++ ) {
+
+		for (var i = 0; i < paintExplorerForm.childNodes.length; i++) {
 			var child = paintExplorerForm.childNodes[i];
-			if( child.type && child.type === "radio" ) {
-				if( child.id === idPrefix + "Radio_" + id ) {
+
+			if (child.type && child.type === "radio") {
+				if (child.id === (idPrefix + "Radio_" + id)) {
 					child.checked = true;
 				}
 				else {
@@ -345,21 +347,22 @@ function PaintExplorer(idPrefix) {
 			}
 		}
 	}
+
 	this.ChangeSelection = function(id) {
 		changeSelection(id);
 	};
 
-	function refreshAndChangeSelection(drawingId) {
-		console.log(drawingCategory);
-		console.log(drawingId.type);
-		if(drawingCategory != drawingId.type) {
-			console.log("refresh!!");
-			refresh(drawingId.type);
+	// todo : is this being used? seems like it oculd replace the separate refresh + change selection methods..
+	function refreshAndChangeSelection(drawing) {
+		if (drawingCategory != drawing.type) {
+			refresh(drawing.type);
 		}
-		changeSelection(drawingId.id);
+
+		changeSelection(drawing.id);
 	}
-	this.RefreshAndChangeSelection = function(drawingId) {
-		refreshAndChangeSelection(drawingId);
+
+	this.RefreshAndChangeSelection = function(drawing) {
+		refreshAndChangeSelection(drawing);
 	};
 
 	function deleteThumbnail(id) {
@@ -375,7 +378,9 @@ function PaintExplorer(idPrefix) {
 		document.getElementById(getThumbnailId(id)).title = captionText;
 		var caption = document.getElementById(idPrefix + "Caption_" + id);
 		caption.innerText = captionText;
-		var obj = (new DrawingId(drawingCategory,id)).getEngineObject();
+
+		var obj = getDrawingObject(drawingCategory, id);
+
 		if (obj.name) {
 			if(caption.classList.contains("thumbnailDefaultName")) {
 				caption.classList.remove("thumbnailDefaultName");
@@ -416,7 +421,7 @@ function ThumbnailRenderer() {
 	var thumbnailRenderEncoders = {};
 	var cache = {};
 
-	function render(imgId,drawingId,frameIndex,imgElement) {
+	function render(imgId, drawing, frameIndex, imgElement) {
 		var isAnimated = (frameIndex === undefined || frameIndex === null) ? true : false;
 
 		var palId = getRoomPal(curRoom); // TODO : should NOT be hardcoded like this
@@ -428,21 +433,19 @@ function ThumbnailRenderer() {
 			hexPalette.push(hexStr);
 		}
 
-		// console.log(id);
-
 		var drawingFrameData = [];
 
 		// oof this code really needs to be re-written properly
 		if (isAnimated) {
-			var frameCount = drawingId.getEngineObject().animation.frameCount;
+			var frameCount = drawing.animation.frameCount;
 
 			for (var i = 0; i < frameCount; i++) {
-				drawingId.draw(drawingThumbnailCtx, 0, 0, palId, i);
+				drawTile(drawing, palId, i, 0, 0, drawingThumbnailCtx);
 				drawingFrameData.push(drawingThumbnailCtx.getImageData(0, 0, 8 * scale, 8 * scale).data);
 			}
 		}
 		else {
-			drawingId.draw(drawingThumbnailCtx, 0, 0, palId, frameIndex);
+			drawTile(drawing, palId, frameIndex, 0, 0, drawingThumbnailCtx);
 			drawingFrameData.push(drawingThumbnailCtx.getImageData(0, 0, 8 * scale, 8 * scale).data);
 		}
 
@@ -455,21 +458,26 @@ function ThumbnailRenderer() {
 			loops: 0,
 			delay: animationTime / 10 // TODO why divide by 10???
 		};
+
 		var encoder = new gif();
 
 		// cancel old encoder (if in progress already)
-		if( thumbnailRenderEncoders[imgId] != null )
+		if (thumbnailRenderEncoders[imgId] != null) {
 			thumbnailRenderEncoders[imgId].cancel();
+		}
+
 		thumbnailRenderEncoders[imgId] = encoder;
 
 		// start encoding new GIF
 		if (imgElement === undefined || imgElement === null) {
 			imgElement = document.getElementById(imgId);
 		}
-		encoder.encode( gifData, createThumbnailRenderCallback(imgElement) );
+
+		encoder.encode(gifData, createThumbnailRenderCallback(imgElement));
 	}
-	this.Render = function(imgId,drawingId,frameIndex,imgElement) {
-		render(imgId,drawingId,frameIndex,imgElement);
+
+	this.Render = function(imgId, drawing, frameIndex, imgElement) {
+		render(imgId, drawing, frameIndex, imgElement);
 	};
 
 	function createThumbnailRenderCallback(img) {

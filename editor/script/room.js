@@ -2,21 +2,11 @@
 	ROOM
 */
 
-/*
-TODO:
-drawingId -> drawingId.id
-paintMode -> drawingId.type
-
-what other methods do I need to move into this class? exit stuff??
-- exits
-- endings
-- items
-- etc.
-*/
 function RoomTool(canvas) {
 	var self = this; // feels a bit hacky
 
-	this.drawing = new DrawingId( TileType.Avatar, "A" );
+	// todo : I'd like to remove this eventually I think
+	this.drawing;
 
 	// edit flags
 	var isDragAddingTiles = false;
@@ -75,23 +65,16 @@ function RoomTool(canvas) {
 		}
 
 		if (!isEditingMarker && self.drawing.id != null) {
-			//add tiles/sprites to map
+			// add tiles/sprites to map
 			if (self.drawing.type == TileType.Tile) {
-				if ( room[curRoom].tilemap[y][x] === "0" ) {
-					console.log("ADD");
-					//add
-					//row = row.substr(0, x) + drawingId + row.substr(x+1);
-					console.log( room[curRoom].tilemap );
+				if (room[curRoom].tilemap[y][x] === "0") {
 					room[curRoom].tilemap[y][x] = self.drawing.id;
 					isDragAddingTiles = true;
 				}
 				else {
-					//delete (better way to do this?)
-					//row = row.substr(0, x) + "0" + row.substr(x+1);
 					room[curRoom].tilemap[y][x] = "0";
 					isDragDeletingTiles = true;
 				}
-				//room[curRoom].tilemap[y] = row;
 			}
 			else if( self.drawing.type == TileType.Avatar || self.drawing.type == TileType.Sprite ) {
 				var otherSprite = getSpriteAt(x,y);
@@ -174,22 +157,19 @@ function RoomTool(canvas) {
 	function editTilesOnDrag(e) {
 		var off = getOffset(e);
 		off = mobileOffsetCorrection(off,e,(tilesize*mapsize*scale));
+
 		var x = clamp(Math.floor(off.x / (tilesize*scale)), 0, mapsize - 1);
 		var y = clamp(Math.floor(off.y / (tilesize*scale)), 0, mapsize - 1);
-		// var row = room[curRoom].tilemap[y];
+
 		if (isDragAddingTiles) {
-			if ( room[curRoom].tilemap[y][x] != self.drawing.id ) {
-				// row = row.substr(0, x) + drawingId + row.substr(x+1);
-				// room[curRoom].tilemap[y] = row;
+			if (room[curRoom].tilemap[y][x] != self.drawing.id) {
 				room[curRoom].tilemap[y][x] = self.drawing.id;
 				refreshGameData();
 				self.drawEditMap();
 			}
 		}
 		else if (isDragDeletingTiles) {
-			if ( room[curRoom].tilemap[y][x] != "0" ) {
-				// row = row.substr(0, x) + "0" + row.substr(x+1);
-				// room[curRoom].tilemap[y] = row;
+			if (room[curRoom].tilemap[y][x] != "0") {
 				room[curRoom].tilemap[y][x] = "0";
 				refreshGameData();
 				self.drawEditMap();
