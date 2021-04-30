@@ -328,6 +328,119 @@ function CardUI() {
 		};
 	}
 
+	function CardNavControls(options) {
+		var navRoot = document.createElement("div");
+
+		var curDataType = options.dataTypes[0]; // but this is non-optional?
+
+		var nav = document.createElement("div");
+		nav.classList.add("bitsy-menubar-group");
+		navRoot.appendChild(nav);
+
+		var nameControl;
+
+		function createNavControls() {
+			nav.innerHTML = "";
+
+			var isNavDisabled = dataCategories[curDataType].navDisabled;
+
+			nameControl = document.createElement("input");
+			nameControl.type = "text";
+			nameControl.onchange = function(e) {
+				options.onChangeName(e.target.value);
+			};
+
+			if (isNavDisabled) {
+				nameControl.value = dataCategories[curDataType].name;
+				nameControl.disabled = true;
+			}
+
+			nav.appendChild(nameControl);
+
+			nav.appendChild(createButton({
+				icon: "previous",
+				disabled: isNavDisabled,
+				onclick: options.onPrevious,
+			}));
+
+			nav.appendChild(createButton({
+				icon: "next",
+				disabled: isNavDisabled,
+				onclick: options.onNext,
+			}));
+
+			nav.appendChild(createButton({
+				icon: "add",
+				disabled: isNavDisabled,
+				onclick: options.onAdd,
+			}));
+
+			nav.appendChild(createButton({
+				icon: "copy",
+				disabled: isNavDisabled,
+				onclick: options.onCopy,
+			}));
+
+			nav.appendChild(createButton({
+				icon: "delete",
+				disabled: isNavDisabled,
+				onclick: options.onDelete,
+			}));
+		}
+
+		function createTypeTabs() {
+			var dataTabs = [];
+
+			var typeSelect = document.createElement("div");
+			typeSelect.classList.add("bitsy-menubar-group");
+			navRoot.appendChild(typeSelect);
+
+			for (var i = 0; i < options.dataTypes.length; i++) {
+				var category = dataCategories[options.dataTypes[i]];
+				dataTabs.push({ text: category.name, icon: category.iconId, value: options.dataTypes[i], });
+			}
+
+			typeSelect.appendChild(createTabs({
+				name: card.name + "-data-tabs",
+				tabs: dataTabs,
+				value: curDataType,
+				onclick: function(e) {
+					curDataType = e.target.value;
+					createNavControls();
+					options.onTypeChange(curDataType);
+				}
+			}));
+		}
+
+		function refreshControls() {
+			createNavControls();
+
+			if (options.dataTypes.length > 1) {
+				createTypeTabs();
+			}
+		}
+
+		this.GetElement = function() {
+			return navRoot;
+		};
+
+		// these are really awkward to me
+		this.SetType = function(type) {
+			curDataType = type;
+			refreshControls();
+		};
+
+		this.SetName = function(name) {
+			// TODO : REALLY AWKWARD!!
+			if (!dataCategories[curDataType].navDisabled) {
+				console.log("SET NAME " + name);
+				nameControl.value = name;
+			}
+		};
+
+		refreshControls();
+	}
+
 	// todo : confusing naming with the system cards??? CardView? CardDisplay? CardWindow?
 	function CardView(card) {
 		var self = this; // todo : I don't love this pattern..
@@ -335,122 +448,64 @@ function CardUI() {
 		var frame = new CardFrame(card.name, card.name + "Tool", card.icon, card.sizeHint);
 		var toolRoot = frame.GetToolRoot();
 
-		var nameControl;
+		var navControls;
 
 		if (card.data) {
-			var curDataType = card.data[0];
-
-			var nav = document.createElement("div");
-			nav.classList.add("bitsy-menubar-group");
-			toolRoot.appendChild(nav);
-
-			function createNavControls() {
-				nav.innerHTML = "";
-
-				var isNavDisabled = dataCategories[curDataType].navDisabled;
-
-				nameControl = document.createElement("input");
-				nameControl.type = "text";
-				nameControl.onchange = function(e) {
+			// is it a good idea to separate this out so soon?
+			navControls = new CardNavControls({
+				cardName: card.name,
+				dataTypes: card.data,
+				onChangeName: function(value) {
 					if (card.changeDataName) {
-						card.changeDataName(e.target.value);
+						card.changeDataName(value);
 					}
-				};
-
-				if (isNavDisabled) {
-					nameControl.value = dataCategories[curDataType].name;
-					nameControl.disabled = true;
-				}
-
-				nav.appendChild(nameControl);
-
-				nav.appendChild(createButton({
-					icon: "previous",
-					disabled: isNavDisabled,
-					onclick: function() {
-						if (card.prev) {
-							card.prev();
-						}
-
-						UpdateCard();
+				},
+				onPrevious: function() {
+					if (card.prev) {
+						card.prev();
 					}
-				}));
 
-				nav.appendChild(createButton({
-					icon: "next",
-					disabled: isNavDisabled,
-					onclick: function() {
-						if (card.next) {
-							card.next();
-						}
-
-						UpdateCard();
+					UpdateCard();
+				},
+				onNext: function() {
+					if (card.next) {
+						card.next();
 					}
-				}));
 
-				nav.appendChild(createButton({
-					icon: "add",
-					disabled: isNavDisabled,
-					onclick: function() {
-						if (card.add) {
-							card.add();
-						}
-
-						UpdateCard();
+					UpdateCard();
+				},
+				onAdd: function() {
+					// todo : these hookups are starting to feel convoluted
+					if (card.add) {
+						card.add();
 					}
-				}));
 
-				nav.appendChild(createButton({
-					icon: "copy",
-					disabled: isNavDisabled,
-					onclick: function() {
-						if (card.copy) {
-							card.copy();
-						}
-
-						UpdateCard();
+					UpdateCard();
+				},
+				onCopy: function() {
+					if (card.copy) {
+						card.copy();
 					}
-				}));
 
-				nav.appendChild(createButton({
-					icon: "delete",
-					disabled: isNavDisabled,
-					onclick: function() {
-						if (card.del) {
-							card.del();
-						}
-
-						UpdateCard();
+					UpdateCard();
+				},
+				onDelete: function() {
+					if (card.del) {
+						card.del();
 					}
-				}));
-			}
 
-			if (card.data.length > 1) {
-				var dataTabs = [];
-
-				for (var i = 0; i < card.data.length; i++) {
-					var category = dataCategories[card.data[i]];
-					dataTabs.push({ text: category.name, icon: category.iconId, value: card.data[i], });
-				}
-
-				toolRoot.appendChild(createTabs({
-					name: card.name + "-data-tabs",
-					tabs: dataTabs,
-					value: curDataType,
-					onclick: function(e) {
-						curDataType = e.target.value;
-
-						if (card.select) {
-							card.select({ type: curDataType, });
-						}
-
-						createNavControls();
-						UpdateCard();
+					UpdateCard();
+				},
+				onTypeChange: function(type) {
+					if (card.select) {
+						card.select({ type: type, });
 					}
-				}));
-			}
 
-			createNavControls();
+					UpdateCard();
+				},
+			});
+
+			toolRoot.appendChild(navControls.GetElement());
 		}
 
 		var canvas;
@@ -486,13 +541,10 @@ function CardUI() {
 				card.menu();
 			}
 
-			if (nameControl && !nameControl.disabled) {
-				if (card.getDataName) {
-					nameControl.value = card.getDataName();
-				}
-				else {
-					nameControl.value = "";
-				}
+			// todo.. this is also very awkward
+			if (navControls && card.getDataName) {
+				var name = card.getDataName();
+				navControls.SetName(name ? name : "");
 			}
 		}
 
@@ -735,10 +787,6 @@ function CardUI() {
 			};
 		}
 
-		// this.SetName = function(name) {
-		// 	nameControl.value = name;
-		// };
-
 		// ??? correct name and place?
 		this.Boot = function() {
 			if (card.boot) {
@@ -749,6 +797,14 @@ function CardUI() {
 		}
 
 		this.Refresh = function() {
+			UpdateCard();
+		};
+
+		this.Select = function(options) {
+			if (card.select) {
+				card.select(options);
+			}
+
 			UpdateCard();
 		};
 
