@@ -13,7 +13,7 @@ X move code out of editor.js
 - method to update thumbnail caption text
 */
 
-function PaintExplorer(idPrefix,selectCallback) {
+function PaintExplorer(idPrefix) {
 
 	var renderer = new ThumbnailRenderer();
 
@@ -150,7 +150,7 @@ function PaintExplorer(idPrefix,selectCallback) {
 	};
 
 	function addThumbnail(id) {
-		if( drawingCategory == null ) { // TODO: used combined id + type instead?
+		if (drawingCategory == null) { // TODO: used combined id + type instead?
 			return;
 		}
 
@@ -218,9 +218,33 @@ function PaintExplorer(idPrefix,selectCallback) {
 
 		paintExplorerForm.appendChild(label);
 
-		radio.onclick = selectCallback;
+		radio.onclick = function(e) {
+			// todo : re-implement double click to open paint
 
-		updateThumbnail( id );
+			var type = drawingCategory;
+			var id = e.target.value;
+			var d = null;
+
+			// is this a one off? or something that needs to go in a util?
+			if (type === TileType.Avatar) {
+				d = sprite["A"];
+			}
+			else if (type === TileType.Sprite) {
+				d = sprite[id];
+			}
+			else if (type === TileType.Tile) {
+				d = tile[id];
+			}
+			else if (type === TileType.Item) {
+				d = item[id];
+			}
+
+			if (d != null) {
+				selectDrawing(d);
+			}
+		}
+
+		updateThumbnail(id);
 	}
 	this.AddThumbnail = function(id) {
 		addThumbnail(id);
@@ -368,13 +392,14 @@ function PaintExplorer(idPrefix,selectCallback) {
 	}
 
 	events.Listen("palette_change", function(event) {
-		refresh( paintTool.drawing.type, true /*doKeepOldThumbnails*/ );
+		// todo : bad to reference the global drawing?
+		refresh(drawing.type, true /*doKeepOldThumbnails*/);
 	});
 
 	events.Listen("game_data_change", function(event) {
 		// the code in the paint and find drawing tools is so messy it hurts :(
-		changeSelection( paintTool.drawing.id );
-		refresh( paintTool.drawing.type, false /*doKeepOldThumbnails*/ );
+		changeSelection(drawing.id);
+		refresh(drawing.type, false /*doKeepOldThumbnails*/);
 	});
 } // PaintExplorer()
 

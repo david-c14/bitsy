@@ -565,7 +565,6 @@ function resetGameData() {
 	refreshGameData();
 
 	// TODO RENDERER : refresh images
-	updateExitOptionsFromGameData();
 	updateRoomName();
 	updateInventoryUI();
 	updateFontSelectUI(); // hmm is this really the place for this?
@@ -573,7 +572,6 @@ function resetGameData() {
 	on_paint_avatar();
 	document.getElementById('paintOptionAvatar').checked = true;
 
-	paintTool.updateCanvas(); // hacky - assumes global paintTool and roomTool
 	markerTool.Clear(); // hacky -- should combine more of this stuff together
 	markerTool.SetRoom(curRoom);
 	markerTool.Refresh();
@@ -624,7 +622,6 @@ var editMode = EditMode.Edit; // TODO : move to core.js?
 
 /* TOOL CONTROLLERS */
 var roomTool;
-var paintTool;
 
 /* CUR DRAWING */
 var drawing;
@@ -637,6 +634,11 @@ function selectDrawing(d) {
 	if (paintExplorer != null) { 
 		paintExplorer.Refresh(drawing.type);
 		paintExplorer.ChangeSelection(drawing.id);
+	}
+
+	if (roomTool != null) {
+		// if selected drawing is always global.. why am I bothering with this?
+		roomTool.drawing = drawing;
 	}
 }
 
@@ -860,8 +862,7 @@ function start() {
 
 	//init tool controllers
 	roomTool = new RoomTool(canvas);
-	roomTool.listenEditEvents()
-	roomTool.drawing = drawing;
+	roomTool.listenEditEvents();
 	roomTool.editDrawingAtCoordinateCallback = editDrawingAtCoordinate;
 
 	markerTool = new RoomMarkerTool(document.getElementById("markerCanvas1"), document.getElementById("markerCanvas2") );
@@ -936,10 +937,10 @@ function start() {
 	});
 
 	// init paint explorer
-	paintExplorer = new PaintExplorer("paintExplorer",selectPaint);
+	paintExplorer = new PaintExplorer("paintExplorer");
 	paintExplorer.Refresh(TileType.Avatar);
 	paintExplorer.ChangeSelection("A");
-	paintExplorer.SetDisplayCaptions( true );
+	paintExplorer.SetDisplayCaptions(true);
 
 	//unsupported feature stuff
 	if (hasUnsupportedFeatures() && !isPortraitOrientation()) {
@@ -1137,8 +1138,6 @@ function on_palette_name_change(event) {
 }
 
 function selectRoom(roomId) {
-	console.log("SELECT ROOM " + roomId);
-
 	// ok watch out this is gonna be hacky
 	var ids = sortedRoomIdList();
 
@@ -1154,10 +1153,11 @@ function selectRoom(roomId) {
 		curRoom = ids[roomIndex];
 		markerTool.SetRoom(curRoom);
 		roomTool.drawEditMap();
-		paintTool.updateCanvas();
 		updateRoomPaletteSelect();
 		paintExplorer.Refresh(drawing.type, true /*doKeepOldThumbnails*/);
 		updateRoomName();
+
+		// todo : do I need to manually update the new paint tool in these?
 	}
 }
 
@@ -1167,7 +1167,6 @@ function nextRoom() {
 	curRoom = ids[roomIndex];
 	markerTool.SetRoom(curRoom);
 	roomTool.drawEditMap();
-	paintTool.updateCanvas();
 	updateRoomPaletteSelect();
 	paintExplorer.Refresh(drawing.type, true /*doKeepOldThumbnails*/);
 	updateRoomName();
@@ -1180,7 +1179,6 @@ function prevRoom() {
 	curRoom = ids[roomIndex];
 	markerTool.SetRoom(curRoom);
 	roomTool.drawEditMap();
-	paintTool.updateCanvas();
 	updateRoomPaletteSelect();
 	paintExplorer.Refresh(drawing.type, true /*doKeepOldThumbnails*/);
 	updateRoomName();
@@ -1223,7 +1221,6 @@ function duplicateRoom() {
 	//console.log(curRoom);
 	markerTool.SetRoom(curRoom); // hack to re-find all the markers
 	roomTool.drawEditMap();
-	paintTool.updateCanvas();
 	updateRoomPaletteSelect();
 
 	updateRoomName();
@@ -1293,7 +1290,6 @@ function newRoom() {
 	//console.log(curRoom);
 	markerTool.SetRoom(curRoom);
 	roomTool.drawEditMap();
-	paintTool.updateCanvas();
 	updateRoomPaletteSelect();
 
 	updateRoomName();
@@ -1335,11 +1331,8 @@ function deleteRoom() {
 		markerTool.Clear();
 		nextRoom();
 		roomTool.drawEditMap();
-		paintTool.updateCanvas();
 		updateRoomPaletteSelect();
 		markerTool.Refresh();
-		// updateExitOptionsFromGameData();
-		//recreate exit options
 	}
 }
 
@@ -1459,12 +1452,6 @@ function updatePreviewDialogButton() {
 	document.getElementById("previewDialogText").innerHTML = isPreviewDialogMode ? stopText : previewText;
 }
 
-function togglePaintGrid(e) {
-	paintTool.drawPaintGrid = e.target.checked;
-	iconUtils.LoadIcon(document.getElementById("paintGridIcon"), paintTool.drawPaintGrid ? "visibility" : "visibility_off");
-	paintTool.updateCanvas();
-}
-
 function toggleMapGrid(e) {
 	roomTool.drawMapGrid = e.target.checked;
 	iconUtils.LoadIcon(document.getElementById("roomGridIcon"), roomTool.drawMapGrid ? "visibility" : "visibility_off");
@@ -1556,8 +1543,9 @@ function roomPaletteChange(event) {
 	refreshGameData();
 	markerTool.SetRoom(curRoom);
 	roomTool.drawEditMap();
-	paintTool.updateCanvas();
 	paintExplorer.Refresh(drawing.type, true /*doKeepOldThumbnails*/);
+
+	// todo : update new paint tool?
 }
 
 function on_paint_avatar() {
@@ -1586,84 +1574,34 @@ function on_paint_item() {
 	selectDrawing(item[id]);
 }
 
-function paintExplorerFilterChange( e ) {
+function paintExplorerFilterChange(e) {
 	console.log("paint explorer filter : " + e.target.value);
-	paintExplorer.Refresh( paintTool.drawing.type, true, e.target.value );
+	paintExplorer.Refresh(drawing.type, true, e.target.value);
 }
 
-function editDrawingAtCoordinate(x,y) {
-	var spriteId = getSpriteAt(x,y); // todo: need more consistency with these methods
-	// console.log(spriteId);
-	if(spriteId) {
-		if(spriteId === "A") {
-			on_paint_avatar_ui_update();
-		}
-		else {
-			on_paint_sprite_ui_update();
-		}
-
-		var drawing = new DrawingId( spriteId === "A" ? TileType.Avatar : TileType.Sprite, spriteId );
-		paintTool.selectDrawing( drawing );
-		paintExplorer.RefreshAndChangeSelection( drawing );
+function editDrawingAtCoordinate(x, y) {
+	// todo: need more consistency with these methods
+	var spriteId = getSpriteAt(x, y);
+	if (spriteId) {
+		selectDrawing(sprite[spriteId]);
 		return;
 	}
 
-	var item = getItem(curRoom,x,y);
-	// console.log(item);
-	if(item) {
-		on_paint_item_ui_update();
-		var drawing = new DrawingId( TileType.Item, item.id );
-		paintTool.selectDrawing( drawing );
-		paintExplorer.RefreshAndChangeSelection( drawing );
+	var item = getItem(curRoom, x, y);
+	if (item) {
+		selectDrawing(item);
 		return;
 	}
 
-	var tileId = getTile(x,y);
-	// console.log(tileId);
-	if(tileId != 0) {
-		on_paint_tile_ui_update(); // really wasteful probably
-		var drawing = new DrawingId( TileType.Tile, tileId );
-		paintTool.selectDrawing( drawing );
-		paintExplorer.RefreshAndChangeSelection( drawing );
+	var tileId = getTile(x, y);
+	if (tileId != 0) {
+		selectDrawing(tile[tileId]);
 		return;
-	}
-}
-
-var animationThumbnailRenderer = new ThumbnailRenderer();
-function renderAnimationThumbnail(imgId,id,frameIndex) {
-	var drawingId = new DrawingId(drawing.type,id); // HACK!!! - need consistency on how type + id should be coupled
-	animationThumbnailRenderer.Render(imgId,drawingId,frameIndex);
-}
-
-function renderAnimationPreview(id) {
-	// console.log("RENDRE ANIM PREVIW");
-	renderAnimationThumbnail( "animationThumbnailPreview", id );
-	renderAnimationThumbnail( "animationThumbnailFrame1", id, 0 );
-	renderAnimationThumbnail( "animationThumbnailFrame2", id, 1 );
-}
-
-function selectPaint() {
-	if (drawing.id === this.value) {
-		showPanel("paintPanel", "paintExplorerPanel");
-	}
-
-	drawing.id = this.value;
-	if( drawing.type === TileType.Tile ) {
-		tileIndex = sortedTileIdList().indexOf( drawing.id );
-		paintTool.reloadDrawing();
-	}
-	else if( drawing.type === TileType.Item ) {
-		itemIndex = sortedItemIdList().indexOf( drawing.id );
-		paintTool.reloadDrawing();
-	}
-	else {
-		spriteIndex = sortedSpriteIdList().indexOf( drawing.id );
-		paintTool.reloadDrawing();
 	}
 }
 
 function getCurPaintModeStr() {
-	if(drawing.type == TileType.Sprite || drawing.type == TileType.Avatar) {
+	if (drawing.type == TileType.Sprite || drawing.type == TileType.Avatar) {
 		return localization.GetStringOrFallback("sprite_label", "sprite");
 	}
 	else if(drawing.type == TileType.Item) {
@@ -1815,18 +1753,6 @@ function updateFontDescriptionUI() {
 			fontDescription.style.display = fontOption.selected ? "block" : "none";
 		}
 	}
-}
-
-function updateExitOptionsFromGameData() {
-	// TODO ???
-}
-
-function on_toggle_wall(e) {
-	paintTool.toggleWall( e.target.checked );
-}
-
-function toggleWallUI(checked) {
-	iconUtils.LoadIcon(document.getElementById("wallCheckboxIcon"), checked ? "wall_on" : "wall_off");
 }
 
 function filenameFromGameTitle() {
@@ -2733,7 +2659,6 @@ function on_change_language_inner(language) {
 			src: localization.GetStringOrFallback("default_sprite_dlg", "I'm a cat"),
 			name: null,
 		};
-		paintTool.reloadDrawing();
 	}
 
 	// update default item
@@ -2743,7 +2668,6 @@ function on_change_language_inner(language) {
 			src: localization.GetStringOrFallback("default_item_dlg", "You found a nice warm cup of tea"),
 			name: null,
 		};
-		paintTool.reloadDrawing(); // hacky to do this twice
 	}
 
 	refreshGameData();

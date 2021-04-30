@@ -172,29 +172,7 @@ function CardUI() {
 
 	// hmm... this isn't working currently -- do I want to refactor this control anyway?
 	function createDialogField(options) {
-		// todo : eventually I want to simplify this widget code a lot, but for now I'm just wrapping it
-		var widget = dialogTool.CreateWidget(
-			options.name,
-			options.parentId,
-			options.dlgId);
-		// ,
-		// 	true,
-		// 	function(id) {
-		// 		obj.dlg = id;
-		// 	},
-		// 	{
-		// 		CreateFromEmptyTextBox: true,
-		// 		OnCreateNewDialog: function(id) {
-		// 			obj.dlg = id;
-		// 			refreshGameData();
-		// 		},
-		// 		GetDefaultName: function() {
-		// 			var desc = paintTool.drawing.getNameOrDescription();
-		// 			return CreateDefaultName(desc + " dialog", dialog, true); // todo : localize
-		// 		}, // todo : localize
-		// 	});
-
-		return widget.GetElement();
+		return null; // todo
 	}
 
 	function createThumbnail(options) {
