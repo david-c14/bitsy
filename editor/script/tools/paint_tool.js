@@ -26,6 +26,7 @@ installCard(function(card) {
 	// naming? how are these defined? (data?)
 	card.data = [ "AVA", "TIL", "SPR", "ITM", ];
 
+	// does this really belong in this tool?
 	var dataStorage = {
 		"AVA" : { store: sprite, filter: function(id) { return (id === "A"); }, },
 		"SPR" : { store: sprite, filter: function(id) { return (id != "A"); }, },
@@ -46,7 +47,7 @@ installCard(function(card) {
 
 	// todo : will this be needed in the end? name?? (boot, load, start, init??)
 	card.boot = function() {
-		onSelect(dataId);
+		card.select({ type: "AVA", id: "A", });
 	};
 
 	function drawBigPixel(index, x, y) { // todo : add square drawing func?
@@ -402,7 +403,8 @@ installCard(function(card) {
 			i = (idList.length - 1);
 		}
 
-		onSelect(idList[i]);
+		// this seems a little.. circular
+		card.select({ id: idList[i] });
 	};
 
 	card.next = function() {
@@ -424,7 +426,7 @@ installCard(function(card) {
 			i = 0;
 		}
 
-		onSelect(idList[i]);
+		card.select({ id: idList[i] });
 	};
 
 	function addDrawing(imageData) {
@@ -450,7 +452,9 @@ installCard(function(card) {
 		}
 
 		refreshGameData();
-		onSelect(nextId);
+
+		// also circular?
+		card.select({ id: nextId });
 	}
 
 	card.add = function() {
@@ -502,19 +506,6 @@ installCard(function(card) {
 		// todo : bring this up to parity with old delete function
 	};
 
-	card.changeDataType = function(type) {
-		console.log("data change! " + type);
-		curDataType = type;
-
-		var idList = Object.keys(dataStorage[curDataType].store);
-
-		if (dataStorage[curDataType].filter) {
-			idList = idList.filter(dataStorage[curDataType].filter);
-		}
-
-		onSelect(idList[0]);
-	};
-
 	// todo : I don't really like this function name..
 	card.getDataName = function() {
 		var store = dataStorage[curDataType].store;
@@ -529,13 +520,27 @@ installCard(function(card) {
 		refreshGameData();
 	};
 
-	function onSelect(id) {
-		dataId = id;
+	// this could be simplified if I structured the game data better
+	card.select = function(options) {
+		if (options.type) {
+			curDataType = options.type;
+		}
+
+		if (options.id) {
+			dataId = options.id;
+		}
+		else {
+			var idList = Object.keys(dataStorage[curDataType].store);
+
+			if (dataStorage[curDataType].filter) {
+				idList = idList.filter(dataStorage[curDataType].filter);
+			}
+
+			dataId = idList[0];
+		}
+
 		drawingId = dataStorage[curDataType].store[dataId].drw;
 		imageSource = renderer.GetImageSource(drawingId).slice();
-		frameIndex = 0;
+		frameIndex = 0;		
 	};
-
-	// TODO : this might return once I have a universal way to handle data type navigation
-	// card.select = function(id) {}
 });

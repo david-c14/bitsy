@@ -440,8 +440,8 @@ function CardUI() {
 					onclick: function(e) {
 						curDataType = e.target.value;
 
-						if (card.changeDataType) {
-							card.changeDataType(curDataType);
+						if (card.select) {
+							card.select({ type: curDataType, });
 						}
 
 						createNavControls();
