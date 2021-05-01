@@ -629,7 +629,14 @@ var drawing;
 function selectDrawing(d) {
 	drawing = d;
 
-	// todo.. update new paint tool
+	// hmm I don't like iterating over everything
+	for (var i = 0; i < allCardViews.length; i++) {
+		var cardView = allCardViews[i];
+
+		if (cardView.id === "paintTool") {
+			cardView.Select({ type: drawing.type, id: drawing.id });
+		}
+	}
 
 	if (paintExplorer != null) { 
 		paintExplorer.Refresh(drawing.type);

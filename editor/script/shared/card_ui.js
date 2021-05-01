@@ -445,7 +445,9 @@ function CardUI() {
 	function CardView(card) {
 		var self = this; // todo : I don't love this pattern..
 
-		var frame = new CardFrame(card.name, card.name + "Tool", card.icon, card.sizeHint);
+		self.id = card.name + "Tool";
+
+		var frame = new CardFrame(card.name, self.id, card.icon, card.sizeHint);
 		var toolRoot = frame.GetToolRoot();
 
 		var navControls;
