@@ -11,7 +11,7 @@ TODO
 */
 
 /* PUBLIC */
-function bitsyInit() {
+function bitsyInit() { // todo : should the engine really be calling this?
 	// init input management
 	input = new InputManager();
 
@@ -46,7 +46,7 @@ function bitsyInit() {
 
 	window.onblur = input.onblur;
 
-	// setInterval(main, 16);
+	mainInterval = setInterval(main, 16);
 }
 
 function bitsyClose() {
@@ -72,6 +72,8 @@ function bitsyClose() {
 	}
 
 	window.onblur = null;
+
+	clearInterval(mainInterval);
 }
 
 function bitsyButton(buttonCode) {
@@ -101,9 +103,8 @@ function bitsyButtonReset() {
 	}
 }
 
-function bitsyButtonUpdateStuff() {
-	input.resetKeyPressed();
-	input.resetTapReleased();
+function bitsyOnUpdate(f) {
+	updateFunction = f;
 }
 
 /* PRIVATE */
@@ -133,9 +134,15 @@ var SwipeDir = {
 	Right : 3
 };
 
+var mainInterval = null;
+var updateFunction = null;
 var input = null;
 
 function main() {
+	if (updateFunction) {
+		updateFunction();
+	}
+
 	input.resetKeyPressed();
 	input.resetTapReleased();
 }

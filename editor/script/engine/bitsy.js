@@ -191,15 +191,13 @@ function reset_cur_game() {
 	}
 }
 
-var update_interval = null;
 function onready(startWithTitle) {
 	if(startWithTitle === undefined || startWithTitle === null) startWithTitle = true;
 
 	clearInterval(loading_interval);
 
+	bitsyOnUpdate(update);
 	bitsyInit();
-
-	update_interval = setInterval(update,16);
 
 	if(startWithTitle) { // used by editor 
 		startNarrating(getTitle());
@@ -242,8 +240,6 @@ function stopGame() {
 	console.log("stop GAME!");
 
 	bitsyClose();
-
-	clearInterval(update_interval);
 }
 
 /* loading animation */
@@ -390,9 +386,6 @@ function update() {
 	}
 
 	prevTime = curTime;
-
-	// hack..
-	bitsyButtonUpdateStuff();
 }
 
 function updateInput() {
