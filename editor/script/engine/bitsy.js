@@ -198,7 +198,6 @@ function onready(startWithTitle) {
 	clearInterval(loading_interval);
 
 	bitsyInit();
-	bitsyButtonUpdate(updateInput);
 
 	update_interval = setInterval(update,16);
 
@@ -350,10 +349,9 @@ function update() {
 		startNarrating( "", true /*isEnding*/ );
 	}
 
-	// TODO : turn off input during transitions!
-	// if (!transition.IsTransitionActive()) {
-	// 	updateInput();
-	// }
+	if (!transition.IsTransitionActive()) {
+		updateInput();
+	}
 
 	if (transition.IsTransitionActive()) {
 		// transition animation takes over everything!
@@ -392,11 +390,14 @@ function update() {
 	}
 
 	prevTime = curTime;
+
+	// hack..
+	bitsyButtonUpdateStuff();
 }
 
-function updateInput(buttonCode) {
+function updateInput() {
 	if (dialogBuffer.IsActive()) {
-		if (buttonCode > 0) {
+		if (bitsyButtonAny()) {
 			/* CONTINUE DIALOG */
 			if (dialogBuffer.CanContinue()) {
 				var hasMoreDialog = dialogBuffer.Continue();
@@ -411,7 +412,7 @@ function updateInput(buttonCode) {
 		}
 	}
 	else if (isEnding) {
-		if (buttonCode > 0) {
+		if (bitsyButtonAny()) {
 			/* RESTART GAME */
 			reset_cur_game();
 		}
@@ -420,16 +421,16 @@ function updateInput(buttonCode) {
 		/* WALK */
 		var prevPlayerDirection = curPlayerDirection;
 
-		if (buttonCode === 1) {
+		if (bitsyButton(0)) {
 			curPlayerDirection = Direction.Up;
 		}
-		else if (buttonCode === 2) {
+		else if (bitsyButton(1)) {
 			curPlayerDirection = Direction.Down;
 		}
-		else if (buttonCode === 3) {
+		else if (bitsyButton(2)) {
 			curPlayerDirection = Direction.Left;
 		}
-		else if (buttonCode === 4) {
+		else if (bitsyButton(3)) {
 			curPlayerDirection = Direction.Right;
 		}
 		else {

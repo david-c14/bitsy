@@ -2,6 +2,9 @@
 NOTES
  - which things should be called by the engine vs. outside it?
  - how does the engine boot?
+ - flat api
+ - concise api
+ - keep as much in engine layer as possible
 
 TODO
  - encapsulate private functions, etc
@@ -43,7 +46,7 @@ function bitsyInit() {
 
 	window.onblur = input.onblur;
 
-	setInterval(main, 16);
+	// setInterval(main, 16);
 }
 
 function bitsyClose() {
@@ -71,14 +74,36 @@ function bitsyClose() {
 	window.onblur = null;
 }
 
-function bitsyButtonUpdate(handler) {
-	buttonDownHandler = handler;
+function bitsyButton(buttonCode) {
+	switch (buttonCode) {
+		case 0: // UP
+			return (input.isKeyDown(key.up) || input.isKeyDown(key.w) || input.swipeUp());
+		case 1: // DOWN
+			return (input.isKeyDown(key.down) || input.isKeyDown(key.s) || input.swipeDown());
+		case 2: // LEFT
+			return (input.isKeyDown(key.left) || input.isKeyDown(key.a) || input.swipeLeft());
+		case 3: // RIGHT
+			return ((input.isKeyDown(key.right) || input.isKeyDown(key.d) || input.swipeRight()));
+	}
+
+	return false;
 }
 
+// todo : should any of this be in the engine?
+function bitsyButtonAny() {
+	return input.anyKeyPressed() || input.isTapReleased();
+}
+
+// todo : this should probably be in the engine
 function bitsyButtonReset() {
 	if (input) {
 		input.ignoreHeldKeys();
 	}
+}
+
+function bitsyButtonUpdateStuff() {
+	input.resetKeyPressed();
+	input.resetTapReleased();
 }
 
 /* PRIVATE */
@@ -108,33 +133,9 @@ var SwipeDir = {
 	Right : 3
 };
 
-var buttonDownHandler = null;
-
 var input = null;
 
 function main() {
-	var buttonCode = 0;
-
-	if (input.isKeyDown(key.up) || input.isKeyDown(key.w) || input.swipeUp()) {
-		buttonCode = 1;
-	}
-	else if (input.isKeyDown(key.down) || input.isKeyDown(key.s) || input.swipeDown()) {
-		buttonCode = 2;
-	}
-	else if (input.isKeyDown(key.left) || input.isKeyDown(key.a) || input.swipeLeft()) {
-		buttonCode = 3;
-	}
-	else if (input.isKeyDown(key.right) || input.isKeyDown(key.d) || input.swipeRight()) {
-		buttonCode = 4;
-	}
-	else if (input.isTapReleased()) {
-		buttonCode = 5;
-	}
-
-	if (buttonDownHandler) {
-		buttonDownHandler(buttonCode);
-	}
-
 	input.resetKeyPressed();
 	input.resetTapReleased();
 }
