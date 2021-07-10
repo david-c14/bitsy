@@ -350,11 +350,11 @@ function update() {
 		startNarrating( "", true /*isEnding*/ );
 	}
 
-	if (!transition.IsTransitionActive()) {
+	if (transition == null || !transition.IsTransitionActive()) {
 		updateInput();
 	}
 
-	if (transition.IsTransitionActive()) {
+	if (transition != null && transition.IsTransitionActive()) {
 		// transition animation takes over everything!
 		transition.UpdateTransition(deltaTime);
 	}
@@ -585,11 +585,12 @@ function movePlayer(direction) {
 	}
 }
 
-var transition = new TransitionManager();
+// var transition = new TransitionManager();
+var transition = null; // temporarily turning off the transition fx system
 
 function movePlayerThroughExit(ext) {
 	var GoToDest = function() {
-		if (ext.transition_effect != null) {
+		if (transition != null && ext.transition_effect != null) {
 			transition.BeginTransition(player().room, player().x, player().y, ext.dest.room, ext.dest.x, ext.dest.y, ext.transition_effect);
 			transition.UpdateTransition(0);
 		}
