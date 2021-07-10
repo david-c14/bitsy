@@ -117,6 +117,11 @@ function bitsyDrawPixel(index, x, y) {
 	ctx.fillRect(x * scale, y * scale, scale, scale);
 }
 
+function bitsyClearScreen(index) {
+	ctx.fillStyle = "rgb(" + curPalette[index][0] + "," + curPalette[index][1] + "," + curPalette[index][2] + ")";
+	ctx.fillRect(0, 0, 128 * scale, 128 * scale);
+}
+
 /* PRIVATE */
 var key = {
 	left : 37,

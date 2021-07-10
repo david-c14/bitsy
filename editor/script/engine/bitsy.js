@@ -356,7 +356,8 @@ function update() {
 	else {
 		if (!isNarrating && !isEnding) {
 			updateAnimation();
-			drawRoom( room[curRoom] ); // draw world if game has begun
+			// drawRoom( room[curRoom] ); // draw world if game has begun
+			drawRoomTest(room[curRoom]);
 		}
 		else {
 			//make sure to still clear screen
@@ -1745,6 +1746,10 @@ function drawRoom(room,context,frameIndex) { // context & frameIndex are optiona
 			drawSprite( getSpriteImage(spr,paletteId,frameIndex), spr.x, spr.y, context );
 		}
 	}
+}
+
+function drawRoomTest(room) {
+	bitsyClearScreen(0);
 }
 
 // TODO : remove these get*Image methods
