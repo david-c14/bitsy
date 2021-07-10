@@ -199,6 +199,11 @@ function onready(startWithTitle) {
 	bitsyOnUpdate(update);
 	bitsyInit();
 
+	// hack : test palette
+	bitsySetPaletteColor(0, 255, 0, 0);
+	bitsySetPaletteColor(1, 0, 255, 0);
+	bitsySetPaletteColor(2, 0, 0, 255);
+
 	if(startWithTitle) { // used by editor 
 		startNarrating(getTitle());
 	}
@@ -386,6 +391,11 @@ function update() {
 	}
 
 	prevTime = curTime;
+
+	// hack test draw pixels
+	bitsyDrawPixel(0, 0, 0);
+	bitsyDrawPixel(1, 64, 64);
+	bitsyDrawPixel(2, 127, 127);
 }
 
 function updateInput() {

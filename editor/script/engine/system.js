@@ -107,6 +107,16 @@ function bitsyOnUpdate(f) {
 	updateFunction = f;
 }
 
+function bitsySetPaletteColor(index, r, g, b) {
+	curPalette[index] = [r, g, b];
+}
+
+function bitsyDrawPixel(index, x, y) {
+	// todo : do I want to draw to an image instead, and the put it on the canvas all at once?
+	ctx.fillStyle = "rgb(" + curPalette[index][0] + "," + curPalette[index][1] + "," + curPalette[index][2] + ")";
+	ctx.fillRect(x * scale, y * scale, scale, scale);
+}
+
 /* PRIVATE */
 var key = {
 	left : 37,
@@ -136,7 +146,10 @@ var SwipeDir = {
 
 var mainInterval = null;
 var updateFunction = null;
+
 var input = null;
+
+var curPalette = [];
 
 function main() {
 	if (updateFunction) {
