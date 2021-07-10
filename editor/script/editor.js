@@ -844,6 +844,7 @@ function start() {
 
 	//game canvas & context (also the map editor)
 	attachCanvas( document.getElementById("game") );
+	renderer.AttachContext(ctx); // temp hack
 
 	//init tool controllers
 	roomTool = new RoomTool(canvas);

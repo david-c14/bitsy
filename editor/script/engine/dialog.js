@@ -51,11 +51,6 @@ var DialogRenderer = function() {
 		return Math.ceil( font.getHeight() * textboxInfo.font_scale );
 	}
 
-	var context = null;
-	this.AttachContext = function(c) {
-		context = c;
-	};
-
 	this.ClearTextbox = function() {
 		// todo : still need this?
 		// create new image none exists

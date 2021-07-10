@@ -236,6 +236,9 @@ var SwipeDir = {
 	Right : 3
 };
 
+var canvas;
+var ctx;
+
 var mainInterval = null;
 var updateFunction = null;
 
@@ -250,6 +253,13 @@ var text_scale = 2; // todo : refactor -- this is duplicated from dialog rendere
 var textboxImg = null;
 var textboxWidth = 0;
 var textboxHeight = 0;
+
+function attachCanvas(c) {
+	canvas = c;
+	canvas.width = width * scale;
+	canvas.height = width * scale;
+	ctx = canvas.getContext("2d");
+}
 
 function main() {
 	if (updateFunction) {

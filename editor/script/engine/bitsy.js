@@ -1,8 +1,3 @@
-var xhr; // TODO : remove
-var canvas;
-var context; // TODO : remove if safe?
-var ctx;
-
 var room = {};
 var tile = {};
 var sprite = {};
@@ -141,15 +136,6 @@ function getGameNameFromURL() {
 	var game = window.location.hash.substring(1);
 	// console.log("game name --- " + game);
 	return game;
-}
-
-function attachCanvas(c) {
-	canvas = c;
-	canvas.width = width * scale;
-	canvas.height = width * scale;
-	ctx = canvas.getContext("2d");
-	dialogRenderer.AttachContext(ctx);
-	renderer.AttachContext(ctx);
 }
 
 var curGameData = null;
