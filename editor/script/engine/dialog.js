@@ -95,27 +95,23 @@ var DialogRenderer = function() {
 		0,0,1,0,0
 	];
 	this.DrawNextArrow = function() {
-		return;
+		var arrowScale = scale / text_scale;
 
-		// console.log("draw arrow!");
-		var top = (textboxInfo.height-5) * scale;
-		var left = (textboxInfo.width-(5+4)) * scale;
+		var top = heightInTextBoxPixels - (5 * arrowScale);
+		var left = widthInTextBoxPixels - ((5 + 4) * arrowScale);
 		if (textDirection === TextDirection.RightToLeft) { // RTL hack
-			left = 4 * scale;
+			left = 4 * arrowScale;
 		}
 
 		for (var y = 0; y < 3; y++) {
 			for (var x = 0; x < 5; x++) {
 				var i = (y * 5) + x;
+
 				if (arrowdata[i] == 1) {
-					//scaling nonsense
-					for (var sy = 0; sy < scale; sy++) {
-						for (var sx = 0; sx < scale; sx++) {
-							var pxl = 4 * ( ((top+(y*scale)+sy) * (textboxInfo.width*scale)) + (left+(x*scale)+sx) );
-							textboxInfo.img.data[pxl+0] = 255;
-							textboxInfo.img.data[pxl+1] = 255;
-							textboxInfo.img.data[pxl+2] = 255;
-							textboxInfo.img.data[pxl+3] = 255;
+					// scaling nonsense
+					for (var sy = 0; sy < arrowScale; sy++) {
+						for (var sx = 0; sx < arrowScale; sx++) {
+							bitsyDrawTextBoxPixel(1, left + x + sx, top + y + sy);
 						}
 					}
 				}
@@ -135,10 +131,9 @@ var DialogRenderer = function() {
 
 		var charData = char.bitmap;
 
+		// todo : make sure the math here is correct...
 		var top = (2 * text_scale) + (row * 4 * text_scale) + (row * font.getHeight() * text_scale) + Math.floor( char.offset.y );
 		var left = (2 * text_scale) + (leftPos) + Math.floor( char.offset.x );
-
-		var debug_r = Math.random() * 255;
 
 		for (var y = 0; y < char.height; y++) {
 			for (var x = 0; x < char.width; x++) {
