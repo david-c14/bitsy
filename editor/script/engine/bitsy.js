@@ -1748,6 +1748,20 @@ function drawRoom(room,context,frameIndex) { // context & frameIndex are optiona
 	}
 }
 
+var tileIdCount = 0;
+var drawingIdToTileId = {};
+function getOrRenderTileTest(drawing) {
+	if (drawingIdToTileId[drawing.drw] === undefined) {
+		drawingIdToTileId[drawing.drw] = tileIdCount;
+		tileIdCount++;
+
+		// fake render
+		bitsySetTilePixel(drawingIdToTileId[drawing.drw], 1, 0, 0);
+	}
+
+	return drawingIdToTileId[drawing.drw];
+}
+
 function drawRoomTest(room) {
 	bitsyClearScreen(0);
 
@@ -1761,7 +1775,8 @@ function drawRoomTest(room) {
 					room.tilemap[i][j] = id;
 				}
 				else {
-					bitsyDrawTile(1, j, i);
+					var tileIndex = getOrRenderTileTest(tile[id]);
+					bitsyDrawTile(tileIndex, j, i);
 				}
 			}
 		}
@@ -1770,14 +1785,16 @@ function drawRoomTest(room) {
 	//draw items
 	for (var i = 0; i < room.items.length; i++) {
 		var itm = room.items[i];
-		bitsyDrawTile(2, itm.x, itm.y);
+		var tileIndex = getOrRenderTileTest(itm);
+		bitsyDrawTile(tileIndex, itm.x, itm.y);
 	}
 
 	//draw sprites
 	for (id in sprite) {
 		var spr = sprite[id];
 		if (spr.room === room.id) {
-			bitsyDrawTile(2, spr.x, spr.y);
+			var tileIndex = getOrRenderTileTest(spr);
+			bitsyDrawTile(tileIndex, spr.x, spr.y);
 		}
 	}
 }

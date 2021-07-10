@@ -123,9 +123,46 @@ function bitsyClearScreen(index) {
 }
 
 // todo : name? set tile?
-function bitsyDrawTile(index, x, y) {
-	ctx.fillStyle = "rgb(" + curPalette[index][0] + "," + curPalette[index][1] + "," + curPalette[index][2] + ")";
-	ctx.fillRect(x * tilesize * scale, y * tilesize * scale, tilesize * scale, tilesize * scale);
+function bitsyDrawTile(tileIndex, x, y) {
+	if (tileMemory[tileIndex] === undefined) {
+		return;
+	}
+
+	if (tileMemory[tileIndex].canvas === null) {
+		// convert to canvas: chrome has poor performance when working directly with image data
+		tileMemory[tileIndex].canvas = document.createElement("canvas");
+		tileMemory[tileIndex].canvas.width = tileMemory[tileIndex].img.width;
+		tileMemory[tileIndex].canvas.height = tileMemory[tileIndex].img.height;
+
+		var imageContext = tileMemory[tileIndex].canvas.getContext("2d");
+		imageContext.putImageData(tileMemory[tileIndex].img, 0, 0);
+	}
+
+	ctx.drawImage(
+		tileMemory[tileIndex].canvas,
+		x * tilesize * scale,
+		y * tilesize * scale,
+		tilesize * scale,
+		tilesize * scale);
+}
+
+function bitsySetTilePixel(tileIndex, palIndex, x, y) {
+	if (tileMemory[tileIndex] === undefined) {
+		tileMemory[tileIndex] = {
+			img : ctx.createImageData(tilesize * scale, tilesize * scale),
+			canvas : null,
+		};
+	}
+
+	for (var sy = 0; sy < scale; sy++) {
+		for (var sx = 0; sx < scale; sx++) {
+			var pxl = (((y * scale) + sy) * tilesize * scale * 4) + (((x*scale) + sx) * 4);
+			tileMemory[tileIndex].img.data[pxl + 0] = curPalette[palIndex][0];
+			tileMemory[tileIndex].img.data[pxl + 1] = curPalette[palIndex][1];
+			tileMemory[tileIndex].img.data[pxl + 2] = curPalette[palIndex][2];
+			tileMemory[tileIndex].img.data[pxl + 3] = 255;
+		}
+	}
 }
 
 /* PRIVATE */
@@ -161,6 +198,8 @@ var updateFunction = null;
 var input = null;
 
 var curPalette = [];
+
+var tileMemory = [];
 
 function main() {
 	if (updateFunction) {
