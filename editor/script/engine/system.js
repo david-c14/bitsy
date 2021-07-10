@@ -122,6 +122,12 @@ function bitsyClearScreen(index) {
 	ctx.fillRect(0, 0, 128 * scale, 128 * scale);
 }
 
+// todo : name? set tile?
+function bitsyDrawTile(index, x, y) {
+	ctx.fillStyle = "rgb(" + curPalette[index][0] + "," + curPalette[index][1] + "," + curPalette[index][2] + ")";
+	ctx.fillRect(x * tilesize * scale, y * tilesize * scale, tilesize * scale, tilesize * scale);
+}
+
 /* PRIVATE */
 var key = {
 	left : 37,

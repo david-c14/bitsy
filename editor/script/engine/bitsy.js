@@ -1750,6 +1750,36 @@ function drawRoom(room,context,frameIndex) { // context & frameIndex are optiona
 
 function drawRoomTest(room) {
 	bitsyClearScreen(0);
+
+	//draw tiles
+	for (i in room.tilemap) {
+		for (j in room.tilemap[i]) {
+			var id = room.tilemap[i][j];
+			if (id != "0") {
+				if (tile[id] == null) { // hack-around to avoid corrupting files (not a solution though!)
+					id = "0";
+					room.tilemap[i][j] = id;
+				}
+				else {
+					bitsyDrawTile(1, j, i);
+				}
+			}
+		}
+	}
+
+	//draw items
+	for (var i = 0; i < room.items.length; i++) {
+		var itm = room.items[i];
+		bitsyDrawTile(2, itm.x, itm.y);
+	}
+
+	//draw sprites
+	for (id in sprite) {
+		var spr = sprite[id];
+		if (spr.room === room.id) {
+			bitsyDrawTile(2, spr.x, spr.y);
+		}
+	}
 }
 
 // TODO : remove these get*Image methods
