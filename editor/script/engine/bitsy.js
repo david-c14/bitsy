@@ -199,11 +199,6 @@ function onready(startWithTitle) {
 	bitsyOnUpdate(update);
 	bitsyInit();
 
-	// hack : test palette
-	bitsySetPaletteColor(0, 255, 0, 0);
-	bitsySetPaletteColor(1, 0, 255, 0);
-	bitsySetPaletteColor(2, 0, 0, 255);
-
 	if(startWithTitle) { // used by editor 
 		startNarrating(getTitle());
 	}
@@ -635,6 +630,13 @@ function initRoom(roomId) {
 	// init ending properties
 	for (var i = 0; i < room[roomId].endings.length; i++) {
 		room[roomId].endings[i].property = { locked:false };
+	}
+
+	// update palette
+	var palId = getRoomPal(roomId);
+	var colors = palette[palId].colors;
+	for (var i = 0; i < colors.length; i++) {
+		bitsySetPaletteColor(i, colors[i][0], colors[i][1], colors[i][2]);
 	}
 }
 
