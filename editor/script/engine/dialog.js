@@ -125,8 +125,6 @@ var DialogRenderer = function() {
 
 	var text_scale = 2; //using a different scaling factor for text feels like cheating... but it looks better
 	this.DrawChar = function(char, row, col, leftPos) {
-		return;
-
 		char.offset = {
 			x: char.base_offset.x,
 			y: char.base_offset.y
@@ -137,8 +135,8 @@ var DialogRenderer = function() {
 
 		var charData = char.bitmap;
 
-		var top = (4 * scale) + (row * 2 * scale) + (row * font.getHeight() * text_scale) + Math.floor( char.offset.y );
-		var left = (4 * scale) + (leftPos * text_scale) + Math.floor( char.offset.x );
+		var top = (2 * text_scale) + (row * 4 * text_scale) + (row * font.getHeight() * text_scale) + Math.floor( char.offset.y );
+		var left = (2 * text_scale) + (leftPos) + Math.floor( char.offset.x );
 
 		var debug_r = Math.random() * 255;
 
@@ -147,33 +145,8 @@ var DialogRenderer = function() {
 
 				var i = (y * char.width) + x;
 				if ( charData[i] == 1 ) {
-
-					//scaling nonsense
-					for (var sy = 0; sy < text_scale; sy++) {
-						for (var sx = 0; sx < text_scale; sx++) {
-							var pxl = 4 * ( ((top+(y*text_scale)+sy) * (textboxInfo.width*scale)) + (left+(x*text_scale)+sx) );
-							textboxInfo.img.data[pxl+0] = char.color.r;
-							textboxInfo.img.data[pxl+1] = char.color.g;
-							textboxInfo.img.data[pxl+2] = char.color.b;
-							textboxInfo.img.data[pxl+3] = char.color.a;
-						}
-					}
+					bitsyDrawTextBoxPixel(2, left + x, top + y);
 				}
-				// else {
-				// 	// DEBUG
-
-				// 	//scaling nonsense
-				// 	for (var sy = 0; sy < text_scale; sy++) {
-				// 		for (var sx = 0; sx < text_scale; sx++) {
-				// 			var pxl = 4 * ( ((top+(y*text_scale)+sy) * (textboxInfo.width*scale)) + (left+(x*text_scale)+sx) );
-				// 			textboxInfo.img.data[pxl+0] = debug_r;
-				// 			textboxInfo.img.data[pxl+1] = 0;
-				// 			textboxInfo.img.data[pxl+2] = 0;
-				// 			textboxInfo.img.data[pxl+3] = 255;
-				// 		}
-				// 	}
-				// }
-
 			}
 		}
 		
