@@ -24,11 +24,22 @@ var DialogRenderer = function() {
 		arrow_height : 5,
 	};
 
+	// store dimensions
+	var heightInTextBoxPixels = 0;
+	var widthInTextBoxPixels = 0;
+
 	var font = null;
 	this.SetFont = function(f) {
 		font = f;
-		textboxInfo.height = (textboxInfo.padding_vert * 3) + (relativeFontHeight() * 2) + textboxInfo.arrow_height;
-		textboxInfo.img = context.createImageData(textboxInfo.width*scale, textboxInfo.height*scale);
+
+		// textboxInfo.height = (textboxInfo.padding_vert * 3) + (relativeFontHeight() * 2) + textboxInfo.arrow_height;
+		// textboxInfo.img = context.createImageData(textboxInfo.width*scale, textboxInfo.height*scale);
+
+		heightInTextBoxPixels = font.getHeight() +
+			(2 * ((textboxInfo.padding_vert * 3) + textboxInfo.arrow_height));
+		widthInTextBoxPixels = (2 * textboxInfo.width);
+
+		bitsySetTextBoxSize(widthInTextBoxPixels, heightInTextBoxPixels);
 	}
 
 	function textScale() {
@@ -49,20 +60,12 @@ var DialogRenderer = function() {
 	};
 
 	this.ClearTextbox = function() {
-		if(context == null) return;
-
-		//create new image none exists
-		if(textboxInfo.img == null)
-			textboxInfo.img = context.createImageData(textboxInfo.width*scale, textboxInfo.height*scale);
+		// todo : still need this?
+		// create new image none exists
+		bitsySetTextBoxSize(widthInTextBoxPixels, heightInTextBoxPixels);
 
 		// fill text box with black
-		for (var i=0;i<textboxInfo.img.data.length;i+=4)
-		{
-			textboxInfo.img.data[i+0]=0;
-			textboxInfo.img.data[i+1]=0;
-			textboxInfo.img.data[i+2]=0;
-			textboxInfo.img.data[i+3]=255;
-		}
+		bitsyClearTextBox(0);
 	};
 
 	var isCentered = false;
@@ -71,17 +74,18 @@ var DialogRenderer = function() {
 	};
 
 	this.DrawTextbox = function() {
-		if(context == null) return;
+		var heightInScreenPixels = heightInTextBoxPixels / 2;
+
 		if (isCentered) {
-			context.putImageData(textboxInfo.img, textboxInfo.left*scale, ((height/2)-(textboxInfo.height/2))*scale);
+			bitsyDrawTextBox(textboxInfo.left, 64 - (heightInScreenPixels / 2));
 		}
 		else if (player().y < mapsize/2) {
-			//bottom
-			context.putImageData(textboxInfo.img, textboxInfo.left*scale, (height-textboxInfo.bottom-textboxInfo.height)*scale);
+			// bottom
+			bitsyDrawTextBox(textboxInfo.left, textboxInfo.bottom - heightInScreenPixels);
 		}
 		else {
-			//top
-			context.putImageData(textboxInfo.img, textboxInfo.left*scale, textboxInfo.top*scale);
+			// top
+			bitsyDrawTextBox(textboxInfo.left, textboxInfo.top);
 		}
 	};
 
@@ -91,6 +95,8 @@ var DialogRenderer = function() {
 		0,0,1,0,0
 	];
 	this.DrawNextArrow = function() {
+		return;
+
 		// console.log("draw arrow!");
 		var top = (textboxInfo.height-5) * scale;
 		var left = (textboxInfo.width-(5+4)) * scale;
@@ -119,6 +125,8 @@ var DialogRenderer = function() {
 
 	var text_scale = 2; //using a different scaling factor for text feels like cheating... but it looks better
 	this.DrawChar = function(char, row, col, leftPos) {
+		return;
+
 		char.offset = {
 			x: char.base_offset.x,
 			y: char.base_offset.y

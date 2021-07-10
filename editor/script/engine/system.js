@@ -169,6 +169,41 @@ function bitsyClearTiles() {
 	tileMemory = [];
 }
 
+// todo : how do I want to handle text box scaling?
+// do I want to use textbox pixels here? or 
+function bitsySetTextBoxSize(w, h) {
+	textboxImg = ctx.createImageData(w * text_scale, h * text_scale);
+
+	// store width and height
+	textboxWidth = w;
+	textboxHeight = h;
+}
+
+// todo : need another palette for text
+function bitsyDrawTextBoxPixel(palIndex, x, y) {
+	for (var sy = 0; sy < text_scale; sy++) {
+		for (var sx = 0; sx < text_scale; sx++) {
+			var pxl = (((y * text_scale) + sy) * textboxWidth * text_scale * 4) + (((x*text_scale) + sx) * 4);
+			textboxImg.data[pxl + 0] = curPalette[palIndex][0];
+			textboxImg.data[pxl + 1] = curPalette[palIndex][1];
+			textboxImg.data[pxl + 2] = curPalette[palIndex][2];
+			textboxImg.data[pxl + 3] = 255;
+		}
+	}
+}
+
+function bitsyClearTextBox(palIndex) {
+	for (var y = 0; y < textboxHeight; y++) {
+		for (var x = 0; x < textboxWidth; x++) {
+			bitsyDrawTextBoxPixel(palIndex, x, y);
+		}
+	}
+}
+
+function bitsyDrawTextBox(x, y) {
+	ctx.putImageData(textboxImg, x * scale, y * scale);
+}
+
 /* PRIVATE */
 var key = {
 	left : 37,
@@ -204,6 +239,11 @@ var input = null;
 var curPalette = [];
 
 var tileMemory = [];
+
+var text_scale = 2; // todo : refactor -- this is duplicated from dialog renderer
+var textboxImg = null;
+var textboxWidth = 0;
+var textboxHeight = 0;
 
 function main() {
 	if (updateFunction) {
