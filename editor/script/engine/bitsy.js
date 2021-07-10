@@ -199,6 +199,11 @@ function onready(startWithTitle) {
 	bitsyOnUpdate(update);
 	bitsyInit();
 
+	// temp hack..
+	bitsySetTextBoxPaletteColor(0, 0, 0, 0);
+	bitsySetTextBoxPaletteColor(1, 255, 255, 255);
+	bitsySetTextBoxPaletteColor(2, 255, 255, 255);
+
 	if(startWithTitle) { // used by editor 
 		startNarrating(getTitle());
 	}

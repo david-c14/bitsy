@@ -32,9 +32,6 @@ var DialogRenderer = function() {
 	this.SetFont = function(f) {
 		font = f;
 
-		// textboxInfo.height = (textboxInfo.padding_vert * 3) + (relativeFontHeight() * 2) + textboxInfo.arrow_height;
-		// textboxInfo.img = context.createImageData(textboxInfo.width*scale, textboxInfo.height*scale);
-
 		heightInTextBoxPixels = font.getHeight() +
 			(2 * ((textboxInfo.padding_vert * 3) + textboxInfo.arrow_height));
 		widthInTextBoxPixels = (2 * textboxInfo.width);

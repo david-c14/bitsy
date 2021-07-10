@@ -111,6 +111,11 @@ function bitsySetPaletteColor(index, r, g, b) {
 	curPalette[index] = [r, g, b];
 }
 
+// todo : share API with the other palette?
+function bitsySetTextBoxPaletteColor(index, r, g, b) {
+	textPalette[index] = [r, g, b];
+}
+
 function bitsyDrawPixel(index, x, y) {
 	// todo : do I want to draw to an image instead, and the put it on the canvas all at once?
 	ctx.fillStyle = "rgb(" + curPalette[index][0] + "," + curPalette[index][1] + "," + curPalette[index][2] + ")";
@@ -184,9 +189,9 @@ function bitsyDrawTextBoxPixel(palIndex, x, y) {
 	for (var sy = 0; sy < text_scale; sy++) {
 		for (var sx = 0; sx < text_scale; sx++) {
 			var pxl = (((y * text_scale) + sy) * textboxWidth * text_scale * 4) + (((x*text_scale) + sx) * 4);
-			textboxImg.data[pxl + 0] = curPalette[palIndex][0];
-			textboxImg.data[pxl + 1] = curPalette[palIndex][1];
-			textboxImg.data[pxl + 2] = curPalette[palIndex][2];
+			textboxImg.data[pxl + 0] = textPalette[palIndex][0];
+			textboxImg.data[pxl + 1] = textPalette[palIndex][1];
+			textboxImg.data[pxl + 2] = textPalette[palIndex][2];
 			textboxImg.data[pxl + 3] = 255;
 		}
 	}
@@ -237,6 +242,7 @@ var updateFunction = null;
 var input = null;
 
 var curPalette = [];
+var textPalette = []; // todo : store both palettes in an array?
 
 var tileMemory = [];
 
