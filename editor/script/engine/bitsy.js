@@ -1748,32 +1748,37 @@ function drawRoom(room,context,frameIndex) { // context & frameIndex are optiona
 	}
 }
 
+function renderFrameToTileTest(tileIndex, palIndex, frameSrc) {
+	for (var y = 0; y < tilesize; y++) {
+		for (var x = 0; x < tilesize; x++) {
+			if (frameSrc[y][x] === 1) {
+				bitsySetTilePixel(tileIndex, palIndex, x, y);
+			}
+			else {
+				bitsySetTilePixel(tileIndex, 0, x, y);
+			}
+		}
+	}
+}
+
 var tileIdCount = 0;
 var drawingIdToTileId = {};
 function getOrRenderTileTest(drawing) {
 	if (drawingIdToTileId[drawing.drw] === undefined) {
 		var nextTileId = tileIdCount;
-		tileIdCount++;
 
 		// render first frame
 		var imageSource = renderer.GetImageSource(drawing.drw);
-		var frameSrc = imageSource[0];
 
-		for (var y = 0; y < tilesize; y++) {
-			for (var x = 0; x < tilesize; x++) {
-				if (frameSrc[y][x] === 1) {
-					bitsySetTilePixel(nextTileId, drawing.col, x, y);
-				}
-				else {
-					bitsySetTilePixel(nextTileId, 0, x, y);
-				}
-			}
+		for (var i = 0; i < imageSource.length; i++) {
+			renderFrameToTileTest(nextTileId + i, drawing.col, imageSource[i]);
 		}
 
 		drawingIdToTileId[drawing.drw] = nextTileId;
+		tileIdCount += imageSource.length;
 	}
 
-	return drawingIdToTileId[drawing.drw];
+	return drawingIdToTileId[drawing.drw] + drawing.animation.frameIndex;
 }
 
 function drawRoomTest(room) {
