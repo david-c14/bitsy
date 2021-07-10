@@ -165,6 +165,10 @@ function bitsySetTilePixel(tileIndex, palIndex, x, y) {
 	}
 }
 
+function bitsyClearTiles() {
+	tileMemory = [];
+}
+
 /* PRIVATE */
 var key = {
 	left : 37,

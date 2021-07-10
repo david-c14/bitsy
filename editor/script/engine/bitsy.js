@@ -387,11 +387,6 @@ function update() {
 	}
 
 	prevTime = curTime;
-
-	// hack test draw pixels
-	bitsyDrawPixel(0, 0, 0);
-	bitsyDrawPixel(1, 64, 64);
-	bitsyDrawPixel(2, 127, 127);
 }
 
 function updateInput() {
@@ -639,6 +634,11 @@ function initRoom(roomId) {
 	for (var i = 0; i < colors.length; i++) {
 		bitsySetPaletteColor(i, colors[i][0], colors[i][1], colors[i][2]);
 	}
+
+	// clear tile memory
+	bitsyClearTiles();
+	tileIdCount = 0;
+	drawingIdToTileId = {};
 }
 
 function getItemIndex( roomId, x, y ) {
@@ -1767,7 +1767,6 @@ function getOrRenderTileTest(drawing) {
 	if (drawingIdToTileId[drawing.drw] === undefined) {
 		var nextTileId = tileIdCount;
 
-		// render first frame
 		var imageSource = renderer.GetImageSource(drawing.drw);
 
 		for (var i = 0; i < imageSource.length; i++) {
