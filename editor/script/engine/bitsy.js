@@ -183,7 +183,7 @@ function onready(startWithTitle) {
 	clearInterval(loading_interval);
 
 	bitsyOnUpdate(update);
-	bitsyInit();
+	bitsyOnExit(stopGame);
 
 	// temp hack..
 	bitsySetTextBoxPaletteColor(0, 0, 0, 0);
@@ -229,8 +229,6 @@ function getOffset(evt) {
 
 function stopGame() {
 	console.log("stop GAME!");
-
-	bitsyClose();
 }
 
 /* loading animation */
@@ -2002,3 +2000,7 @@ var scriptModule = new Script();
 var scriptInterpreter = scriptModule.CreateInterpreter();
 var scriptUtils = scriptModule.CreateUtils(); // TODO: move to editor.js?
 // scriptInterpreter.SetDialogBuffer( dialogBuffer );
+
+
+/* NEW API STUFF */
+bitsyOnLoad(load_game);
