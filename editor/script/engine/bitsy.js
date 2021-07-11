@@ -147,10 +147,10 @@ function load_game(game_data, startWithTitle) {
 
 	parseWorld(game_data);
 
-	if (!isPlayerEmbeddedInEditor) {
-		// hack to ensure default font is available
-		fontManager.AddResource(defaultFontName + fontManager.GetExtension(), document.getElementById(defaultFontName).text.slice(1));
-	}
+	// if (!isPlayerEmbeddedInEditor) {
+	// 	// hack to ensure default font is available
+	// 	fontManager.AddResource(defaultFontName + fontManager.GetExtension(), document.getElementById(defaultFontName).text.slice(1));
+	// }
 
 	var font = fontManager.Get( fontName );
 	dialogBuffer.SetFont(font);
@@ -180,7 +180,9 @@ function reset_cur_game() {
 function onready(startWithTitle) {
 	if(startWithTitle === undefined || startWithTitle === null) startWithTitle = true;
 
-	clearInterval(loading_interval);
+	startWithTitle = false;
+
+	// clearInterval(loading_interval);
 
 	bitsyOnUpdate(update);
 	bitsyOnExit(stopGame);
@@ -350,8 +352,8 @@ function update() {
 		}
 		else {
 			//make sure to still clear screen
-			ctx.fillStyle = "rgb(" + getPal(curPal())[0][0] + "," + getPal(curPal())[0][1] + "," + getPal(curPal())[0][2] + ")";
-			ctx.fillRect(0,0,canvas.width,canvas.height);
+			// ctx.fillStyle = "rgb(" + getPal(curPal())[0][0] + "," + getPal(curPal())[0][1] + "," + getPal(curPal())[0][2] + ")";
+			// ctx.fillRect(0,0,canvas.width,canvas.height);
 		}
 
 		// if (isDialogMode) { // dialog mode
@@ -511,7 +513,7 @@ var curPlayerDirection = Direction.None;
 var playerHoldToMoveTimer = 0;
 
 function movePlayer(direction) {
-	if (player().room == null || !Object.keys(room).includes(player().room)) {
+	if (player().room == null || !(Object.keys(room).indexOf(player().room) != -1)) {
 		return; // player room is missing or invalid.. can't move them!
 	}
 
@@ -839,7 +841,7 @@ function parseWorld(file) {
 	placeSprites();
 
 	var roomIds = Object.keys(room);
-	if (player() != undefined && player().room != null && roomIds.includes(player().room)) {
+	if (player() != undefined && player().room != null && (roomIds.indexOf(player().room) != -1)) {
 		// player has valid room
 		curRoom = player().room;
 	}
@@ -1784,11 +1786,14 @@ function drawRoomTest(room) {
 				}
 				else {
 					var tileIndex = getOrRenderTileTest(tile[id]);
-					bitsyDrawTile(tileIndex, j, i);
+					// bitsyLog(tileIndex + " " + j + " " + i);
+					bitsyDrawTile(tileIndex, parseInt(j), parseInt(i));
 				}
 			}
 		}
 	}
+
+	// bitsyLog("--");
 
 	//draw items
 	for (var i = 0; i < room.items.length; i++) {
