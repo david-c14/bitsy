@@ -11,6 +11,10 @@ TODO
 */
 
 /* PUBLIC */
+function bitsyLog(str) {
+	console.log(str);
+}
+
 function bitsyOnLoad(f) {
 	loadFunction = f;
 }
@@ -350,13 +354,13 @@ var InputManager = function() {
 		for (var key in pressed) {
 			if (pressed[key]) { // only ignore keys that are actually held
 				ignored[key] = true;
-				// console.log("IGNORE -- " + key);
+				// bitsyLog("IGNORE -- " + key);
 			}
 		}
 	}
 
 	this.onkeydown = function(event) {
-		// console.log("KEYDOWN -- " + event.keyCode);
+		// bitsyLog("KEYDOWN -- " + event.keyCode);
 
 		stopWindowScrolling(event);
 
@@ -387,7 +391,7 @@ var InputManager = function() {
 	}
 
 	this.onkeyup = function(event) {
-		// console.log("KEYUP -- " + event.keyCode);
+		// bitsyLog("KEYUP -- " + event.keyCode);
 		pressed[event.keyCode] = false;
 		ignored[event.keyCode] = false;
 	}
@@ -485,7 +489,7 @@ var InputManager = function() {
 	}
 
 	this.onblur = function() {
-		// console.log("~~~ BLUR ~~");
+		// bitsyLog("~~~ BLUR ~~");
 		resetAll();
 	}
 }
