@@ -871,7 +871,7 @@ var ArabicHandler = function() {
 }
 
 /* NEW TEXT EFFECTS */
-var TextEffects = new Map();
+var TextEffects = {};
 
 var RainbowEffect = function() { // TODO - should it be an object or just a method?
 	this.DoEffect = function(char,time) {
