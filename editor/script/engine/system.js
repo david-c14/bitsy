@@ -13,3 +13,19 @@ function bitsyLog(message, category) {
 		console.log(category + "::" + message);
 	}
 }
+
+/* SOUND */
+var audioContext;
+var oscillator;
+
+// init audio context and square wave oscillator
+audioContext = new AudioContext();
+oscillator = audioContext.createOscillator();
+oscillator.type = "square";
+oscillator.start();
+
+function bitsyPlayNote(frequency, length) {
+	oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime); // frequency in hertz
+	oscillator.connect(audioContext.destination);
+	setTimeout(function() { oscillator.disconnect(); }, length);
+}
