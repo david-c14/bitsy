@@ -414,6 +414,8 @@ function update() {
 	var curTime = Date.now();
 	deltaTime = curTime - prevTime;
 
+	sound.Update(deltaTime);
+
 	if (curRoom == null) {
 		// in the special case where there is no valid room, end the game
 		startNarrating( "", true /*isEnding*/ );
@@ -2198,3 +2200,6 @@ var scriptModule = new Script();
 var scriptInterpreter = scriptModule.CreateInterpreter();
 var scriptUtils = scriptModule.CreateUtils(); // TODO: move to editor.js?
 // scriptInterpreter.SetDialogBuffer( dialogBuffer );
+
+/* SOUND */
+var sound = new Sound();
