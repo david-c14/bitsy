@@ -1085,6 +1085,9 @@ function parseWorld(file) {
 			// parse endings for back compat
 			i = parseEnding(lines, i, compatibilityFlags);
 		}
+		else if (getType(curLine) === "MUS") {
+			i = parseMusic(lines, i);
+		}
 		else if (getType(curLine) === "VAR") {
 			i = parseVariable(lines, i);
 		}
@@ -1360,6 +1363,10 @@ function serializeWorld(skipFonts) {
 			worldStr += "\n";
 		}
 	}
+	/* MUSIC */
+	worldStr += "MUS 0\n"; // todo : multiple songs..
+	worldStr += savedSong.join(",") + "\n";
+	worldStr += "\n";
 	/* VARIABLES */
 	for (id in variable) {
 		worldStr += "VAR " + id + "\n";
@@ -1887,6 +1894,25 @@ function parseVariable(lines, i) {
 	var value = lines[i];
 	i++;
 	variable[id] = value;
+	return i;
+}
+
+// hack
+var savedSong = [];
+
+function parseMusic(lines, i) {
+	var id = getId(lines[i]);
+	i++;
+
+	var songStr = lines[i];
+	i++
+
+	var song = songStr.split(",");
+
+	// hack
+	savedSong = song;
+	sound.PlayMusic(savedSong);
+
 	return i;
 }
 

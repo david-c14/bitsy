@@ -30,7 +30,7 @@ function Sound() {
 		"B" : 11,
 	};
 
-	var testSong = ["C", "E", "G", "A", "G", "F", "D", "E"];
+	var curSong = ["C", "E", "G", "A", "G", "F", "D", "E"];
 	var tempoBpm = 120; // 120 bpm = slow end of allegro
 	var beatLengthMs = 60000 / tempoBpm;
 	var noteLengthMs = beatLengthMs * 0.8;
@@ -42,12 +42,17 @@ function Sound() {
 		beatCounter += dt;
 
 		if (beatCounter >= beatLengthMs) {
-			var note = testSong[noteIndex];
+			var note = curSong[noteIndex];
 			var freq = noteFrequencies[noteCode[note]];
 			bitsyPlayNote(freq, noteLengthMs);
 
-			noteIndex = (noteIndex + 1) % testSong.length; // loop
+			noteIndex = (noteIndex + 1) % curSong.length; // loop
 			beatCounter = 0;
 		}
+	};
+
+	this.PlayMusic = function(song) {
+		curSong = song;
+		noteIndex = 0;
 	};
 }
