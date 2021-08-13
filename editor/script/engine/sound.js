@@ -44,7 +44,7 @@ function Sound() {
 		if (beatCounter >= beatLengthMs) {
 			var note = curSong[noteIndex];
 			var freq = noteFrequencies[noteCode[note]];
-			bitsyPlayNote(freq, noteLengthMs);
+			bitsyPlayNote(freq, noteLengthMs, 11, 75, -2);
 
 			noteIndex = (noteIndex + 1) % curSong.length; // loop
 			beatCounter = 0;

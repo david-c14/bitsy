@@ -16,14 +16,20 @@ function bitsyLog(message, category) {
 
 /* SOUND */
 var audioContext;
-var oscillator;
-var threshold;
+var squareWaveNode;
+var volumeNode;
+
+// volume
+var volumeMax = 0.15;
+var volumeMin = 0.0;
+var volumeIncrement = 0.01;
+var volumeInterval = null;
 
 // init audio context and square wave oscillator
 audioContext = new AudioContext();
 
-oscillator = audioContext.createOscillator();
-oscillator.type = "square";
+squareWaveNode = audioContext.createOscillator();
+squareWaveNode.type = "square";
 
 // experimenting with more complex stuff
 // threshold = audioContext.createWaveShaper();
@@ -39,13 +45,28 @@ oscillator.type = "square";
 // threshold.curve = curve;
 // oscillator.connect(threshold);
 
-oscillator.start();
+volumeNode = audioContext.createGain();
+volumeNode.gain.value = volumeMin;
 
-var inputNode = oscillator;
-var outputNode = oscillator;
+squareWaveNode.connect(volumeNode);
+squareWaveNode.start();
 
-function bitsyPlayNote(frequency, length) {
+var inputNode = squareWaveNode;
+var outputNode = volumeNode;
+
+function bitsyPlayNote(frequency, length, envelopeStart, envelopeStepTime, envelopeIncrement) {
+	volumeNode.gain.value = (envelopeStart * volumeIncrement); // todo : min & max, etc
+
+	if (volumeInterval != null) {
+		clearInterval(volumeInterval);
+	}
+
+	volumeInterval = setInterval(
+		function() { volumeNode.gain.value = Math.max(volumeMin, volumeNode.gain.value + (envelopeIncrement * volumeIncrement)); },
+		envelopeStepTime);
+
 	inputNode.frequency.setValueAtTime(frequency, audioContext.currentTime); // frequency in hertz
 	outputNode.connect(audioContext.destination);
+
 	setTimeout(function() { outputNode.disconnect(); }, length);
 }
