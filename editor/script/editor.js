@@ -606,15 +606,16 @@ function refreshGameData() {
 
 	// document.getElementById("game_data").value = gameData; // TODO : this is where the slow down is
 
-	var gameDataNoFonts = serializeWorld(true);
-	document.getElementById("game_data").value = showFontDataInGameData ? serializeWorld() : gameDataNoFonts;
+	// TODO : SLOW GAMES TEST
+	// var gameDataNoFonts = serializeWorld(true);
+	// document.getElementById("game_data").value = showFontDataInGameData ? serializeWorld() : gameDataNoFonts;
 
-	// Store.set("game_data", gameData); //auto-save
+	// // Store.set("game_data", gameData); //auto-save
 
-	Store.set("game_data", gameDataNoFonts);
+	// Store.set("game_data", gameDataNoFonts);
 
-	// todo : test if re-enabling this going to mess up HTML imports?
-	events.Raise("game_data_refresh");
+	// // todo : test if re-enabling this going to mess up HTML imports?
+	// events.Raise("game_data_refresh");
 }
 
 /* TIMER */
