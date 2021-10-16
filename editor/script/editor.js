@@ -595,8 +595,6 @@ function resetGameData() {
 	});
 }
 
-// test
-
 function refreshGameData(force) {
 	// TODO temp
 	console.log("REFRESH GAME DATA " + force);
