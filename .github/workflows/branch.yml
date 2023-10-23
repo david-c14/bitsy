@@ -8,7 +8,7 @@ jobs:
     steps:
       # setup
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
 
       # build resources
       - run: node ./dev/icon_generator/makeicons
